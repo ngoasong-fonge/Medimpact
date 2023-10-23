@@ -1,0 +1,89 @@
+1a.  Create database on target
+
+
+1b. Add this to the source pg_hba.conf on the source side servers. The IPs are the three target ip addresses.
+
+host    all             enterprisedb    10.2.1.245/32 (ip of target)     trust
+
+
+2. on Source(needs a restart) - do this for all the primary and secondary.
+Change the parameter from wal_level=replica to wal_level=logical
+
+alter system set wal_level=logical;
+pg_ctl restart
+
+3. On source, create the publication for all the tables ( connect to intended database and create publication)
+
+You are now connected to database "acedb" as user "enterprisedb".
+acedb=# CREATE PUBLICATION r42coredb1_publication FOR ALL TABLES;
+CREATE PUBLICATION
+acedb=# \dRp+    (command to validate creation)
+              Publication acedbpublication
+    Owner     | All tables | Inserts | Updates | Deletes
+--------------+------------+---------+---------+---------
+enterprisedb | t          | t       | t       | t
+(1 row)
+
+eigdb=# CREATE PUBLICATION eigdbpublication FOR ALL TABLES;
+CREATE PUBLICATION
+
+eigdb=# \dRp+
+              Publication eigdbpublication
+    Owner     | All tables | Inserts | Updates | Deletes
+--------------+------------+---------+---------+---------
+enterprisedb | t          | t       | t       | t
+(1 row)
+
+eigdb=# select * from pg_publication;
+     pubname      | pubowner | puballtables | pubinsert | pubupdate | pubdelete
+------------------+----------+--------------+-----------+-----------+-----------
+eigdbpublication |       10 | t            | t         | t         | t
+(1 row)
+
+
+4. On destination, create all the schemas and tables using the pg_dump and restore commands. (dump of schema only in souce and restore in target)
+
+Source: [enterprisedb@lpqospdbb50516 logicalrep]$ pg_dump -d r42coredb1 -n glbl_r42_cr -n public -s > r42coredb1.sql
+
+
+5. 
+
+On Destination or target:
+CREATE SUBSCRIPTION dpglytcorsubsciption CONNECTION 'host=10.0.242.221 dbname=DPGLYTCOR user=enterprisedb port=5444' PUBLICATION dpglytcor_publication;
+(the host,dbname,user,port info should reflect same in source)
+
+acedb=# CREATE SUBSCRIPTION r42coredb1subsciption CONNECTION 'host=10.0.242.221 dbname=r42coredb1 user=enterprisedb port=5444' PUBLICATION r42coredb1_publication;
+NOTICE:  created replication slot "acedbsubsciption" on publisher
+CREATE SUBSCRIPTION
+acedb=#
+
+eigdb=# CREATE SUBSCRIPTION eigdbsubsciption CONNECTION 'host=10.9.149.121 dbname=eigdb user=enterprisedb port=5444' PUBLICATION eigdbpublication;
+NOTICE:  created replication slot "eigdbsubsciption" on publisher
+CREATE SUBSCRIPTION
+
+6. Validate the error logs, all the table subscriptions should have been initiated and completed
+
+
+
+
+
+
+
+
+CREATE DATABASE "DPGLYTCOR"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_dpglytcor
+    CONNECTION LIMIT = -1;
+
+CREATE DATABASE r42coredb1
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_r42coredb1
+    CONNECTION LIMIT = -1;

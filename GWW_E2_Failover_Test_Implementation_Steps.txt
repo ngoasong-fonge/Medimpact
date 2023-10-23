@@ -1,0 +1,343 @@
+**************************************
+**************************************
+		PREREQUISITEs
+**************************************
+**************************************
+
+# Application team has scripts ready during failover test that will serve below purpose.Please make sure API is using the VIP to connect to server from APP end
+
+1> Should create continuous traffic (with inserts and select operation separately). 
+2> What happens to the business continuity once switch over/Fail Over is complete?
+3> What error do you get in app log during the switch over/Fail Over? 
+4> What happens to the failed transactions?
+5> What is the outage duration for the switch over/Fail Over? 
+
+**************************************
+**************************************
+Implementation Instructions
+**************************************
+**************************************
+E2 Server Details
+--------------------------------
+"db_inst_name": 			"ppqd10276"
+"Database": 				"gwwdb"
+"primary_vip": 				"ppqd10276-p1.aexp.com(read/write)"
+"secondary_vip_read_only": 	"ppqd10276-p1.aexp.com(read only)"
+"primary_vm_name": 			"lpqospdbb51382.phx.aexp.com"
+"secondary_vm_name": 		"lpqospdbb51384.phx.aexp.com"
+"witness_vm_name": 			"lpqospdbb51383.phx.aexp.com"
+
+**************************************
+TEST CASES
+
+1> Standby DB is down
+2> Primary DB is down
+3> Planned Maintenance on Primary Node
+4> Switchover to DR during disaster recovery situations
+**************************************
+**************************************
+	PREVALIDATION
+**************************************
+**************************************
+ 
+# Log in to primary server
+# validate which server is currently serving as master or slave.You will get no row returned/F for master and T for slave.
+ edb=#  select pg_is_in_recovery();
+
+# Validate EFM. You should get Standby database(s) in sync with master. It is safe to promote.
+/usr/edb/efm-3.9/bin/./efm cluster-status efm
+
+# If the DB's are not in sync, bring them back to sync and proceed with the failover testing.
+
+# Validate Replication. should list  replication details in master.
+Select * from   pg_stat_replication;
+
+#  Take backup in master server ONLY
+
+ sh /pgsql/gppd10382/dba/PGScripts/run_backup.ksh >/pgsql/gppd10382/dba/PGScripts/maintlog/run_backup.log 2>&1
+ 
+# Get the file recovery.conf from slave node and recovery.done from master node and validate below checks. 
+# THE ONLY DIFFERENCE IS THE HOST. MASTER SHOULD HAVE SLAVES HOST ID AND SLAVE SHOULD HAVE MASTER'S. 
+# Make sure all the below points are populated as given.
+ 
+Recovery.conf  must have these entries - host should be point to the current master database.
+Edit the host,current master database in read - write mode
+trigger file location --> update your data directory location. 
+
+
+# API team should start BOTH Insert and Select traffics and should be able to monitor Log from their end.
+**************************************
+**************************************
+	TEST CASE 1: STANDBY DB IS DOWN. EXPECTED OUTCOME :  THERE IS NO FAILOVER. APPLICATION SHOULD CONNECT AS EXPECTED.
+**************************************
+**************************************
+Log into witness server  as Enterprisedb	User
+	pbrun to enterprisedb
+	#Run this command to monitor the EFM status	  
+	 /usr/edb/efm-3.9/bin/./efm cluster-status efm
+
+	 Log into standby Server as Enterprisedb	User
+	# Verify   database is in Standby Mode	
+	select     pg_is_in_recovery();	T - recovery should   be True
+
+	# Shutdown   Standby database	
+	psql -c "SELECT CURRENT_TIMESTAMP"
+	pg_ctl -D $PGDATA stop	
+
+Log into Primary Server as Enterprisedb User
+	# Validate EFM in the witness server session	EFM status will be -   Standby DB UNKNOWN	
+
+	# Validate   database	
+	select   pg_is_in_recovery();	F - Database is already on read write mode. 
+
+	# No failover occurred since only standby is down.
+
+    # Create a test  tables in user database to validate replication /efm	
+	
+create table lucy.ngdmtest  (id int);
+
+
+	
+Login Using  Application VIP (Primary VIP) as Enterprisedb User
+	# Validate   Database. Run a insert query in  a test table to ensure its on read write mode	
+	
+	insert into lucy.ngdmtest   values (200);
+
+Get the below points details from API before proceeding to next step
+	
+	1> What happens to the business continuity once switch over/Fail Over is complete?
+	2> What error do you get in app log during the switch over/Fail Over? 
+	3> What happens to the failed transactions?
+	4> What is the outage duration for the switch over/Fail Over? 
+
+Once API team confirms on the above points and the outcome is as expected 
+Log into   Standby Server as Enterprisedb User 
+
+	#Edit   recovery.conf under $PGDATA	as below
+	standby_mode = 'on'
+	primary_conninfo = 'user=edbrepl passfile=''/home/enterprisedb/.pgpass'' host=xx.xx.xx.xx port=5444 sslmode=prefer sslcompression=0 krbsrvname=postgres target_session_attrs=any'
+	recovery_target_timeline='latest'
+	trigger_file='/pgsql/gppd10382/data/trigger_file'
+	restore_command='cp /pgsql/gppd10382/archivelog/%f %p'
+
+
+	# Recovery.conf   must have these entries 
+	Edit the host ? current master database in read - write mode
+	trigger file location --> update your data directory location.
+
+	# Start   Database 
+	psql -c "SELECT CURRENT_TIMESTAMP"
+	pg_ctl -D $PGDATA Start
+
+	# Validate   database	
+	select   pg_is_in_recovery();	T - should be in   recovery mode (standby)
+
+	# Validate EFM	in witness server 
+	 /usr/edb/efm-3.9/bin/./efm cluster-status efm 
+
+# Resume EFM in standby as EFM user as standby DB will be in recovery state
+
+	# Run resume .This will refresh the   EFM status
+		/usr/edb/efm-3.9/bin/efm resume efm	
+
+	# Validate EFM. EFM status shows   primary and standby in sync
+	/usr/edb/efm-3.9/bin/./efm cluster-status efm	
+	
+# Log in to standby as Enterprisedb User
+
+	# Check the results in the table. Insert done through Primary VIP should be there	
+	select * from   ngdmtest;	 
+
+**************************************
+**************************************
+	TEST CASE 2: PRIMARY DATABASE DOWN. 
+	EXPECTED OUTCOME:  EFM WILL INITIATE AN AUTOMATIC FAILOVER AND STANDBY DATABASE WILL BE RECOVERED IN READ - WRITE MODE.
+**************************************
+**************************************
+
+++++++++++++++++++++++++++++++++++++++++
+In  /etc/edb/efm*/efm.properties has a property auto.failover that determines " Whether or not failover will happen automatically when the master fails. Set it to false if you want to receive the failover notifications but not have EFM actually perform the failover steps.The value of this property must be the same across all agents.
+We have this property set to true on all nodes:
+auto.failover=true  
+++++++++++++++++++++++++++++++++++++++++++++++
+
+Log into witness server	as Enterprisedb User 	 
+	pbrun to enterprisedb
+	# Run this command to monitor the EFM status	    
+	/usr/edb/efm-3.9/bin/./efm cluster-status efm	 
+
+Log into Master Server as Enterprisedb User	 	 
+	# validate which server is currently serving as master or slave.You will get no row returned/F for master and T for slave.
+	 edb=#  select pg_is_in_recovery();
+
+	# Validate EFM. You should get Standby database(s) in sync with master. It is safe to promote.
+	/usr/edb/efm-3.9/bin/./efm cluster-status efm
+
+	# Validate Replication. should list  replication details in master.
+	Select * from   pg_stat_replication;
+
+	# Shutdown  Primary database	
+	pg_ctl -D $PGDATA stop	
+
+Log into Standby Server 	 	 
+	# Validate EFM status in the witness server session. EFM status will be  refreshed promoting standby to primary
+
+	# Validate  database. - Database is  recovered in read - write mode
+	 select   pg_is_in_recovery();	
+
+Login Using   Application VIP (Primary VIP)	 	 
+	# Validate   Database	Run a insert query in ngdmtest  table to ensure its on read write mode	
+	insert into lucy.ngdmtest   values (100);
+	select * from lucy.ngdmtest;
+	
+Get the below points details from API before proceeding to next step
+	
+	1> What happens to the business continuity once switch over/Fail Over is complete?
+	2> What error do you get in app log during the switch over/Fail Over? 
+	3> What happens to the failed transactions?
+	4> What is the outage duration for the switch over/Fail Over? 
+
+Once API team confirms on the above points and the outcome is as expected 
+Log into Master Server where database is down (we are starting to make it standby)
+
+	# Edit recovery.conf	
+	standby_mode = 'on'
+	primary_conninfo = 'user=edbrepl passfile=''/home/enterprisedb/.pgpass'' host=xx.xx.xx.xx port=5444 sslmode=prefer sslcompression=0 krbsrvname=postgres target_session_attrs=any'
+	recovery_target_timeline='latest'
+	trigger_file='/pgsql/gppd10382/data/trigger_file'
+	restore_command='cp /pgsql/gppd10382/archivelog/%f %p'
+
+	
+	# Recovery.conf  must have these entries - 
+	host should be point to the current master database.
+	Edit the host ? current master database in read - write mode
+	trigger file location --> update your data directory location.
+	
+	# Start   Database 
+	pg_ctl -D $PGDATA   start	
+	
+	# Validate   database.IT - should be in   recovery mode (standby)
+	select   pg_is_in_recovery();	
+	
+	# Validate EFM status in the witness server session. standby DB is in recovery	 
+	  /usr/edb/efm-3.9/bin/./efm cluster-status efm  
+	
+# Resume EFM in current standby as EFM user as standby DB will be in recovery state
+	pbrun /bin/su - efm	 
+
+    # Run resume  efm.This will refresh the   EFM status
+	/usr/edb/efm-3.9/bin/efm resume efm	
+
+	# Validate EFM status in the witness server session.EFM status shows primary and standby in sync
+	  /usr/edb/efm-3.9/bin/./efm cluster-status efm   
+
+	# Verify the table to ensure its replicated.	
+	select * from   ngdmtest;	
+
+# Log in to current master and confirm replication is working fine.
+	Select * from   pg_stat_replication;
+
+**************************************
+**************************************
+	TEST CASE 3: PLANNED PRIMARY DATABASE MAINTAINACE.
+	Follow all the steps mentioned in test case 2 then proceed with below mentioned steps.( As we have already performed the steps for testcase 2, no need to repeat it again.)
+**************************************
+**************************************
+## 	Switchover again; To make it as before. This makes standby as new primary. 
+
+Login to current primary server  as EFM user
+	 /usr/edb/efm-3.9/bin/efm  promote efm -switchover
+
+	
+Get the below points details from API 
+	
+	1> What happens to the business continuity once switch over/Fail Over is complete?
+	2> What error do you get in app log during the switch over/Fail Over? 
+	3> What happens to the failed transactions?
+	4> What is the outage duration for the switch over/Fail Over? 
+
+Once API team confirms on the above points and the outcome is as expected 	
+Log into Master Server	 	 
+	# Verify database is primary.F - recovery should be False
+	select     pg_is_in_recovery();	
+    # Validate EFM status in the witness server session. Both DB Should be in Sync and it should be safe to promote.
+	  /usr/edb/efm-3.9/bin/efm cluster-status
+ 	    # confirm replication is working fine.
+	Select * from   pg_stat_replication;
+	
+Login Using   Application VIP (Primary VIP)	 	 
+	# Validate   Database	Run a insert query in ngdmtest  table to ensure its on read write mode	
+	insert into ngdmtest   values (100);
+    select * from ngdmtest;
+
+
+**************************************
+**************************************
+	TEST CASE 4: Disaster Recovery Situation.
+	Follow all the steps mentioned in test case 3 then proceed with below mentioned steps.
+**************************************
+**************************************
+
+
+E2 Details:
+
+"db_inst_name": 			"ppqd10276"
+"Database": 				"gwwdb"
+"primary_vip": 				"ppqd10276-p1.aexp.com(read/write)"
+"secondary_vip_read_only": 	"ppqd10276-p1.aexp.com(read only)"
+"primary_vm_name": 			"lpqospdbb51382.phx.aexp.com"
+"secondary_vm_name": 		"lpqospdbb51384.phx.aexp.com"
+"witness_vm_name": 			"lpqospdbb51383.phx.aexp.com"
+
+1. Log in to Primary - "lpqospdbb51382.gso.aexp.com"
+
+2. Check EFM is running - cluster status efm 
+   /usr/edb/efm-3.9/bin/efm cluster-status efm
+
+3. Change the promotable to true in IPC1 DB server - "lppospdbb50822.phx.aexp.com"
+cd /home/enterprisedb/efm-3.9 
+cat efm.properties | grep -i promotable
+cp -p efm.properties efm.properties.bkp.CHGxxxxxxx
+vi efm.properties
+promotable=true
+
+4.Restart the efm agent 
+/usr/edb/efm-3.9/bin/runefm.sh stop efm
+/usr/edb/efm-3.9/bin/runefm.sh start efm
+
+5.Add IPC1 DB Server in  standby priority list on the primary
+/usr/edb/efm-3.9/bin/efm set-priority efm 10.12.184.82 1
+
+6. Do a switch over and validate cluster status using cluster status efm  - validate app connections to IPC1
+/usr/edb/efm-3.9/bin/efm promote efm -switchover
+/usr/edb/efm-3.9/bin/efm cluster-status efm
+
+APPLICATION TESTING 
+ 
+POST TESTING 
+
+
+7. Change the standby priority list - IPC2 primary 
+a) /usr/edb/efm-3.9/bin/efm set-priority efm 10.36.192.146 1  --> did not do this as primary was not in sync so used b
+b) /usr/edb/efm-3.9/bin/efm set-priority efm 10.44.219.149 1 
+
+8. Perform a switchover – validate app connections to IPC2
+
+9. Change the promotable to false in IPC1 DB server - efm. properties 
+making it false
+
+10.Restart the efm agent
+
+
+Restore from backup
+Move old data directory files to a temp folder
+mv data/ data_crash
+Check for backups
+cd /usr/edb/bart/bin/
+./bart SHOW-BACKUPS -s production
+Restore from recent backup and provide backup_id
+./bart RESTORE -s production -i <backup_id> -p /pgsql/gppd10382/data
+create a recovery.conf 
+vi recovery.conf 
+restore_command='cp /pgsql/gppd10382/archivelog/%f %p'
+start cluster

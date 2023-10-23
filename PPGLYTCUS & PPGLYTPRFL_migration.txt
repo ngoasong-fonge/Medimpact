@@ -1,0 +1,86 @@
+Implementation instruction:
+***************************
+1 Login into  E3 Target instance using hvnplrrcdb02.gso.aexp.com and create database structure for PPGLYTCUS & PPGLYTPRFL:
+ 
+  cd /pgsql/tprrcdb01/tsdata
+  mkdir ppglytcus
+  mkdir ppglytprfl
+  create tablespace ts_ppglytcus location '/pgsql/tprrcdb01/tsdata/ppglytcus';
+  create tablespace ts_ppglytprfl location '/pgsql/tprrcdb01/tsdata/ppglytprfl';
+
+  CREATE DATABASE "PPGLYTCUS"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_ppglytcus
+    CONNECTION LIMIT = -1;
+   
+  CREATE DATABASE "PPGLYTPRFL"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_ppglytprfl
+    CONNECTION LIMIT = -1;
+
+2 Login into  E3 source instance using lgpospdbb60339.gso.aexp.com and do a dump and restore of roles as well as schemas
+
+pg_dumpall  -v --roles-only -f "/tmp/source_role.sql"
+
+pg_dump -d PPGLYTCUS -n glbl_lylt_cust -n public --schema-only > /tmp/glbl_lylt_cust.sql
+
+pg_dump -d PPGLYTPRFL -n glbl_lylt_prfl -n public --schema-only > /tmp/glbl_lylt_prfl.sql
+
+3 Login into  E3 Target instance using hvnplrrcdb02.gso.aexp.com and restore dump.files 
+
+psql -d PPGLYTCUS -f /tmp/source_role.sql
+psql -d PPGLYTCUS -f /tmp/glbl_lylt_cust.sql
+psql -d PPGLYTPRFL -f /tmp/glbl_lylt_prfl.sql
+    
+
+4. Add the bellow detail to source pg_hba.conf servers. 
+
+host    all             enterprisedb    10.40.0.232/32      trust
+
+
+5. on Source Change the parameter from wal_level=replica to wal_level=logical
+
+alter system set wal_level=logical;
+pg_ctl restart
+
+6. On source, create the publication for all the tables ( connect to intended database and create publication)
+
+You are now connected to database "PPGLYTCUS" as user "enterprisedb".
+PPGLYTCUS=# CREATE PUBLICATION ppglytcus_publication FOR ALL TABLES;
+CREATE PUBLICATION
+PPGLYTCUS=# \dRp+    (command to validate creation)
+              Publication acedbpublication
+    Owner     | All tables | Inserts | Updates | Deletes
+--------------+------------+---------+---------+---------
+enterprisedb | t          | t       | t       | t
+(1 row)
+
+PPGLYTPRFL=# CREATE PUBLICATION ppglytprfl_publication FOR ALL TABLES;
+CREATE PUBLICATION
+
+PPGLYTPRFL=# \dRp+
+              Publication eigdbpublication
+    Owner     | All tables | Inserts | Updates | Deletes
+--------------+------------+---------+---------+---------
+enterprisedb | t          | t       | t       | t
+(1 row)
+ 
+
+7. On Destination or target create SUBSCRIPTION with bellow command:
+
+CREATE SUBSCRIPTION dpglytcorsubsciption CONNECTION 'host=10.44.227.66 dbname=PPGLYTCUS user=enterprisedb port=5444' PUBLICATION ppglytcus_publication;
+CREATE SUBSCRIPTION dpglytcorsubsciption CONNECTION 'host=10.44.227.66 dbname=PPGLYTPRFL user=enterprisedb port=5444' PUBLICATION ppglytprfl_publication;
+
+
+
+
+
+copy glbl_lylt_prfl.glbl_lylt_prfl_hist from '/pgsql/ppdd0076/backup/tmp/prfl_hist_051222.copy';

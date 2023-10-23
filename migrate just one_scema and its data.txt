@@ -1,0 +1,5 @@
+source
+pg_dump -d aceclicdb -n springbatch --schema=schema > /tmp/springbatch.sql
+
+Target
+psql -d aceplatdb -f /tmp/springbatch.sql

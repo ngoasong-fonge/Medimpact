@@ -1,0 +1,92 @@
+Migrating Schema only
+
+CREATE DATABASE r42lytbaldb
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_r42lytbaldb
+    CONNECTION LIMIT = -1;
+
+create tablespace ts_r42lytbaldb location '/pgsql/teusw1pgecpa000062/tsdata01/r42lytbaldb';
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10296/backup/tmp/source_role_r42lytbaldb.sql"
+
+pg_dump -d r42lytbaldb -n glbl_lylt_bal --schema-only > /tmp/source_r42lytbaldb_db.sql (for one schema)
+
+pg_dumpall --schema-only > /tmp/source_r42lytbaldb_db.sql ( for all schema) or
+pg_dumpall --schema-only -f "/location/of/file/schemaonly.sql" 
+
+
+**On Target Side
+restore
+psql -d PPGLYTCOR -f /location/of/file/schemaonly.sql
+psql -d r42lytbaldb -f /tmp/source_role_r42lytbaldb.sql
+psql -d r42lytbaldb -f /tmp/source_r42lytbaldb_db.sql
+
+
+
+CREATE DATABASE "QPGLYTJOB"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = s002
+    CONNECTION LIMIT = -1;
+CREATE DATABASE "QPGLYTPRTR"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = s001
+    CONNECTION LIMIT = -1;
+
+mkdir QPGLYTJOB
+mkdir QPGLYTPRTR
+
+create tablespace s002 location '/pgsql/tqrppdb01i/tsdata/QPGLYTJOB';
+create tablespace s001 location '/pgsql/tqrppdb01i/tsdata/QPGLYTPRTR';
+
+------------------------------------------------------------------------------------------------------------------------
+
+mkdir QPGLYTCUS
+mkdir QPGLYTPRFL
+
+create tablespace ts_qpglytcus location '/pgsql/tqrrcdb01/tsdata/QPGLYTCUS';
+create tablespace ts_qpglytprfl location '/pgsql/tqrrcdb01/tsdata/QPGLYTPRFL';
+
+CREATE DATABASE "QPGLYTCUS"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_qpglytcus
+    CONNECTION LIMIT = -1;
+
+CREATE DATABASE "QPGLYTPRFL"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_qpglytprfl
+    CONNECTION LIMIT = -1;
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10296/backup/tmp/source_role_r42lytbaldb.sql"
+
+pg_dump -d QPGLYTCUS -n glbl_lylt_cust --schema-only > /tmp/source_glbl_lylt_cust_db.sql (for one schema)
+pg_dump -d QPGLYTPRFL -n glbl_lylt_prfl --schema-only > /tmp/glbl_lylt_prfl.sql
+
+pg_dumpall --schema-only > /tmp/source_r42lytbaldb_db.sql ( for all schema) or
+pg_dumpall --schema-only -f "/location/of/file/schemaonly.sql" 
+
+
+**On Target Side
+restore
+psql -d QPGLYTCUS -f /tmp/source_glbl_lylt_cust1_db.sql
+psql -d QPGLYTCUS -f /tmp/source_glbl_lylt_cust_db.sql
+psql -d QPGLYTPRFL -f /tmp/glbl_lylt_prfl.sql

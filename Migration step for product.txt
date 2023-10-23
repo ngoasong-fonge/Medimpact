@@ -1,0 +1,751 @@
+alter database "TPLYTCCAR" with allow_connections = off;
+	alter database "TPLYTCCAR" set default_transaction_read_only = false;
+	alter database "TPLYTCCAR" with allow_connections = on;
+
+
+
+**on target
+
+CREATE DATABASE "TQPLYTCORP"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tdplytcorp
+    CONNECTION LIMIT = -1;
+
+CREATE DATABASE "TQPLYTBRT"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tqplytbrt
+    CONNECTION LIMIT = -1;
+
+mkdir TDPLYTBRT
+mkdir TDPLYTCORP
+create tablespace ts_tdplytcorp location '/pgsql/tqlemdb01/tsdata/TDPLYTCORP';
+create tablespace ts_tdplytbrt location '/pgsql/tqlemdb01/tsdata/TDPLYTBRT';
+create tablespace ts_tqplytbrt location '/pgsql/tqlemdb01/tsdata/TQPLYTBRT';
+
+**On Source Side
+mkdir tmp
+chmod -R 777
+pg_dumpall  -v --roles-only -f "/pgsql/pcqd600/backup/tmp/source_role.sql"
+
+pg_dump -h 10.0.137.236 -f /pgsql/ppqd10314/backup/tmp/source_TDPLYTCORP_db.sql TDPLYTCORP
+pg_dump -h 10.0.137.236 -f /pgsql/ppqd10314/backup/tmp/source_TDPLYTBRT_db.sql TDPLYTBRT
+pg_dump -h 10.0.72.110 -f /pgsql/pcqd600/backup/tmp/source_TQPLYTBRT_db.sql TQPLYTBRT
+
+
+**On Target Side
+psql -d TQPLYTBRT -f /tmp/source_role.sql
+psql -d TQPLYTCORP -f /tmp/source_TDPLYTCORP_db.sql
+psql -d TQPLYTBRT -f /tmp/source_TQPLYTBRT_db.sql
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+**on target
+
+CREATE DATABASE "TQLYTEWB"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tqlytewb
+    CONNECTION LIMIT = -1;
+
+CREATE DATABASE "TQLYTCCAR"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tqlytccar
+    CONNECTION LIMIT = -1;
+
+mkdir TQLYTEWB
+mkdir TQLYTCCAR
+create tablespace ts_tqlytewb location '/pgsql/tdlemdb03/tsdata/TQLYTEWB';
+create tablespace ts_tqlytccar location '/pgsql/tqlemdb01/tsdata/TQLYTCCAR';
+
+
+**On Source Side
+mkdir tmp
+chmod -R 777 tmp
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10312/backup/tmp/source_role.sql"
+pg_dump -h 10.9.151.199 -f /pgsql/ppqd10312/backup/tmp/source_TQLYTEWB_db.sql TQLYTCCAR
+
+**On Target Side
+psql -d TQLYTCCAR -f /tmp/source_role.sql
+psql -d TQLYTCCAR -f /tmp/source_TQLYTEWB_db.sql 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+**on target
+
+CREATE DATABASE "TDLYTEWB"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tdlytewb 
+    CONNECTION LIMIT = -1;
+
+mkdir TDLYTEWB
+create tablespace ts_tdlytewb location '/pgsql/tdlemdb02/tsdata/TDLYTEWB';
+
+**On Source Side 
+
+mkdir tmp
+chmod -R 777 tmp
+pg_dumpall  -v --roles-only -f "/pgsql/ppdd10299/backup/tmp/source_role_TDLYTEWB.sql"
+pg_dump -h 10.0.137.227 -f /pgsql/ppdd10299/backup/tmp/source_TDLYTEWB_db.sql TDLYTEWB
+
+**On Target Side
+psql -d TDLYTEWB -f /tmp/source_role_TDLYTEWB.sql
+psql -d TDLYTEWB -f /tmp/source_TDLYTEWB_db.sql 
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+lpdospdbb50791.phx.aexp.com
+
+**on target
+
+CREATE DATABASE "TDLYTSBE"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tdlytsbe
+    CONNECTION LIMIT = -1;
+
+mkdir TDLYTSBE
+create tablespace ts_tdlytsbe location '/pgsql/tdlemdb02/tsdata/TDLYTSBE';
+
+**On Source Side 
+
+mkdir tmp
+chmod -R 777 tmp
+pg_dumpall  -v --roles-only -f "/pgsql/ppdd10303/backup/tmp/source_role_TDLYTSBE.sql"
+pg_dump -h 10.0.137.238 -f /pgsql/ppdd10303/backup/tmp/source_TDLYTSBE_db.sql TDLYTSBE
+
+**On Target Side
+psql -d TDLYTEWB -f /tmp/source_role_TDLYTEWB.sql
+psql -d TDLYTEWB -f /tmp/source_TDLYTEWB_db.sql 
+
+**On Target side
+cd /pgsql/teusw1pgecpa000052/tsdata01
+mkdir QPGLYTPROD
+mkdir QPGLYTPRD
+create tablespace ts_qpglytprd location '/pgsql/teusw1pgecpa000052/tsdata01/QPGLYTPRD';
+create tablespace ts_qpglytprod location '/pgsql/teusw1pgecpa000052/tsdata01/QPGLYTPROD';
+
+postgres=# CREATE DATABASE "QPGLYTPRD"
+postgres-#     WITH
+postgres-#     OWNER = enterprisedb
+postgres-#     ENCODING = 'UTF8'
+postgres-#     LC_COLLATE = 'en_US.utf8'
+postgres-#     LC_CTYPE = 'en_US.utf8'
+postgres-#     TABLESPACE = ts_qpglytprd
+postgres-#     CONNECTION LIMIT = -1;
+CREATE DATABASE
+postgres=# CREATE DATABASE "QPGLYTPROD"
+postgres-#     WITH
+postgres-#     OWNER = enterprisedb
+postgres-#     ENCODING = 'UTF8'
+postgres-#     LC_COLLATE = 'en_US.utf8'
+postgres-#     LC_CTYPE = 'en_US.utf8'
+postgres-#     TABLESPACE = ts_qpglytprod
+postgres-#     CONNECTION LIMIT = -1;
+CREATE DATABASE
+
+
+**On Source Side
+mkdir tmp
+chmod -R 777
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10004/backup/tmp/source_role.sql"
+
+pg_dump -h 10.9.149.55 -f /pgsql/ppqd10004/backup/tmp/source_QPGLYTPROD_db.sql QPGLYTPROD
+
+scp source_role.sql   nlekefon@lpqecpdb0002565.phx.aexp.com:/pgsql/teusw1pgecpa000052/backup/tmp   Or use Winscp
+
+**On Target Side
+psql -d QPGLYTPROD -f /tmp/source_role.sql
+psql -d QPGLYTPROD -f /tmp/source_QPGLYTPROD_db.sql
+psql -d QPGLYTPRD -f /tmp/source_QPGLYTPRD_db.sql
+
+local   all             enterprisedb                            peer
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+CREATE DATABASE "pgrfn00i"
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_pgrfn00i
+    CONNECTION LIMIT = -1;
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10091/backup/tmp/source_role_pgrfn00i.sql"
+
+pg_dump -h 10.9.151.65 -f /pgsql/ppqd10091/backup/tmp/source_pgrfn00i_db.sql pgrfn00i
+
+scp source_role.sql   nlekefon@lpqecpdb0002588.phx.aexp.com:/pgsql/teusw1pgecpa000057/backup/tmp   Or use Winscp
+
+**On Target Side
+psql -d pgrfn00i -f /tmp/source_role_pgrfn00i.sql
+psql -d pgrfn00i -f /tmp/source_pgrfn00i_db.sql
+
+----------------------------------------------------------------------------------------------------
+
+
+CREATE DATABASE "QPGLYTJOB"
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_qpglytjob
+    CONNECTION LIMIT = -1;
+
+
+CREATE DATABASE "QPGLYTPRTR"
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_qpglytprtr
+    CONNECTION LIMIT = -1;
+
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10083/backup/tmp/source_role_partner.sql"
+
+pg_dump -h 10.9.151.70 -f /pgsql/ppqd10083/backup/tmp/source_QPGLYTJOB_db.sql QPGLYTJOB
+pg_dump -h 10.9.151.70 -f /pgsql/ppqd10083/backup/tmp/source_QPGLYTPRTR_db.sql QPGLYTPRTR
+
+scp source_role_partner.sql   nlekefon@lpqecpdb0002591.phx.aexp.com:/pgsql/teusw1pgecpa000058/backup/tmp   Or use Winscp
+
+**On Target Side
+psql -d QPGLYTJOB -f /tmp/source_role_partner.sql
+psql -d QPGLYTJOB -f /tmp/source_QPGLYTJOB_db.sql
+psql -d QPGLYTPRTR -f /tmp/source_QPGLYTPRTR_db.sql
+
+---------------------------------------------------------------------------------------------------------------
+
+
+CREATE DATABASE "QPGLYTCAPI"
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_qpglytcapi
+    CONNECTION LIMIT = -1;
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10053/backup/tmp/source_role_coreapi.sql"
+
+pg_dump -h 10.9.149.26 -f /pgsql/ppqd10053/backup/tmp/source_QPGLYTCAPI_db.sql QPGLYTCAPI
+
+scp source_role_partner.sql   nlekefon@lpqecpdb0002591.phx.aexp.com:/pgsql/teusw1pgecpa000058/backup/tmp   Or use Winscp
+
+**On Target Side
+psql -d QPGLYTCAPI -f /tmp/source_role_coreapi.sql
+psql -d QPGLYTCAPI -f /tmp/source_QPGLYTCAPI_db.sql
+
+-------------------------------------------------------------------------------------------------------------------------
+
+CREATE DATABASE r42lytbaldb
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_r42lytbaldb
+    CONNECTION LIMIT = -1;
+
+create tablespace ts_r42lytbaldb location '/pgsql/teusw1pgecpa000062/tsdata01/r42lytbaldb';
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10296/backup/tmp/source_role_r42lytbaldb.sql"
+
+
+pg_dump -h 10.0.210.222 -f /pgsql/ppqd10296/backup/tmp/source_r42lytbaldb_db.sql r42lytbaldb
+
+pg_dump -d r42lytbaldb -n glbl_lylt_bal --schema-only > /tmp/source_r42lytbaldb_db.sql
+
+**On Target Side
+psql -d r42lytbaldb -f /tmp/source_role_r42lytbaldb.sql
+psql -d r42lytbaldb -f /tmp/source_r42lytbaldb_db.sql
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10260/backup/tmp/source_role_cqudb.sql"
+
+
+pg_dump -h 10.9.151.164 -f /pgsql/ppqd10260/backup/tmp/source_cqudb.sql cqudb
+
+
+
+**On Target Side
+psql -d cqudb -f /tmp/source_role_cqudb.sql
+psql -d cqudb -f /tmp/source_cqudb.sql
+
+----------------------------------------------------------------------------------------------------------
+
+
+pg_dumpall  -v --roles-only -f "/pgsql/tqpdrdb04/backup/tmp/source_role_r42infirmary.sql"
+
+pg_dump -d r42infirmary -n glbl_lylt_infy --schema-only > /pgsql/tqpdrdb04/backup/tmp/source_r42infirmary.sql
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+RFC Instructions
+
+**on target
+cd /pgsql/gcpd728/tsdata01
+mkdir TPPLYTCORP
+create tablespace ts_tpplytcorp location '/pgsql/gcpd728/tsdata01/TPPLYTCORP';
+
+CREATE DATABASE "TPPLYTCORP"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tpplytcorp
+    CONNECTION LIMIT = -1;
+
+**On Source Side
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd728/tsdata01/backup/tmp/source_role.sql"
+
+pg_dump -h 10.36.161.58 -f /pgsql/gcpd728/tsdata01/tmp/source_TPPLYTCORP_db.sql TPPLYTCORP
+
+**On Target Side
+psql -d TQPLYTCORP -f /tmp/source_role.sql
+psql -d TQPLYTCORP -f /tmp/source_TDPLYTCORP_db.sql
+----------------------------------------------------------------------------------------------------
+**on target
+cd /pgsql/gcpd759/tsdata01
+mkdir TPPLYTCOBR
+create tablespace ts_tpplytcobr location '/pgsql/gcpd759/tsdata01/TPPLYTCOBR';
+
+CREATE DATABASE "TPPLYTCOBR"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tpplytcobr
+    CONNECTION LIMIT = -1;
+
+**on source 
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd759/backup/tmp/source_role.sql"
+
+pg_dump -h 10.44.143.145 -f /pgsql/gcpd759/backup/tmp/source_TPPLYTCOBR_db.sql TPPLYTCOBR
+
+**on target
+psql -d TPPLYTCOBR -f /tmp/source_role.sql
+psql -d TPPLYTCOBR -f /tmp/source_TPPLYTCOBR_db.sql
+----------------------------------------------------------------------------------------------------------------
+**on target
+cd /pgsql/gcpd613/tsdata01
+mkdir TPPLYTCOBR
+create tablespace ts_tpplytbrt location '/pgsql/gcpd613/tsdata01/TPPLYTBRT';
+
+CREATE DATABASE "TPPLYTBRT"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tpplytbrt
+    CONNECTION LIMIT = -1;
+
+**on source 
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd613/backup/tmp/source_role.sql"
+
+pg_dump -h 10.36.68.47 -f /pgsql/gcpd613/backup/tmp/source_TPPLYTBRT_db.sql TPPLYTBRT
+
+**on target
+psql -d TPPLYTBRT -f /tmp/source_role.sql
+psql -d TPPLYTBRT -f /tmp/source_TPPLYTBRT_db.sql
+
+----------------------------------------------------------------------------------------------------------------
+
+**on target
+cd /pgsql/gcpd588/tsdata01
+mkdir TPLYTCCAR
+create tablespace ts_tplytccar location '/pgsql/gcpd588/tsdata01/TPLYTCCAR';
+
+CREATE DATABASE "TPLYTCCAR"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tplytccar
+    CONNECTION LIMIT = -1;
+
+**on source 
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd588/backup/tmp/source_role.sql"
+
+pg_dump -h 10.44.50.191 -f /pgsql/gcpd588/backup/tmp/source_TPLYTCCAR_db.sql TPLYTCCAR
+
+**on target
+psql -d TPLYTCCAR -f /tmp/source_role.sql
+psql -d TPLYTCCAR -f /tmp/source_TPLYTCCAR_db.sql
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+**on target
+cd /pgsql/gcpd667/tsdata01
+mkdir TPLYTEWB
+create tablespace ts_tplytewb location '/pgsql/gcpd667/tsdata01/TPLYTEWB';
+
+CREATE DATABASE "TPLYTEWB"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tplytewb
+    CONNECTION LIMIT = -1;
+
+**on source 
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd667/backup/tmp/source_role.sql"
+
+pg_dump -h 10.36.68.119 -f /pgsql/gcpd667/backup/tmp/source_TPLYTEWB_db.sql TPLYTEWB
+
+**on target
+psql -d TPLYTCCAR -f /tmp/source_role.sql
+psql -d TPLYTCCAR -f /tmp/source_TPLYTEWB_db.sql
+
+------------------------------------------------------------------------------------------------------------------
+
+**on target
+cd /pgsql/tplemdb05/tsdata
+mkdir TPLYTMQD
+create tablespace ts_tplytmqd location '/pgsql/tplemdb05/tsdata/TPLYTMQD';
+
+CREATE DATABASE "TPLYTMQD"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tplytmqd
+    CONNECTION LIMIT = -1;
+
+**on source 
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd584/backup/tmp/source_role.sql"
+
+pg_dump -h 10.44.50.185 -f /pgsql/gcpd584/backup/tmp/source_TPLYTMQD_db.sql TPLYTMQD
+
+**on target
+psql -d TPLYTMQD -f /tmp/source_role.sql
+psql -d TPLYTMQD -f /tmp/source_TPLYTMQD_db.sql
+
+-------------------------------------------------------------------------------------------
+
+**on target
+cd /pgsql/gcpd584/tsdata01
+mkdir TPLYTCOADV
+create tablespace ts_tplytcoadv location '/pgsql/gcpd584/tsdata01/TPLYTCOADV';
+
+CREATE DATABASE "TPLYTCOADV"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tplytcoadv
+    CONNECTION LIMIT = -1;
+
+**on source 
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd584/backup/tmp/source_role.sql"
+
+pg_dump -h 10.44.50.185 -f /pgsql/gcpd584/backup/tmp/source_TPLYTCOADV_db.sql TPLYTCOADV
+
+**on target
+psql -d TPLYTCOADV -f /tmp/source_role.sql
+psql -d TPLYTCOADV -f /tmp/source_TPLYTCOADV_db.sql
+
+-------------------------------------------------------------------------------------------------
+
+**on target
+cd /pgsql/gcpd675/tsdata01
+mkdir TPLYTCOA
+create tablespace ts_tplytcoa location '/pgsql/gcpd675/tsdata01/TPLYTCOA';
+
+CREATE DATABASE "TPLYTCOA"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_tplytcoa
+    CONNECTION LIMIT = -1;
+
+**on source 
+
+alter database "TPLYTCCAR" with allow_connections = off;
+	alter database "TPLYTCCAR" set default_transaction_read_only = false;
+	alter database "TPLYTCCAR" with allow_connections = on;
+
+pg_dumpall  -v --roles-only -f "/pgsql/gcpd675/backup/tmp/source_role.sql"
+
+pg_dump -h 10.44.50.185 -f /pgsql/gcpd675/backup/tmp/source_TPLYTCOA_db.sql TPLYTCOA
+
+**on target
+psql -d TPLYTCOA -f /tmp/source_role.sql
+psql -d TPLYTCOA -f /tmp/source_TPLYTCOA_db.sql
+
+
+
+--------------------------------------------------------
+Migrating Schema only
+
+CREATE DATABASE r42lytbaldb
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_r42lytbaldb
+    CONNECTION LIMIT = -1;
+
+create tablespace ts_r42lytbaldb location '/pgsql/teusw1pgecpa000062/tsdata01/r42lytbaldb';
+
+pg_dumpall  -v --roles-only -f "/pgsql/ppqd10296/backup/tmp/source_role_r42lytbaldb.sql"
+
+pg_dump -d r42lytbaldb -n glbl_lylt_bal --schema-only > /tmp/source_r42lytbaldb_db.sql
+
+**On Target Side
+psql -d r42lytbaldb -f /tmp/source_role_r42lytbaldb.sql
+psql -d r42lytbaldb -f /tmp/source_r42lytbaldb_db.sql
+
+
+** Target
+cd /pgsql/peinw1pgecpa000054/tsdata01
+mkdir PPGLYTPRD
+create tablespace ts_ppglytprd location '/pgsql/peinw1pgecpa000054/tsdata01/PPGLYTPRD';
+cd /pgsql/peinw1pgecpa000054/tsdata01
+mkdir PPGLYTPROD
+create tablespace ts_ppglytprod location '/pgsql/peinw1pgecpa000054/tsdata01/PPGLYTPROD';
+
+
+
+CREATE DATABASE "PPGLYTPRD"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_ppglytprd
+    CONNECTION LIMIT = -1;
+
+ALTER DATABASE "PPGLYTPRD"
+    SET default_transaction_read_only TO 'off';
+
+GRANT TEMPORARY, CONNECT ON DATABASE "PPGLYTPRD" TO PUBLIC;
+
+GRANT CONNECT ON DATABASE "PPGLYTPRD" TO csoprdro;
+
+GRANT ALL ON DATABASE "PPGLYTPRD" TO enterprisedb;
+
+GRANT CONNECT ON DATABASE "PPGLYTPRD" TO dba_design;
+
+GRANT CONNECT ON DATABASE "PPGLYTPRD" TO dba_default;
+
+GRANT CONNECT ON DATABASE "PPGLYTPRD" TO csoprdup;
+
+CREATE DATABASE "PPGLYTPROD"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_ppglytprod
+    CONNECTION LIMIT = -1;
+
+GRANT TEMPORARY, CONNECT ON DATABASE "PPGLYTPROD" TO PUBLIC;
+
+GRANT CONNECT ON DATABASE "PPGLYTPROD" TO csoprdro;
+
+GRANT ALL ON DATABASE "PPGLYTPROD" TO enterprisedb;
+
+GRANT CONNECT ON DATABASE "PPGLYTPROD" TO dba_design;
+
+GRANT CONNECT ON DATABASE "PPGLYTPROD" TO dba_default;
+
+GRANT CONNECT ON DATABASE "PPGLYTPROD" TO csoprdup;
+
+** Source
+pg_dumpall  -v --roles-only -f "/pgsql/gppd10138/backup/tmp/source_role.sql"
+
+pg_dump -d PPGLYTPRD -n glbl_lylt_prod --schema-only > /pgsql/gppd10138/backup/tmp/source_PPGLYTPRD_db.sql
+pg_dump -d PPGLYTPROD -n glbl_lylt_prod --schema-only > /pgsql/gppd10138/backup/tmp/source_PPGLYTPROD_db.sql
+
+
+**On Target Side
+psql -d PPGLYTPRD -f /tmp/source_role.sql
+psql -d PPGLYTPRD -f /tmp/source_PPGLYTPRD_db.sql
+psql -d PPGLYTPROD -f /tmp/source_PPGLYTPROD_db.sql
+
+eFh+1iRsZqAjXxdaCiLAQh7yohZxKtSECToOUrhSvOQ=
+
+
+-------------------------------------------------------------------------------
+
+
+
+** Target
+cd /pgsql/peinw1pgecpa000075/tsdata01
+mkdir PPGLYTCOR
+create tablespace tbs_ppglytcor location '/pgsql/peinw1pgecpa000075/tsdata01/PPGLYTCOR';
+
+
+CREATE DATABASE "PPGLYTCOR"
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = tbs_ppglytcor
+    CONNECTION LIMIT = -1;
+
+GRANT TEMPORARY, CONNECT ON DATABASE "PPGLYTCOR" TO PUBLIC;
+
+GRANT CONNECT ON DATABASE "PPGLYTCOR" TO csocorup;
+
+GRANT ALL ON DATABASE "PPGLYTCOR" TO enterprisedb;
+
+GRANT CONNECT ON DATABASE "PPGLYTCOR" TO csocorro;
+
+GRANT ALL ON DATABASE "PPGLYTCOR" TO role_tab_grfn;
+
+GRANT CONNECT ON DATABASE "PPGLYTCOR" TO dba_design;
+
+GRANT CONNECT ON DATABASE "PPGLYTCOR" TO dba_default;
+GRANT CONNECT ON DATABASE "PPGLYTLGR" TO csoledup;
+
+** Source
+pg_dumpall  -v --roles-only -f "/pgsql/gppd10139/backup/source_role.sql"
+
+pg_dump -d PPGLYTCOR -n glbl_lylt_cor --schema-only > /pgsql/gppd10139/backup/source_PPGLYTCOR_db.sql
+
+
+**On Target Side
+psql -d PPGLYTCOR -f /tmp/source_role.sql
+psql -d PPGLYTCOR -f /tmp/source_PPGLYTCOR_db.sql
+--------------------------------------------------------------------------------------------------------------------------
+cd /pgsql/peinw1pgecpa000077/tsdata01
+mkdir dbomonitoring
+create tablespace ts_dbomonitoring location '/pgsql/peinw1pgecpa000077/tsdata01/dbomonitoring';
+cd /pgsql/peinw1pgecpa000077/tsdata01
+mkdir r42lytbaldb
+create tablespace ts_r42lytbaldb location '/pgsql/peinw1pgecpa000077/tsdata01/r42lytbaldb';
+
+CREATE DATABASE dbomonitoring
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_dbomonitoring
+    CONNECTION LIMIT = -1;
+
+GRANT TEMPORARY, CONNECT ON DATABASE dbomonitoring TO PUBLIC;
+
+GRANT ALL ON DATABASE dbomonitoring TO enterprisedb;
+
+GRANT CONNECT ON DATABASE dbomonitoring TO dba_design;
+
+GRANT CONNECT ON DATABASE dbomonitoring TO dba_default;
+
+CREATE DATABASE r42lytbaldb
+    WITH 
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TABLESPACE = ts_r42lytbaldb
+    CONNECTION LIMIT = -1;
+
+ALTER DATABASE r42lytbaldb
+    SET search_path TO glbl_lylt_bal;
+
+GRANT TEMPORARY, CONNECT ON DATABASE r42lytbaldb TO PUBLIC;
+
+GRANT CONNECT ON DATABASE r42lytbaldb TO naf_partman_app;
+
+GRANT ALL ON DATABASE r42lytbaldb TO enterprisedb;
+
+GRANT ALL ON DATABASE r42lytbaldb TO lq_ddl_role;
+
+GRANT CONNECT ON DATABASE r42lytbaldb TO r42lytbal_app;
+
+GRANT CONNECT ON DATABASE r42lytbaldb TO dba_design;
+
+GRANT CONNECT ON DATABASE r42lytbaldb TO r42lytbal_ro;
+
+GRANT CONNECT ON DATABASE r42lytbaldb TO dba_default;
+
+GRANT CONNECT ON DATABASE r42lytbaldb TO r42lytbal_rw;
+** Source
+pg_dumpall  -v --roles-only -f "/pgsql/gppd10420/backup/source_role.sql"
+
+pg_dump -d dbomonitoring -n public --schema-only > /pgsql/gppd10420/backup/source_dbomonitoring_db.sql
+pg_dump -d r42lytbaldb -n admin --schema-only > /pgsql/gppd10420/backup/source_r42lytbaldb_db.sql
+pg_dump -d r42lytbaldb -n glbl_lylt_bal --schema-only > /pgsql/gppd10420/backup/source_r42lytbaldb_db_b.sql
+pg_dump -d r42lytbaldb -n naf_partman --schema-only > /pgsql/gppd10420/backup/source_r42lytbaldb_db_c.sql
+
+
+**On Target Side
+psql -d PPGLYTCUS -f /tmp/source_PPGLYTCUS_db.sql
+psql -d PPGLYTPRFL -f /tmp/source_PPGLYTPRFL_db.sql
+-----------------------------------------------------------------------------------------------------------
+cd /pgsql/tdrrcdb01/tsdata
+mkdir dpglytcus
+create tablespace ts_dpglytcus location '/pgsql/tdrrcdb01/tsdata/dpglytcus';
+mkdir dpglytprfl
+create tablespace ts_dpglytprfl location '/pgsql/tdrrcdb01/tsdata/dpglytprfl';
+
+
+CREATE DATABASE "DPGLYTCUS"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_dpglytcus
+    CONNECTION LIMIT = -1;
+
+CREATE DATABASE "DPGLYTPRFL"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = ts_dpglytprfl
+    CONNECTION LIMIT = -1;
+
+** Source
+pg_dumpall  -v --roles-only -f "/pgsql/ppdd0076/backup/tmp/source_role.sql"
+pg_dump -h 10.9.153.122 -f /pgsql/ppdd0076/backup/tmp/source_DPGLYTCUS_db.sql DPGLYTCUS
+
+**on target
+psql -d DPGLYTCUS -f /tmp/source_role.sql
+psql -d DPGLYTCUS -f /tmp/source_DPGLYTCUS_db.sql
