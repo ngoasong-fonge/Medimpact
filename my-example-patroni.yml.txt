@@ -1,0 +1,189 @@
+[svcpostgres@pv1medpg0c1 group0]$ cat /opt/app/patroni/patroni.yml
+scope: pgproddr1
+#namespace: /service/
+name: pv1medpg0c1
+
+restapi:
+  listen: 10.13.2.21:8008
+  connect_address: 10.13.2.21:8008
+#  cafile: /etc/ssl/certs/ssl-cacert-snakeoil.pem
+#  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
+#  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
+#  authentication:
+#    username: username
+#    password: password
+
+#ctl:
+#  insecure: false # Allow connections to Patroni REST API without verifying certificates
+#  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
+#  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
+#  cacert: /etc/ssl/certs/ssl-cacert-snakeoil.pem
+
+citus:
+  database: citus
+  group: 0  # coordinator
+
+etcd3:
+  #Provide host to do the initial discovery of the cluster topology:
+  hosts: 10.13.2.39:2379,10.13.2.54:2379,10.15.2.27:2379
+  protocol: https
+  cert: /opt/app/patroni/pki/clientpeer.crt
+  key: /opt/app/patroni/pki/clientpeer.key
+  cacert: /opt/app/patroni/pki/ca.crt
+  #Or use "hosts" to provide multiple endpoints
+  #Could be a comma separated string:
+  #hosts: host1:port1,host2:port2
+  #or an actual yaml list:
+  #hosts:
+  #- host1:port1
+  #- host2:port2
+  #Once discovery is complete Patroni will use the list of advertised clientURLs
+  #It is possible to change this behavior through by setting:
+  #use_proxies: true
+
+#raft:
+#  data_dir: .
+#  self_addr: 127.0.0.1:2222
+#  partner_addrs:
+#  - 127.0.0.1:2223
+#  - 127.0.0.1:2224
+
+bootstrap:
+  # this section will be written into Etcd:/<namespace>/<scope>/config after initializing new cluster
+  # and all other cluster members will use it as a `global configuration`
+
+  # To restore the db, set recovery_target_time and uncomment method: restore_cluster
+  #method: restore_cluster
+  restore_cluster:
+    command: '/opt/app/patroni/scripts/restore_postgres.sh 0 pv1medpg0c1 2023-05-11T232703Z'
+    no_params: False
+    recovery_conf:
+      recovery_target_action: promote
+      restore_command: '/usr/bin/cp /opt/backup/pgproddr1/group0/wal_archive/%f %p'
+      recovery_target_time: '2023-05-11 23:33:45 UTC'
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+#    primary_start_timeout: 300
+#    synchronous_mode: false
+    standby_cluster:
+      host: 10.15.130.69
+      port: 5432
+      create_replica_methods:
+      - basebackup
+    postgresql:
+      use_pg_rewind: true
+#      use_slots: true
+      parameters:
+#        wal_level: hot_standby
+#        hot_standby: "on"
+#        max_connections: 100
+#        max_worker_processes: 8
+#        wal_keep_segments: 8
+        wal_keep_size: "140GB"
+        wal_compression: on
+        max_wal_senders: 10
+#        max_replication_slots: 10
+#        max_prepared_transactions: 0
+#        max_locks_per_transaction: 64
+#        wal_log_hints: "on"
+#        track_commit_timestamp: "off"
+        log_timezone: UTC
+        logging_collector: on
+        log_directory: "log"
+        log_filename: "postgresql-%Y-%m-%d_%H%M%S.log"
+        log_truncate_on_rotation: on
+        log_rotation_age: 1d
+        timezone: America/Los_Angeles
+        ssl: on
+        ssl_key_file: /opt/app/patroni/pki/pgcluster.key
+        ssl_cert_file: /opt/app/patroni/pki/pgcluster.crt
+        ssl_ciphers: 'HIGH:MEDIUM:!3DES:!aNULL' # allowed SSL ciphers
+        ssl_prefer_server_ciphers: on
+        archive_mode: "on"
+        archive_timeout: 900s
+        archive_command: test ! -f /opt/backup/pgproddr1/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgproddr1/group0/wal_archive/%f
+      pg_hba:
+      - host replication patroni_replicator 127.0.0.1/32 trust
+      - hostssl replication patroni_replicator 127.0.0.1/32 trust
+      - hostssl replication patroni_replicator 10.15.130.160/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.15.130.161/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.15.130.162/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.15.130.163/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.15.130.164/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.15.130.170/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.21/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.27/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.30/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.31/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.34/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.35/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.36/32 scram-sha-256
+      - hostssl replication patroni_replicator 10.13.2.38/32 scram-sha-256
+      - host all all 127.0.0.1/32 trust
+      - hostssl all all 10.13.2.21/32 trust
+      - hostssl all all 10.13.2.27/32 trust
+      - hostssl all all 10.13.2.30/32 trust
+      - hostssl all all 10.13.2.31/32 trust
+      - hostssl all all 10.13.2.34/32 trust
+      - hostssl all all 10.13.2.35/32 trust
+      - hostssl all +ldaplogin 10.0.0.0/8 ldap ldapserver="ad.medimpact.com" ldaptls=1 ldapbasedn="OU=Users OU,DC=medimpact,DC=com" ldapbinddn="CN=svcPGLookupUser,OU=Service Based Accounts,OU=Users OU,DC=medimpact,DC=com" ldapbindpasswd="D2DkYGo090dCVYennB7E" ldapsearchfilter="(&(memberOf=CN=pg_prod1_admin,OU=Postgres,OU=Secure Groups,OU=Groups OU,DC=medimpact,DC=com)(sAMAccountName=$username))"
+      - hostssl all all 0.0.0.0/0 scram-sha-256
+
+  # some desired options for 'initdb'
+  initdb:  # Note: It needs to be a list (some options need values, others are switches)
+  - encoding: UTF8
+  - data-checksums
+
+  # Additional script to be launched after initial cluster creation (will be passed the connection URL as parameter)
+# post_init: /usr/local/bin/setup_cluster.sh
+
+  # Some additional users users which needs to be created after initializing new cluster
+  users:
+    admin:
+      password: admin%
+      options:
+        - createrole
+        - createdb
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 10.13.2.21:5432
+
+#  proxy_address: 127.0.0.1:5433  # The address of connection pool (e.g., pgbouncer) running next to Patroni/Postgres. Only for service discovery.
+  data_dir: /opt/app/postgres-data/data
+#  bin_dir:
+#  config_dir:
+  pgpass: /tmp/pgpass0
+  authentication:
+    replication:
+      username: patroni_replicator
+      password: LYEv2RggJUQdZhwuJtsC
+    superuser:
+      username: postgres
+      password: kEAtWd4aq
+    rewind:  # Has no effect on postgres 10 and lower
+      username: patroni_rewinduser
+      password: PRieoMepPeyR8Q5mLzmx
+  # Server side kerberos spn
+#  krbsrvname: postgres
+  parameters:
+    # Fully qualified kerberos ticket file for the running user
+    # same as KRB5CCNAME used by the GSS
+#   krb_server_keyfile: /var/spool/keytabs/postgres
+    unix_socket_directories: '..'  # parent directory of data_dir
+  # Additional fencing script executed after acquiring the leader lock but before promoting the replica
+  #pre_promote: /path/to/pre_promote.sh
+
+#watchdog:
+#  mode: automatic # Allowed values: off, automatic, required
+#  device: /dev/watchdog
+#  safety_margin: 5
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false

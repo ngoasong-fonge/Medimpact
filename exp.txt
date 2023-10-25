@@ -1,0 +1,11 @@
+[svcpostgres@pv1medpg0c1 group0]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
++ Citus cluster: pgproddr1 --------+----------------+-----------+----+-----------+
+| Group | Member      | Host       | Role           | State     | TL | Lag in MB |
++-------+-------------+------------+----------------+-----------+----+-----------+
+|     0 | pv1medpg0c1 | 10.13.2.21 | Standby Leader | streaming | 17 |           |
+|     0 | pv1medpg0c2 | 10.13.2.27 | Replica        | streaming | 17 |         0 |
+|     1 | pv1medpg0w1 | 10.13.2.30 | Standby Leader | streaming | 12 |           |
+|     1 | pv1medpg0w2 | 10.13.2.31 | Replica        | streaming | 12 |         0 |
+|     2 | pv1medpg0w3 | 10.13.2.34 | Standby Leader | streaming | 11 |           |
+|     2 | pv1medpg0w4 | 10.13.2.35 | Replica        | streaming | 11 |         0 |
++-------+-------------+------------+----------------+-----------+----+-----------+
