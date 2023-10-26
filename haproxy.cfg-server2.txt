@@ -1,0 +1,64 @@
+global
+    maxconn     50000
+    log         127.0.0.1 local2
+    chroot      /opt/app/haproxy
+    pidfile     /run/haproxy.pid
+    user        svchaproxy
+    group       svchaproxy
+    daemon
+
+defaults
+    mode tcp
+    log global
+    retries 3
+    timeout client 30m
+    timeout connect 4s
+    timeout server 30m
+    timeout check 5s
+
+frontend pgprod1_10.15.130.111_5432
+    bind 10.15.130.111:5432
+    default_backend             pgprod1_5432
+frontend pgprod1_group0_repl_10.15.130.69_5432
+    bind 10.15.130.69:5432
+    default_backend             pgprod1_group0_repl_5432
+frontend pgprod1_group1_repl_10.15.130.69_5433
+    bind 10.15.130.69:5433
+    default_backend             pgprod1_group1_repl_5433
+frontend pgprod1_group2_repl_10.15.130.69_5434
+    bind 10.15.130.69:5434
+    default_backend             pgprod1_group2_repl_5434
+
+backend pgprod1_5432
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv2medpg1c1 10.15.130.160:5432 maxconn 49000 check port 8008
+    server pv2medpg1c2 10.15.130.161:5432 maxconn 49000 check port 8008
+backend pgprod1_group0_repl_5432
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv2medpg1c1 10.15.130.160:5432 maxconn 49000 check port 8008
+    server pv2medpg1c2 10.15.130.161:5432 maxconn 49000 check port 8008
+backend pgprod1_group1_repl_5433
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv2medpg1w1 10.15.130.162:5432 maxconn 49000 check port 8008
+    server pv2medpg1w2 10.15.130.163:5432 maxconn 49000 check port 8008
+backend pgprod1_group2_repl_5434
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv2medpg1w3 10.15.130.164:5432 maxconn 49000 check port 8008
+    server pv2medpg1w4 10.15.130.170:5432 maxconn 49000 check port 8008
+
+# haproxy stats on port 8080
+listen stats-8080
+    bind :8080
+    stats enable
+    mode http
+    stats uri /?stats
+    stats refresh 60s
+    #stats admin if TRUE

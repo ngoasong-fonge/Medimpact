@@ -1,0 +1,64 @@
+global
+    maxconn     50000
+    log         127.0.0.1 local2
+    chroot      /opt/app/haproxy
+    pidfile     /run/haproxy.pid
+    user        svchaproxy
+    group       svchaproxy
+    daemon
+
+defaults
+    mode tcp
+    log global
+    retries 3
+    timeout client 30m
+    timeout connect 4s
+    timeout server 30m
+    timeout check 5s
+
+frontend pgproddr1_10.13.2.72_5432
+    bind 10.13.2.72:5432
+    default_backend             pgproddr1_5432
+frontend pgproddr1_group0_repl_10.13.2.65_5432
+    bind 10.13.2.65:5432
+    default_backend             pgproddr1_group0_repl_5432
+frontend pgproddr1_group1_repl_10.13.2.65_5433
+    bind 10.13.2.65:5433
+    default_backend             pgproddr1_group1_repl_5433
+frontend pgproddr1_group2_repl_10.13.2.65_5434
+    bind 10.13.2.65:5434
+    default_backend             pgproddr1_group2_repl_5434
+
+backend pgproddr1_5432
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv1medpg0c1 10.13.2.21:5432 maxconn 49000 check port 8008
+    server pv1medpg0c2 10.13.2.27:5432 maxconn 49000 check port 8008
+backend pgproddr1_group0_repl_5432
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv1medpg0c1 10.13.2.21:5432 maxconn 49000 check port 8008
+    server pv1medpg0c2 10.13.2.27:5432 maxconn 49000 check port 8008
+backend pgproddr1_group1_repl_5433
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv1medpg0w1 10.13.2.30:5432 maxconn 49000 check port 8008
+    server pv1medpg0w2 10.13.2.31:5432 maxconn 49000 check port 8008
+backend pgproddr1_group2_repl_5434
+    option httpchk
+    http-check expect status 200
+    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions
+    server pv1medpg0w3 10.13.2.34:5432 maxconn 49000 check port 8008
+    server pv1medpg0w4 10.13.2.35:5432 maxconn 49000 check port 8008
+
+# haproxy stats on port 8080
+listen stats-8080
+    bind :8080
+    stats enable
+    mode http
+    stats uri /?stats
+     stats refresh 60s
+    #stats admin if TRUE
