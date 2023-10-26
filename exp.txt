@@ -18,3 +18,16 @@ join ngmep.encounter_ver_exception eve on ev.encounter_version_id = eve.encounte
 join ngmep.mep_exception_code mec on eve.exception_code = mec.exception_code and mec.internal_external_ind = 'External' 
 where ft.direction = 'Outbound'
   and ft.sender_id in ('9900004318')   and ft.created between '2023-09-26' and '2023-10-25'  GROUP BY mc.client_name, mc.client_code , ev.orig_claim_id
+
+citus=# explain select mec.exception_code,mec.exception_desc,
+citus-# sum(ev.net_amt_due1) as total_net_amount_due,
+citus-# count(ev.encounter_ver_status) as rejected_claims
+citus-# from ngmep.file_transmission ft
+citus-# join ngmep.encounter_version ev on ev.enc_file_transmission_id = ft.file_transmission_id and ev.encounter_ver_status='Exception' ---
+citus-# join ngmep.encounter_ver_exception eve on ev.encounter_version_id = eve.encounter_version_id
+citus-# join ngmep.mep_exception_code mec on eve.exception_code = mec.exception_code and mec.internal_external_ind = 'External'
+citus-# where ft.direction = 'Outbound'  and ft.sender_id in ('9900004318')  and ft.created between '2023-09-26' and '2023-10-25'
+citus-# group by mec.exception_code,mec.exception_desc;
+SSL SYSCALL error: EOF detected
+The connection to the server was lost. Attempting reset: Failed.
+The connection to the server was lost. Attempting reset: Failed.
