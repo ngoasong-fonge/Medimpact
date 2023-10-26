@@ -1,0 +1,182 @@
+**Access the PostgreSQl
+psql postgres
+This will log you in as the postgres database user. You’ll see a prompt similar to this:
+psql (9.2.15)
+Type "help" for help.
+
+postgres=#
+**To see a list of available commands, type \h
+**Once you’ve finished using the shell, you can exit with \q
+
+**Work with Databases**
+*Create a sample database do createdb mytestdb. It’s also possible to assign ownership of the database to a specific Postgres user/role. For example, you could assign ownership to the examplerole role by running:
+createdb mytestdb -O examplerole
+**Connect to a Database**
+psql mytestdb
+ it’s also possible to specify which user you wish to connect as:
+psql mytestdb -U examplerole
+
+**List Databases**
+you can list all of your databases with the \l or \list command
+
+**Delete a Database**
+dropdb mytestdb
+
+**Create a table called “employees” in your test database:**
+CREATE TABLE employees (employee_id int, first_name varchar, last_name varchar);
+
+**Insert a record into the table:**
+INSERT INTO employees VALUES (1, 'John', 'Doe');
+
+**To view the contents of the “employees” table:**
+SELECT * FROM employees;
+
+**You can list all tables in the current database with the \dt command:***
+
+**Delete tables with DROP TABLE. To delete the employees table:**
+DROP TABLE employees;. To do multiple tables DROP TABLE employees1, employees2;
+
+**Add the start_date column to the employees table:**
+ALTER TABLE employees ADD start_date date;
+Verify your change:
+SELECT * FROM employees;
+
+**Update the start_date field for the user with the value 1 in the employee_id column:**
+UPDATE employees SET start_date = '2016-09-28' WHERE employee_id = '1';
+
+**Create a new row in the employees table:**
+INSERT INTO employees VALUES (2, 'Jane', 'Smith', '2015-03-09');
+
+**Use ALTER TABLE to remove the start_date column you made previously:**
+ALTER TABLE employees DROP start_date;
+
+**Now use DELETE to remove the second row of your employees table. The following command will remove the row with a value of 2 in the employee_id column:**
+DELETE FROM employees WHERE employee_id = '2';
+
+**Create Roles**
+createuser examplerole 
+
+**Give a Role Access to a Database**
+
+To view help for psql commands, type \?.
+To view help for SQL commands, type \h.
+To view information about the current database connection, type \conninfo.
+To list the database's tables and their respective owners, type \dt.
+To list all of the tables, views, and sequences in the database, type \z.
+To exit the psql program, type \q.
+
+**To see count of tables in a database : select count(*)
+from information_schema.tables;
+
+**if you want to find the number of tables only for a specific schema for example public schema
+select count(*)
+from information_schema.tables
+where table_schema = 'public';
+
+** To see postresql processes running in database**
+ps -eaf | grep postgres
+
+List of databases	\l+ or \list+
+List of users	\du+ or \du
+List of schemas	\dn+ or \dn
+List of tablespaces	\db+ or \db
+List of available extensions	\dx+ or \dx
+List of views	\dv+ or \dv
+List of functions	\df+ of \df
+List of tables	\dt+ or \dt
+Info about session	\conninfo
+Describe a table or table structure	\d tablename
+Execute previous command	\g
+Command history	\s
+Open PostgreSQL editor	\e
+Execute psql commands from a file	\i filename
+Connect to a particular database	\c dbname
+List foreign tables	\det+ or \det
+List roles	\dg+ or \dg
+Change password of a user	\password
+Timing of query execution	\timing
+Show content of query buffer	\p
+Reset or clear query buffer	\r
+List of possible SQL operations	\?
+Display all psql commands	\!
+Quit psql command line	\q
+Clear the screen in psql (linux)	\! Clear 
+Source bash_profile	Source ~/.bash_profile
+
+
+
+•	CHECKING POSTGRESQL VERSION
+# select version ();
+$ psql –version
+
+•	TOTAL CLUSTER SIZE
+Select sum (pg_database_size (pg_database.datname)/1024/1024) 
+size_in_mb from pg_database;
+
+•	FIND THE TOTAL SIZE OF A DATABASE
+Select pg_size_pretty(pg_database_size(‘mobi’));
+
+•	FIND TOTAL SIZE OF A TABLE WITH INDEXES
+Select pg_size_pretty(pg_total_relation_size(‘tablename’));
+
+•	FIND TOTAL SIZE OF A TABLE WITHOUT INDEX
+Select pg_size_pretty(pg_relation_size(‘tablename’));
+
+•	FIND TOTAL SIZE OF THE INDEX
+Select pg_size_pretty(pg_indexes_size(‘index_name’));
+
+•	TOTAL NUMBER OF ROWS IN A TABLE
+Select count(*) from tablename;
+ 
+VACUUMING, VACUUM ANALYZE, 
+
+*Check the size of table : scott.employee 
+\dt+ scott.employee
+
+* Check the number of live and dead tuples       
+SELECT relname, n_live_tup, n_dead_tup FROM pg_stat_user_tables WHERE relname = ‘operator_settings’;  
+
+*Run VACUUM ANALYZE and check the dead tuples 
+VACUUM ANALYZE scott.employee ;
+
+*Run VACUUM FULL and check the table size now 
+VACUUM FULL scott.employee ;
+ \dt+ scott.employee
+
+*SELECT 
+	relname AS "operator_settings"
+	,n_live_tup AS LiveTuples
+	,n_dead_tup AS DeadTuples
+FROM pg_stat_user_tables;
+
+** To see postgresql processes*
+ps -eaf | grep postgres
+
+CREATE TABLE COMPANY(
+   ID INT PRIMARY KEY     NOT NULL,
+   NAME           TEXT    NOT NULL,
+   AGE            INT     NOT NULL,
+   ADDRESS        CHAR(50),
+   SALARY         REAL,
+   JOIN_DATE	  DATE
+);
+*INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY,JOIN_DATE) VALUES (1, 'Paul', 32, 'California', 20000.00,'2001-07-13');
+*INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,JOIN_DATE) VALUES (2, 'Allen', 25, 'Texas', '2007-12-13');
+*INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY,JOIN_DATE) VALUES (3, 'Teddy', 23, 'Norway', 20000.00, DEFAULT );
+*INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY,JOIN_DATE) VALUES (4, 'Mark', 25, 'Rich-Mond ', 65000.00, '2007-12-13' ), (5, 'David', 27, 'Texas', 85000.00, '2007-12-13');
+
+
+
+
+
+
+
+
+
+We looked through the resque schedule today and there were no jobs scheduled for the first of the month. Basically, all our scheduled jobs run at various times daily. The job scheduler for HR imports in the app also "attempts" to run daily as long as a file is detected for import. I don't know if maybe there is some automation job that runs monthly on the first but can ask Bob and Andrew if they are aware of any
+
+there is one job that runs on the first of the month -- EmailCreditCardExpirationRemindersWorker. It runs at 4am on the first of each month. that combined with some other processes casued high load on the db, Maybe that in conjunction with some other load
+
+makes complete sense... since it's purges, would that lead to higher locks on certain tables and have a knock on effect downward to other jobs/queries trying to read from locked tables?
+
+
