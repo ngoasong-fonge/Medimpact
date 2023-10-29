@@ -1,0 +1,97 @@
+PostgreSQL Patroni is a high-availability solution for PostgreSQL, while Citus is an extension that enables sharding in PostgreSQL. 
+When combining them, you can create a highly available sharded PostgreSQL database. Here's how the architecture might look:
+
+Patroni for High Availability:
+Patroni is used to manage PostgreSQL instances and ensure high availability.
+It deploys multiple PostgreSQL instances, typically with a leader/follower configuration.
+Patroni monitors the health of each PostgreSQL instance and ensures that one of them is always the leader.
+
+Citus for Sharding:
+Citus is an extension that allows you to distribute your PostgreSQL data across multiple nodes for horizontal scalability.
+It uses a distributed architecture with a coordinator and multiple worker nodes.
+The coordinator manages the distributed queries and metadata, while the worker nodes store and process data.
+
+Control Nodes:
+In this setup, you can have one or more control nodes. These are the nodes where Patroni is installed and manages the PostgreSQL instances.
+Control nodes are responsible for monitoring the health of the PostgreSQL instances, promoting new leaders if the current leader fails, and ensuring high availability.
+
+Worker Nodes:
+Worker nodes in the Citus setup store the sharded data.
+Data is distributed across these worker nodes based on a sharding key, and they handle the query processing for their respective data shards.
+Citus distributes queries to the appropriate worker nodes to parallelize query processing.
+
+In this architecture, Patroni ensures that the PostgreSQL instances are highly available by maintaining a leader/follower configuration. 
+Citus, on the other hand, allows you to horizontally scale your data by distributing it across multiple worker nodes.
+The combination of Patroni and Citus is particularly useful when you need both high availability and horizontal scalability for PostgreSQL, 
+making it suitable for applications that require both fault tolerance and the ability to handle large amounts of data and traffic.
+It's important to configure and manage these components carefully to ensure the desired level of performance and availability.
+
+
+In a Citus architecture with control nodes and worker nodes, the distributed data is primarily stored on the worker nodes. Here's how it works:
+
+Data Sharding: 
+Citus divides your data into smaller, more manageable chunks called shards. 
+These shards are typically based on a sharding key, which can be a specific column in your database. 
+Each shard contains a portion of your dataset.
+
+Worker Nodes: 
+The worker nodes are responsible for storing and managing these data shards. 
+Each worker node stores one or more shards of the data, and the data is distributed across these worker nodes. 
+Each shard is replicated across multiple worker nodes for fault tolerance.
+
+Coordinator Node:
+The control or coordinator node(s) in the Citus setup does not store the actual data.
+Instead, it acts as an orchestrator for distributed query processing. 
+When you send a query to the Citus cluster, the coordinator node determines which worker nodes need to be involved in processing the query and coordinates the execution.
+
+In summary, the worker nodes are where the distributed data is stored. 
+The coordinator node(s) manage the distribution of queries and metadata, ensuring that queries are sent to the appropriate worker nodes for data retrieval and processing. 
+This distributed architecture allows for horizontal scalability and efficient data handling in Citus.
+
+In a Citus cluster, application processing queries typically connect to the coordinator node, which acts as the entry point for query processing. Here's how the process works:
+Application Connects to Coordinator: Your application's database connection points to the coordinator node, which serves as the central point of contact for the Citus cluster.
+
+Query Routing: 
+When you submit a query, the coordinator node is responsible for determining which worker nodes should be involved in processing the query. 
+It does this by analyzing the sharding key in your query to understand which shards are relevant.
+
+Query Distribution: 
+The coordinator node distributes the query to the appropriate worker nodes based on the sharding key information. 
+Each worker node is responsible for processing the part of the query that relates to the data stored on that node.
+
+Parallel Query Execution: 
+Worker nodes execute their respective parts of the query in parallel, taking advantage of the distributed nature of the data. 
+This parallelism can significantly improve query performance for large datasets.
+
+Aggregation and Result Assembly: 
+After the worker nodes complete their tasks, the coordinator node collects the results and assembles them into the final response that is sent back to your application.
+
+This architecture allows for efficient and scalable query processing. 
+By centralizing query routing and distribution through the coordinator node, Citus can optimize the use of worker nodes, making it possible to process queries that involve large datasets quickly and in parallel.
+Keep in mind that your application needs to be aware of the Citus architecture and the sharding key, as this knowledge is crucial for writing effective queries and optimizing performance in a sharded environment.
+
+
+
+So if this is the case were the worker node’s actually processes the queries , doesn’t that mean the worker nodes is suppose to have more resources like cpu , ram for I/O than the coordinator node or even thesame ?
+In a Citus cluster, worker nodes are responsible for processing queries and storing data, so they often require substantial resources, including CPU, RAM, and storage, to handle the query workload efficiently.
+However, the resource requirements can vary depending on the specific workload and dataset size. Here are some considerations:
+
+Worker Node Resources:
+Worker nodes should ideally have ample CPU and RAM resources, as query processing and data storage tasks are distributed among them. 
+The specific resource requirements depend on the complexity of your queries and the amount of data stored on each worker node.
+Having fast storage, such as SSDs, is beneficial because it can significantly improve I/O performance, especially for read-heavy workloads.
+
+Coordinator Node Resources:
+The coordinator node primarily handles query routing and coordination. While it doesn't store data or perform as much computational work as worker nodes, it still needs to manage metadata and coordinate query distribution.
+Coordinator nodes may benefit from having lower-latency network connections, as they need to communicate with both the application and the worker nodes.
+
+Scaling Considerations:
+As your workload grows, you can scale your Citus cluster by adding more worker nodes to distribute the query load. 
+This can help ensure that each worker node has the necessary resources to handle its portion of the data and queries.
+
+Balancing Resources:
+It's essential to balance the resources across worker nodes to avoid hotspots where a specific node is overwhelmed with queries. Citus provides tools for managing this, such as shard rebalancing.
+
+In summary, while worker nodes typically require more resources than coordinator nodes due to their role in query processing and data storage, the exact resource requirements depend on your workload.
+Citus allows you to scale horizontally, so you can add more worker nodes as needed to maintain a balance between resources and workload. 
+It's essential to monitor and tune the resources for both coordinator and worker nodes to optimize the performance of your Citus cluster.
