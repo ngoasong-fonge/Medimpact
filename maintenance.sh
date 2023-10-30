@@ -23,7 +23,6 @@ echo "Start Time: $(date -d @$start_time)" > $log_file
 echo "End Time: $(date -d @$end_time)" >> $log_file
 echo "Total Time: $total_time minutes" >> $log_file
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 #!/bin/bash
 
 # Source .bash_profile to load environment variables
