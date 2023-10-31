@@ -21,7 +21,7 @@ total_time=$((end_time - start_time))
 log_file="/path/to/output_directory/vacuum_total_time.log"
 echo "Start Time: $(date -d @$start_time)" > $log_file
 echo "End Time: $(date -d @$end_time)" >> $log_file
-echo "Total Time: $total_time minutes" >> $log_file
+echo "Total Time: $total_time seconds" >> $log_file
 ----------------------------------------------------Bellow -script- will - rotate- logs-----------------------------------------------------------------
 #!/bin/bash
 
@@ -84,7 +84,7 @@ total_time=$((end_time - start_time))
 # Log the total start and end times to the current day's log file
 echo "Start Time: $(date -d @$start_time)" >> $log_file
 echo "End Time: $(date -d @$end_time)" >> $log_file
-echo "Total Time: $total_time minutes" >> $log_file
+echo "Total Time: $total_time seconds" >> $log_file
 
 ---------------------------------------Bellow script will check if the PostgreSQL instance is not the standby leader or master before executing the VACUUM ANALYZE operation ------------------------------------------
 
@@ -164,4 +164,4 @@ total_time=$((end_time - start_time))
 # Log the total start and end times to the current day's log file
 echo "Start Time: $(date -d @$start_time)" >> $log_file
 echo "End Time: $(date -d @$end_time)" >> $log_file
-echo "Total Time: $total_time minutes" >> $log_file
+echo "Total Time: $total_time seconds" >> $log_file
