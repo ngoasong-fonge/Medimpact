@@ -11,7 +11,7 @@ tables=(enc_ver_raw_compound encounter encounter_ext_dtl encounter_extract encou
 start_time=$(date +%s)
 
 for table in "${tables[@]}"; do
-   psql -h pv2medpg1c1 -d citus -c "VACUUM ANALYZE $schema.$table"
+   psql -h localhost -d citus -c "VACUUM ANALYZE $schema.$table"
 done
 
 end_time=$(date +%s)
@@ -74,7 +74,7 @@ perform_log_rotation
 start_time=$(date +%s)
 
 for table in "${tables[@]}"; do
-   psql -h pv2medpg1c1 -d citus -c "VACUUM ANALYZE $schema.$table"
+   psql -h localhost -d citus -c "VACUUM ANALYZE $schema.$table"
 done
 
 # End measuring script execution time
@@ -154,7 +154,7 @@ for table in "${tables[@]}"; do
   check_postgres_role
 
   # Execute VACUUM ANALYZE if it's the leader
-  psql -h pv2medpg1c1 -d citus -c "VACUUM ANALYZE $schema.$table"
+  psql -h localhost -d citus -c "VACUUM ANALYZE $schema.$table"
 done
 
 # End measuring script execution time
