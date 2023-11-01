@@ -1,14 +1,3 @@
-[svcpostgres@pv1medpg0c1 group0]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
-+ Citus cluster: pgproddr1 --------+----------------+-----------+----+-----------+
-| Group | Member      | Host       | Role           | State     | TL | Lag in MB |
-+-------+-------------+------------+----------------+-----------+----+-----------+
-|     0 | pv1medpg0c1 | 10.13.2.21 | Standby Leader | streaming | 17 |           |
-|     0 | pv1medpg0c2 | 10.13.2.27 | Replica        | streaming | 17 |         0 |
-|     1 | pv1medpg0w1 | 10.13.2.30 | Standby Leader | streaming | 12 |           |
-|     1 | pv1medpg0w2 | 10.13.2.31 | Replica        | streaming | 12 |         0 |
-|     2 | pv1medpg0w3 | 10.13.2.34 | Standby Leader | streaming | 11 |           |
-|     2 | pv1medpg0w4 | 10.13.2.35 | Replica        | streaming | 11 |         0 |
-+-------+-------------+------------+----------------+-----------+----+-----------+
 
 [svcpostgres@pv2medpg1c1 vacuum_analyze]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
 + Citus cluster: pgprod1 -------------+--------------+-----------+----+-----------+
@@ -21,4 +10,43 @@
 |     2 | pv2medpg1w3 | 10.15.130.164 | Leader       | running   | 13 |           |
 |     2 | pv2medpg1w4 | 10.15.130.170 | Sync Standby | streaming | 13 |         0 |
 +-------+-------------+---------------+--------------+-----------+----+-----------+
+Group 0 is managed by coordinator nodes pv2medpg1c1 (Leader) and pv2medpg1c2 (Sync Standby). These coordinator nodes typically manage metadata and query routing for the Citus cluster. They are not responsible for storing data.
 
+Group 1 and Group 2 are worker nodes in the Citus cluster. These worker nodes manage the actual data storage and processing.
+
+Group 1 is managed by worker nodes pv2medpg1w1 (Leader) and pv2medpg1w2 (Sync Standby).
+Group 2 is managed by worker nodes pv2medpg1w3 (Leader) and pv2medpg1w4 (Sync Standby).
+In this configuration:
+
+Worker nodes within each group are responsible for storing and processing data, and they actively participate in query execution.
+The "Leader" worker in each group is the primary node for the data in that group. It actively handles write operations and is the target for read queries.
+The "Sync Standby" worker in each group is in a standby state. It replicates data from the leader and is ready to take over as the leader if the leader node fails. This provides high availability and fault tolerance.
+The role of worker nodes, both leader and sync standby, is to collectively manage the distributed data across the Citus cluster and to ensure high availability and load distribution while actively participating in query processing.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+[svcpostgres@pv1medpg0c1 group0]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
++ Citus cluster: pgproddr1 --------+----------------+-----------+----+-----------+
+| Group | Member      | Host       | Role           | State     | TL | Lag in MB |
++-------+-------------+------------+----------------+-----------+----+-----------+
+|     0 | pv1medpg0c1 | 10.13.2.21 | Standby Leader | streaming | 17 |           |
+|     0 | pv1medpg0c2 | 10.13.2.27 | Replica        | streaming | 17 |         0 |
+|     1 | pv1medpg0w1 | 10.13.2.30 | Standby Leader | streaming | 12 |           |
+|     1 | pv1medpg0w2 | 10.13.2.31 | Replica        | streaming | 12 |         0 |
+|     2 | pv1medpg0w3 | 10.13.2.34 | Standby Leader | streaming | 11 |           |
+|     2 | pv1medpg0w4 | 10.13.2.35 | Replica        | streaming | 11 |         0 |
++-------+-------------+------------+----------------+-----------+----+-----------+
+The Citus cluster is divided into three groups, labeled as Group 0, Group 1, and Group 2.
+
+Each group consists of two members, one in the "Standby Leader" role and one in the "Replica" role. This is a high-availability configuration for the cluster, where there is a standby leader for each group, and a replica for each standby leader.
+
+The "Standby Leader" members are in a standby state and are ready to take over as the leader in their respective groups if the current leader fails. These standby leaders continuously replicate data and changes from the current leaders to stay in sync.
+
+The "Replica" members are in a replica role and are actively replicating data from their corresponding leader. They serve as hot standby nodes that can take over if the leader fails.
+
+The "State" column indicates that all members are in a "streaming" state, which means they are actively replicating data. This is a healthy state, as it ensures that data is continuously synchronized.
+
+The "TL" (Transaction Log) column shows the current WAL (Write-Ahead Log) position for each member.
+
+The "Lag in MB" column typically shows the replication lag in megabytes, but it appears to be empty, indicating that the replication is up to date, with a lag of 0 MB.
+
+In this setup, each group has redundancy for high availability, with a standby leader that can take over in case of leader failure. The configuration is designed to ensure that the Citus cluster remains highly available and fault-tolerant while actively replicating data to maintain consistency and reliability across all members.
