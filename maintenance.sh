@@ -339,8 +339,10 @@ total_time=$((end_time - start_time))
 echo "Start Time: $(date -d @$start_time)" >> $log_file
 echo "End Time: $(date -d @$end_time)" >> $log_file
 echo "Total Time: $total_time seconds" >> $log_file
-------------------------------------------------------------------------using the the curl command to check role-----------------------------------------------------------------------
-
+------------------------------------------------------------------------using the the curl command to check role-------------------------------------------------------------------------------------------------------
+In this version of the script, the check_patroni_role function uses the curl command to query the Patroni REST API for the status information, including the node's role. 
+It checks if the role is "master" to determine if it's the leader. If it's the leader, the script proceeds with the VACUUM ANALYZE operation, and if it's not the leader, it skips the operation.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #!/bin/bash
 
 # Source .bash_profile to load environment variables
