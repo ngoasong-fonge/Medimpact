@@ -356,7 +356,7 @@ tables=(enc_ver_raw_compound encounter encounter_ext_dtl encounter_extract encou
 max_log_files=7  # Adjust as needed
 
 # Create the log directory if it doesn't exist
-log_dir=/opt/backup/pgprod1/vacuum_analyze
+log_dir=/opt/backup/pguatdr1/vacuum_analyze
 # mkdir -p "$log_dir"
 
 # Generate a timestamp for the log file
