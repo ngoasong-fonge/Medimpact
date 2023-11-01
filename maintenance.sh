@@ -22,6 +22,10 @@ log_file="/path/to/output_directory/vacuum_total_time.log"
 echo "Start Time: $(date -d @$start_time)" > $log_file
 echo "End Time: $(date -d @$end_time)" >> $log_file
 echo "Total Time: $total_time seconds" >> $log_file
+
+Not the leader. Skipping VACUUM ANALYZE for ngmep.file_transmission_status.
+./vacuum_analyze.sh: line 55: continue: only meaningful in a `for', `while', or `until' loop
+VACUUM
 ----------------------------------------------------Bellow -script- will - rotate- logs-----------------------------------------------------------------
 #!/bin/bash
 
