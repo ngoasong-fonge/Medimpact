@@ -10,24 +10,15 @@
 |     2 | pv1medpg0w4 | 10.13.2.35 | Replica        | streaming | 11 |         0 |
 +-------+-------------+------------+----------------+-----------+----+-----------+
 
-explain select coalesce(mc.client_name, '') || ' - ' || coalesce(mc.client_code, '') as client_code , ev.orig_claim_id,STRING_AGG(eve.EXCEPTION_CODE,',') as exception_code,STRING_AGG(mec.EXCEPTION_DESC,',') as EXCEPTION_DESC
-from ngmep.file_transmission ft
-join ngmep.mep_client mc on mc.sender_id = ft.sender_id and now() between mc.start_date and mc.end_date
-join ngmep.encounter_version ev on (ev.enc_file_transmission_id = ft.file_transmission_id and ev.sender_id=mc.sender_id and ev.encounter_ver_status='Exception')
-join ngmep.encounter_ver_exception eve on ev.encounter_version_id = eve.encounter_version_id
-join ngmep.mep_exception_code mec on eve.exception_code = mec.exception_code and mec.internal_external_ind = 'External' 
-where ft.direction = 'Outbound'
-  and ft.sender_id in ('9900004318')   and ft.created between '2023-09-26' and '2023-10-25'  GROUP BY mc.client_name, mc.client_code , ev.orig_claim_id
+[svcpostgres@pv2medpg1c1 vacuum_analyze]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
++ Citus cluster: pgprod1 -------------+--------------+-----------+----+-----------+
+| Group | Member      | Host          | Role         | State     | TL | Lag in MB |
++-------+-------------+---------------+--------------+-----------+----+-----------+
+|     0 | pv2medpg1c1 | 10.15.130.160 | Leader       | running   | 19 |           |
+|     0 | pv2medpg1c2 | 10.15.130.161 | Sync Standby | streaming | 19 |         0 |
+|     1 | pv2medpg1w1 | 10.15.130.162 | Leader       | running   | 14 |           |
+|     1 | pv2medpg1w2 | 10.15.130.163 | Sync Standby | streaming | 14 |         0 |
+|     2 | pv2medpg1w3 | 10.15.130.164 | Leader       | running   | 13 |           |
+|     2 | pv2medpg1w4 | 10.15.130.170 | Sync Standby | streaming | 13 |         0 |
++-------+-------------+---------------+--------------+-----------+----+-----------+
 
-citus=# explain select mec.exception_code,mec.exception_desc,
-citus-# sum(ev.net_amt_due1) as total_net_amount_due,
-citus-# count(ev.encounter_ver_status) as rejected_claims
-citus-# from ngmep.file_transmission ft
-citus-# join ngmep.encounter_version ev on ev.enc_file_transmission_id = ft.file_transmission_id and ev.encounter_ver_status='Exception' ---
-citus-# join ngmep.encounter_ver_exception eve on ev.encounter_version_id = eve.encounter_version_id
-citus-# join ngmep.mep_exception_code mec on eve.exception_code = mec.exception_code and mec.internal_external_ind = 'External'
-citus-# where ft.direction = 'Outbound'  and ft.sender_id in ('9900004318')  and ft.created between '2023-09-26' and '2023-10-25'
-citus-# group by mec.exception_code,mec.exception_desc;
-SSL SYSCALL error: EOF detected
-The connection to the server was lost. Attempting reset: Failed.
-The connection to the server was lost. Attempting reset: Failed.
