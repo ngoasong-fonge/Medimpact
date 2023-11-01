@@ -1,4 +1,4 @@
-
+PROD SERVERS
 [svcpostgres@pv2medpg1c1 vacuum_analyze]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
 + Citus cluster: pgprod1 -------------+--------------+-----------+----+-----------+
 | Group | Member      | Host          | Role         | State     | TL | Lag in MB |
@@ -23,7 +23,7 @@ The "Leader" worker in each group is the primary node for the data in that group
 The "Sync Standby" worker in each group is in a standby state. It replicates data from the leader and is ready to take over as the leader if the leader node fails. This provides high availability and fault tolerance.
 The role of worker nodes, both leader and sync standby, is to collectively manage the distributed data across the Citus cluster and to ensure high availability and load distribution while actively participating in query processing.
 -----------------------------------------------------------------------------------------------------------------------------------------------
-
+PROD DR SERVERS
 [svcpostgres@pv1medpg0c1 group0]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
 + Citus cluster: pgproddr1 --------+----------------+-----------+----+-----------+
 | Group | Member      | Host       | Role           | State     | TL | Lag in MB |
