@@ -50,3 +50,11 @@ The "TL" (Transaction Log) column shows the current WAL (Write-Ahead Log) positi
 The "Lag in MB" column typically shows the replication lag in megabytes, but it appears to be empty, indicating that the replication is up to date, with a lag of 0 MB.
 
 In this setup, each group has redundancy for high availability, with a standby leader that can take over in case of leader failure. The configuration is designed to ensure that the Citus cluster remains highly available and fault-tolerant while actively replicating data to maintain consistency and reliability across all members.
+
+
+top - 19:21:59 up 105 days, 18:27,  6 users,  load average: 4.19, 4.23, 4.00
+Tasks: 352 total,   4 running, 348 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 84.1 us, 13.1 sy,  0.0 ni,  0.0 id,  0.2 wa,  1.0 hi,  1.7 si,  0.0 st
+MiB Mem :  24078.8 total,    249.5 free,   3231.4 used,  20597.9 buff/cache
+MiB Swap:   2048.0 total,   1194.3 free,    853.7 used.  14159.7 avail Mem
+
