@@ -58,3 +58,7 @@ Tasks: 352 total,   4 running, 348 sleeping,   0 stopped,   0 zombie
 MiB Mem :  24078.8 total,    249.5 free,   3231.4 used,  20597.9 buff/cache
 MiB Swap:   2048.0 total,   1194.3 free,    853.7 used.  14159.7 avail Mem
 
+
+2023-11-02 19:55:57.495 UTC [1330076] HINT:  Consider increasing the configuration parameter "max_wal_size".
+2023-11-02 19:55:57.495 UTC [1330076] LOG:  checkpoint starting: wal
+2023-11-02 19:56:14.970 UTC [1330076] LOG:  checkpoint complete: wrote 61986 buffers (7.9%); 0 WAL file(s) added, 0 removed, 33 recycled; write=17.205 s, sync=0.128 s, total=17.476 s; sync files=15, longest=0.061 s, average=0.009 s; distance=537335 kB, estimate=544704 kB
