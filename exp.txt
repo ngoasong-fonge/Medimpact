@@ -62,3 +62,22 @@ MiB Swap:   2048.0 total,   1194.3 free,    853.7 used.  14159.7 avail Mem
 2023-11-02 19:55:57.495 UTC [1330076] HINT:  Consider increasing the configuration parameter "max_wal_size".
 2023-11-02 19:55:57.495 UTC [1330076] LOG:  checkpoint starting: wal
 2023-11-02 19:56:14.970 UTC [1330076] LOG:  checkpoint complete: wrote 61986 buffers (7.9%); 0 WAL file(s) added, 0 removed, 33 recycled; write=17.205 s, sync=0.128 s, total=17.476 s; sync files=15, longest=0.061 s, average=0.009 s; distance=537335 kB, estimate=544704 kB
+
+
+SELECT datname
+    , age(datfrozenxid)
+    , current_setting('autovacuum_freeze_max_age')
+FROM pg_database
+ORDER BY 2 DESC;
+
+SELECT c.oid::regclass
+    , age(c.relfrozenxid)
+    , pg_size_pretty(pg_total_relation_size(c.oid))
+FROM pg_class c
+JOIN pg_namespace n on c.relnamespace = n.oid
+WHERE relkind IN ('r', 't', 'm')
+AND n.nspname NOT IN ('pg_toast')
+ORDER BY 2 DESC LIMIT 100;
+
+
+\t \o /tmp/vacuum.sql select 'vacuum freeze analyze verbose ' || oid::regclass || ';' from pg_class where relkind in ('r', 't', 'm') order by age(relfrozenxid) desc limit 100; \o \t \set ECHO all \i /tmp/vacuum.sql
