@@ -81,3 +81,5 @@ ORDER BY 2 DESC LIMIT 100;
 
 
 \t \o /tmp/vacuum.sql select 'vacuum freeze analyze verbose ' || oid::regclass || ';' from pg_class where relkind in ('r', 't', 'm') order by age(relfrozenxid) desc limit 100; \o \t \set ECHO all \i /tmp/vacuum.sql
+
+https://www.crunchydata.com/blog/managing-transaction-id-wraparound-in-postgresql
