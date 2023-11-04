@@ -95,3 +95,6 @@ LIMIT 100;
 \t \o /tmp/vacuum.sql select 'vacuum freeze analyze verbose ' || oid::regclass || ';' from pg_class where relkind in ('r', 't', 'm') order by age(relfrozenxid) desc limit 100; \o \t \set ECHO all \i /tmp/vacuum.sql
 
 https://www.crunchydata.com/blog/managing-transaction-id-wraparound-in-postgresql
+
+
+ODBC PostgreSQL Wire Protocol driver]Optional feature not implemented.[Informatica][ODBC PostgreSQL Wire Protocol driver]Driver's SQLSetConnectAttr failed.[Informatica][ODBC PostgreSQL Wire Protocol driver]SSL I/O Error.[Informatica][ODBC PostgreSQL Wire Protocol driver]SSL I/O Error.[Informatica][ODBC PostgreSQL Wire Protocol driver]01006[Informatica][ODBC PostgreSQL Wire Protocol driver]01006
