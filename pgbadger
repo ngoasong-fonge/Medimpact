@@ -1,3 +1,14 @@
+------------------install--from---source--------
+git clone https://github.com/darold/pgbadger.git
+cd pgbadger
+
+
+perl Makefile.PL
+make
+sudo make install
+--------------------------------------------------------------------------------------------------------
+
+
 sudo yum update httpd
 sudo yum install httpd
 sudo service httpd start
@@ -48,7 +59,13 @@ pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /usr/p
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+git clone https://github.com/darold/pgbadger.git
+cd pgbadger
 
+
+perl Makefile.PL
+make
+sudo make install
 
 
 
