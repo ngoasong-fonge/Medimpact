@@ -1,0 +1,72 @@
+sudo yum update httpd
+sudo yum install httpd
+sudo service httpd start
+sudo service httpd status
+sudo chkconfig httpd on
+
+first as root do : yum install pgbadger
+apt-get install pgbadger
+
+
+pgbadger -p -l /mnt/postgresql_log/postgresql.log -f stderr -o /var/lib/pgsql/postgresql.2020.29.6.html
+
+
+
+
+INCREMENTAL REPORTS
+pgBadger includes an automatic incremental report mode using option -I or --incremental. When running in this mode, pgBadger will generate one report per day and a cumulative report per week. Output is first done in binary format into the mandatory output directory (see option -O or --outdir), then in HTML format for daily and weekly reports with a main index file.
+The main index file will show a dropdown menu per week with a link to each week report and links to daily reports of each week.
+For example, if you run pgBadger as follows based on a daily rotated file:
+
+    0 4 * * * /usr/bin/pgbadger -I -q /var/log/postgresql/postgresql.log.1 -O /var/www/pg_reports/
+
+you will have all daily and weekly reports for the full running period.
+In this mode pgBadger will create an automatic incremental file in the output directory, so you don't have to use the -l option unless you want to change the path of that file. This means that you can run pgBadger in this mode each day on a log file rotated each week, and it will not count the log entries twice.
+To save disk space you may want to use the -X or --extra-files command line option to force pgBadger to write JavaScript and CSS to separate files in the output directory. The resources will then be loaded using script and link tags.
+
+
+** pgbadger command to use in mobile platform ** (run as postgres user)
+pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /var/lib/pgsql/postgresql.analy.2020.12.30.html /mnt/postgresql_log/postgresql.log
+
+
+** pgbadger command to use in analyticsmobile platform ** (run as postgres user)
+pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /var/lib/pgsql/postgresql.analy.2020.12.30.html /var/log/postgresql.log
+
+** (pgdb3 command) pgbadger command to use in mobile platform ** (run as postgres user)
+pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /var/lib/pgsql/postgresql.analy.2020.19.11.html /var/log/postgresql.log
+
+
+** log_line_prefix parameter for our pg_badger**
+'%t [%p]: [%l-1] user=%u,db=%d'   (important)
+
+** pgbadger command to use in easy.sell/buy platform ** (run as postgres user)
+pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /var/lib/pgsql/postgresql.analy.2020.12.8.html /var/log/postgresql.log
+
+
+** for Asentinel servers 
+pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /usr/pgdata/postgresql.analy.11.05.2023.html /usr/pglog/pg_log/postgresql-Sat-00.log
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
