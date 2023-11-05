@@ -47,6 +47,364 @@ pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /var/l
 pgbadger -f stderr -s 10 -T PGBadger-localhost.localdomain-20151202 -q -o /usr/pgdata/postgresql.analy.11.05.2023.html /usr/pglog/pg_log/postgresql-Sat-00.log
 
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+INSTALLING AND USING PGBADGER
+==============================
+
+First you need to make sure that you database has been setup for logging.
+
+BUT FIRST WE WILL NEED TO INSTALL PGBADGER WHICH WE ARE GOING TO BE USING FOR REPORTING.THIS WILL USE OUR LOGFILE TO GENERATE THE REPORT WE NEED.
+
+YOU WILL HAVE TO GO TO https://github.com/darold/pgbadger  AND DOWNLOAD THE ZIP FILE FROM GITHUB
+WHEN YOU GO TO GITHUB, YOU WILL CLICK ON "CLONE OR DOWNLOAD" THEN YOU WILL DOWNLOAD THE ZIP FILE WHICH WILL GO TO YOU DOWNLOAD DIRECTORY OF YOUR CENTOS
+
+[root@localhost Downloads]# pwd
+/home/waltonarielle/Downloads
+[root@localhost Downloads]# ll
+-rw-rw-r--. 1 waltonarielle waltonarielle      4256 Oct 24 15:14 adobe-release-x86_64-1.0-1.noarch.rpm
+drwxrwxr-x. 3 waltonarielle waltonarielle        19 Nov  9  2005 dbsamples-0.1
+-rwxrwxr-x. 1 root          root            2835456 May 12 10:36 dvdrental.tar
+-rwxrwxr-x. 1 waltonarielle waltonarielle    550906 Oct 22 16:05 dvdrental.zip
+-rwxrwxr-x. 1 waltonarielle waltonarielle 110682425 Oct 23 20:49 edb-as10-server-10.10.18-1-linux-x64.run
+-rw-rw-r--. 1 waltonarielle waltonarielle   1692893 Oct 24 15:45 pgbadger-master.zip ========================THIS IS MY FILE===========
+-rwxrwxr-x. 1 postgres      postgres          45872 May 11 21:36 restore.sql
+-rw-r--r--. 1 root          root           15597968 Mar  6  2008 sportsdb_sample_postgresql_20080304.sql
+-rwxrwxr-x. 1 waltonarielle waltonarielle    652509 Oct 22 16:06 sportsdb_sample_postgresql.zip
+-rwxrwxr-x. 1 postgres      postgres          55111 May 11 21:36 toc.dat
+-rwxrwxr-x. 1 waltonarielle waltonarielle     83149 Oct 22 15:46 world-1.0.tar.gz
+[root@localhost Downloads]# 
+
+[root@localhost Downloads]# 
+[root@localhost Downloads]# unzip pgbadger-master.zip   =============I WILL HAVE TO UNZIP THIS FILE=========
+Archive:  pgbadger-master.zip
+88e32bb8d69d25a95eaedc87dad4f62cfd317f90
+   creating: pgbadger-master/
+
+[root@localhost Downloads]# 
+[root@localhost Downloads]# cd pgbadger-master  ====CD TO THIS FILE==============
+[root@localhost pgbadger-master]# ll
+total 1664
+-rw-r--r--. 1 root root  116653 Oct 11 07:27 ChangeLog
+-rw-r--r--. 1 root root     878 Oct 11 07:27 CONTRIBUTING.md
+drwxr-xr-x. 2 root root      26 Oct 11 07:27 doc
+-rw-r--r--. 1 root root    1487 Oct 11 07:27 HACKING.md
+-rw-r--r--. 1 root root     910 Oct 11 07:27 LICENSE
+-rw-r--r--. 1 root root    2171 Oct 11 07:27 Makefile.PL
+-rw-r--r--. 1 root root      81 Oct 11 07:27 MANIFEST
+-rw-r--r--. 1 root root     250 Oct 11 07:27 META.yml
+-rwxr-xr-x. 1 root root 1481708 Oct 11 07:27 pgbadger
+-rw-r--r--. 1 root root   36142 Oct 11 07:27 README
+-rw-r--r--. 1 root root   34511 Oct 11 07:27 README.md
+drwxr-xr-x. 3 root root    4096 Oct 11 07:27 resources
+drwxr-xr-x. 3 root root      82 Oct 11 07:27 t
+drwxr-xr-x. 2 root root     117 Oct 11 07:27 tools
+[root@localhost pgbadger-master]# 
+
+[root@localhost ~]# su - postgres         ==================LETS GO BACK AS POSTGRES USER AND EDIT OUR POSTGRESQL.CONF FILE ==========
+Last login: Thu Oct 24 15:17:06 MDT 2019 on pts/0
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf=============================================EDIT THIS FILE AND RESTART========
+-bash-4.2$ /usr/pgsql-10/bin/pg_ctl -D /var/lib/pgsql/10/data restart
+waiting for server to shut down.... done
+server stopped
+waiting for server to start....2019-10-24 16:10:59 MDT [19529]: [1-1] db=,  , app=, LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2019-10-24 16:10:59 MDT [19529]: [2-1] db=,  , app=, LOG:  listening on IPv6 address "::", port 5432
+2019-10-24 16:10:59 MDT [19529]: [3-1] db=,  , app=, LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2019-10-24 16:10:59 MDT [19529]: [4-1] db=,  , app=, LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2019-10-24 16:10:59 MDT [19529]: [5-1] db=,  , app=, LOG:  redirecting log output to logging collector process
+2019-10-24 16:10:59 MDT [19529]: [6-1] db=,  , app=, HINT:  Future log output will appear in directory "log".
+ done
+server started
+-bash-4.2$ 
+
+================I SET THE FOLLOWING IN MY POSTGRESQL.CONF FILE==================
+log_statement = 'all' 
+log_lock_waits = on
+log_checkpoints = on
+log_connections = on
+log_disconnections = on
+log_duration = on
+log_error_verbosity = default   
+log_hostname = on
+log_line_prefix = '%t [%p]: [%l-1] db=%d, %u , app=%a, %h'   
+log_min_duration_statement = 1000                             
+log_rotation_age = 1d                           
+log_rotation_size = 10MB                         
+log_directory = 'log' ==========NOTE THE LOCATION OF MY LOGS==========
+log_filename = 'tsi_postgresql-%a.log'  ============I CHANGED THE NAME OF MY LOGFILE=========
+log_destination = 'stderr'  
+======================================================================================================
+
+=========SO AFTER RESTARTING MY SERVER, I CAN GO AND SEE IF LOGS HAVE BEEN GENERATED=============
+-bash-4.2$ pwd
+/var/lib/pgsql/10/data
+-bash-4.2$ ll
+total 64
+drwx------. 10 postgres postgres   110 Oct 22 16:33 base
+-rw-------.  1 postgres postgres    34 Oct 24 16:10 current_logfiles
+drwx------.  2 postgres postgres  4096 Oct 24 16:11 global
+drwx------.  2 postgres postgres   114 Oct 24 16:10 log
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_commit_ts
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_dynshmem
+-rw-------.  1 postgres postgres  4341 Oct 23 00:51 pg_hba.conf
+-rw-------.  1 postgres postgres  1636 Oct 22 14:02 pg_ident.conf
+drwx------.  4 postgres postgres    68 Oct 24 16:10 pg_logical
+drwx------.  4 postgres postgres    36 Oct 22 14:02 pg_multixact
+drwx------.  2 postgres postgres    18 Oct 24 16:10 pg_notify
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_replslot
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_serial
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_snapshots
+drwx------.  2 postgres postgres     6 Oct 24 16:10 pg_stat
+drwx------.  2 postgres postgres   176 Oct 24 16:13 pg_stat_tmp
+drwx------.  2 postgres postgres    18 Oct 22 16:39 pg_subtrans
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_tblspc
+drwx------.  2 postgres postgres     6 Oct 22 14:02 pg_twophase
+-rw-------.  1 postgres postgres     3 Oct 22 14:02 PG_VERSION
+drwx------.  3 postgres postgres  4096 Oct 22 19:27 pg_wal
+drwx------.  2 postgres postgres    18 Oct 22 14:02 pg_xact
+-rw-------.  1 postgres postgres    88 Oct 22 14:02 postgresql.auto.conf
+-rw-------.  1 postgres postgres 22936 Oct 24 16:10 postgresql.conf
+-rw-------.  1 postgres postgres    58 Oct 24 16:10 postmaster.opts
+-rw-------.  1 postgres postgres    96 Oct 24 16:10 postmaster.pid
+-bash-4.2$ cd log
+-bash-4.2$ ll
+total 25456
+-rw-------. 1 postgres postgres     4085 Oct 24 16:10 postgresql-Thu.log
+-rw-------. 1 postgres postgres 26051264 Oct 22 20:33 postgresql-Tue.log
+-rw-------. 1 postgres postgres      743 Oct 23 20:39 postgresql-Wed.log
+-rw-------. 1 postgres postgres      222 Oct 24 16:10 tsi_postgresql-Thu.log    =============NOW I HAVE LOGS FILE GENERATED=============
+-bash-4.2$ 
+ 
+=========================WE ARE GOING TO TEST TO MAKE SURE EVERYTHING IS BEING LOGGED INTO OUR LOGFILE, WE WILL CREATE A DATABASE AND TABLE, THEN LOOK AT OUR LOGFILE==============
+
+-bash-4.2$ psql
+psql (10.10)
+Type "help" for help.
+
+postgres=# create database tsi;
+CREATE DATABASE
+postgres=# \c tsi
+You are now connected to database "tsi" as user "postgres".
+tsi=# 
+tsi=# create table benson (id int);
+CREATE TABLE
+tsi=# insert into benson values(generate_series(1,10000));
+INSERT 0 10000
+tsi=# 
+
+
+======NOW LETS TAIL OUR LOGS AND SEE IF EVERYTHING WAS BEING LOGGE IN===========
+
+-bash-4.2$ cd log
+-bash-4.2$ ll
+total 25456
+-rw-------. 1 postgres postgres     4085 Oct 24 16:10 postgresql-Thu.log
+-rw-------. 1 postgres postgres 26051264 Oct 22 20:33 postgresql-Tue.log
+-rw-------. 1 postgres postgres      743 Oct 23 20:39 postgresql-Wed.log
+-rw-------. 1 postgres postgres      222 Oct 24 16:10 tsi_postgresql-Thu.log
+
+-bash-4.2$ tail -f tsi_postgresql-Thu.log  ====================LOOKING AT THE LOGS, WE SEE THAT EVERYTHING WAS BEING LOGGED IN===========
+
+st=0.002 s, average=0.002 s; distance=2 kB, estimate=2 kB
+2019-10-24 16:36:29 MDT [20165]: [4-1] db=postgres, postgres , app=psql, [local]LOG:  duration: 142.747 ms
+2019-10-24 16:36:47 MDT [20165]: [5-1] db=postgres, postgres , app=psql, [local]LOG:  statement: create database tsi;
+2019-10-24 16:36:47 MDT [20141]: [3-1] db=,  , app=, LOG:  checkpoint starting: immediate force wait flush-all
+2019-10-24 16:36:47 MDT [20141]: [4-1] db=,  , app=, LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.018 s; sync files=3, longest=0.002 s, average=0.000 s; distance=3 kB, estimate=3 kB
+2019-10-24 16:36:47 MDT [20141]: [5-1] db=,  , app=, LOG:  checkpoint starting: immediate force wait
+2019-10-24 16:36:47 MDT [20141]: [6-1] db=,  , app=, LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.000 s, sync=0.000 s, total=0.008 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=3 kB
+2019-10-24 16:36:47 MDT [20165]: [6-1] db=postgres, postgres , app=psql, [local]LOG:  duration: 279.278 ms
+2019-10-24 16:36:57 MDT [20186]: [1-1] db=[unknown], [unknown] , app=[unknown], [local]LOG:  connection received: host=[local]
+2019-10-24 16:36:57 MDT [20186]: [2-1] db=tsi, postgres , app=[unknown], [local]LOG:  connection authorized: user=postgres database=tsi
+2019-10-24 16:36:57 MDT [20165]: [7-1] db=postgres, postgres , app=psql, [local]LOG:  disconnection: session time: 0:00:50.690 user=postgres database=postgres host=[local]
+2019-10-24 16:37:15 MDT [20186]: [3-1] db=tsi, postgres , app=psql, [local]LOG:  statement: create table benson (id int);
+2019-10-24 16:37:15 MDT [20186]: [4-1] db=tsi, postgres , app=psql, [local]LOG:  duration: 8.511 ms
+2019-10-24 16:37:48 MDT [20186]: [5-1] db=tsi, postgres , app=psql, [local]LOG:  statement: insert into benson values(generate_series(1,10000));
+2019-10-24 16:37:48 MDT [20186]: [6-1] db=tsi, postgres , app=psql, [local]LOG:  duration: 14.938 ms
+
+
+======================================= WHEN YOU LOOK AT THE LOGS...YOU SEE THAT EVERYTHING WAS LOGGED IN...EVEN THE SQLSTATEMENTS AND THE TIME IT TOOK TO EXECUTE THEM..because "log_statement = 'all'"====================
+
+============NOW WE ARE GOING TO BE DOING ALOT OF INSERT AND UPDATE STATEMENTS SO AS TO GENERATE ALOT OF LOGS WHICH WE WILL USE FOR REPORTING=========================
+-bash-4.2$ psql
+psql (10.10)
+Type "help" for help.
+
+postgres=# 
+postgres=# \c tsi
+You are now connected to database "tsi" as user "postgres".
+tsi=# 
+tsi=# 
+tsi=# create table log1 as select * from pg_class,pg_description;
+SELECT 1542078
+tsi=# create table log2 as select * from pg_class,pg_description;
+SELECT 1555605
+tsi=# 
+tsi=# create database benzos;
+CREATE DATABASE
+tsi=# \c benzos
+You are now connected to database "benzos" as user "postgres".
+benzos=# 
+benzos=# create user tsiboy password '1234';
+CREATE ROLE
+benzos=# \c benzos tsiboy
+You are now connected to database "benzos" as user "tsiboy".
+benzos=> 
+benzos=> create table tsi_tab as select * from pg_class,pg_description;
+SELECT 1537569
+benzos=> 
+benzos=> create table tsi_tab1 (id int,name varchar);
+CREATE TABLE
+benzos=> 
+benzos=> insert into tsi_tab1 values(generate_series(1,10000),'postgres_boss');
+INSERT 0 10000
+benzos=> insert into tsi_tab1 values(generate_series(10001,10000000),'postgres_boss');
+INSERT 0 9990000
+benzos=> 
+benzos=> select count(*) from tsi_tab1;
+  count   
+----------
+ 10000000
+(1 row)
+
+benzos=> select count(*) from tsi_tab;
+  count  
+---------
+ 1537569
+(1 row)
+
+benzos=> \c benzos postgres
+You are now connected to database "benzos" as user "postgres".
+benzos=# 
+benzos=# create database learnpostgres;
+CREATE DATABASE
+benzos=# \c learnpostgres postgres
+You are now connected to database "learnpostgres" as user "postgres".
+learnpostgres=# 
+learnpostgres=# 
+learnpostgres=# create user learner1 password '1234';
+CREATE ROLE
+learnpostgres=# \c learnpostgres leaner1
+FATAL:  role "leaner1" does not exist
+Previous connection kept
+learnpostgres=# 
+learnpostgres=# \c learnpostgres learner1
+You are now connected to database "learnpostgres" as user "learner1".
+learnpostgres=> 
+learnpostgres=> create table tsi_tab1 (id int,name varchar);
+CREATE TABLE
+learnpostgres=> insert into tsi_tab1 values(generate_series(1,10000),'postgres_boss');
+INSERT 0 10000
+learnpostgres=> insert into tsi_tab1 values(generate_series(10001,10000000),'postgres_boss');
+INSERT 0 9990000
+learnpostgres=> 
+learnpostgres=> delete from tsi_tab1 where id between 1 and 500;
+DELETE 500
+learnpostgres=> \c learnpostgres postgres
+You are now connected to database "learnpostgres" as user "postgres".
+learnpostgres=# 
+learnpostgres=# update tsi_tab1 set id=1 where id between 1 and 500;
+UPDATE 0
+learnpostgres=# 
+
+======================EVERYTHING WE HAVE BEEN DOING ABOVE WAS BEING LOGGED==============
+
+/var/lib/pgsql/10/data
+-bash-4.2$ cd log
+-bash-4.2$ ll
+total 25476
+-rw-------. 1 postgres postgres     4085 Oct 24 16:10 postgresql-Thu.log
+-rw-------. 1 postgres postgres 26051264 Oct 22 20:33 postgresql-Tue.log
+-rw-------. 1 postgres postgres      743 Oct 23 20:39 postgresql-Wed.log
+-rw-------. 1 postgres postgres    20620 Oct 24 17:11 tsi_postgresql-Thu.log  ======== WE SEE THAT THE SIZE OF THE LOG HAVE GROWEN====
+-bash-4.2$ 
+
+==============NOW WE HAVE TO GO BACK AND INSTALL PGBADGER================
+
+-bash-4.2$ 
+-bash-4.2$ su - root
+Password: 
+Last login: Thu Oct 24 15:18:03 MDT 2019 on pts/0
+[root@localhost ~]# 
+[root@localhost ~]# 
+[root@localhost ~]# cd /home/waltonarielle/Downloads
+[root@localhost Downloads]# ll
+-rw-rw-r--. 1 waltonarielle waltonarielle      4256 Oct 24 15:14 adobe-release-x86_64-1.0-1.noarch.rpm
+drwxrwxr-x. 3 waltonarielle waltonarielle        19 Nov  9  2005 dbsamples-0.1
+-rwxrwxr-x. 1 root          root            2835456 May 12 10:36 dvdrental.tar
+-rwxrwxr-x. 1 waltonarielle waltonarielle    550906 Oct 22 16:05 dvdrental.zip
+-rwxrwxr-x. 1 waltonarielle waltonarielle 110682425 Oct 23 20:49 edb-as10-server-10.10.18-1-linux-x64.run
+drwxr-xr-x. 6 root          root                266 Oct 11 07:27 pgbadger-master
+-rw-rw-r--. 1 waltonarielle waltonarielle   1692893 Oct 24 15:45 pgbadger-master.zip
+-rwxrwxr-x. 1 postgres      postgres          45872 May 11 21:36 restore.sql
+-rw-r--r--. 1 root          root           15597968 Mar  6  2008 sportsdb_sample_postgresql_20080304.sql
+-rwxrwxr-x. 1 waltonarielle waltonarielle    652509 Oct 22 16:06 sportsdb_sample_postgresql.zip
+-rwxrwxr-x. 1 postgres      postgres          55111 May 11 21:36 toc.dat
+-rwxrwxr-x. 1 waltonarielle waltonarielle     83149 Oct 22 15:46 world-1.0.tar.gz
+[root@localhost Downloads]# 
+[root@localhost Downloads]# 
+[root@localhost Downloads]# cd pgbadger-master     ==========CD TO PGBADGER DIRECTORY=====
+[root@localhost pgbadger-master]# 
+[root@localhost pgbadger-master]# ll
+total 1664
+-rw-r--r--. 1 root root  116653 Oct 11 07:27 ChangeLog
+-rw-r--r--. 1 root root     878 Oct 11 07:27 CONTRIBUTING.md
+drwxr-xr-x. 2 root root      26 Oct 11 07:27 doc
+-rw-r--r--. 1 root root    1487 Oct 11 07:27 HACKING.md
+-rw-r--r--. 1 root root     910 Oct 11 07:27 LICENSE
+-rw-r--r--. 1 root root    2171 Oct 11 07:27 Makefile.PL
+-rw-r--r--. 1 root root      81 Oct 11 07:27 MANIFEST
+-rw-r--r--. 1 root root     250 Oct 11 07:27 META.yml
+-rwxr-xr-x. 1 root root 1481708 Oct 11 07:27 pgbadger
+-rw-r--r--. 1 root root   36142 Oct 11 07:27 README
+-rw-r--r--. 1 root root   34511 Oct 11 07:27 README.md
+drwxr-xr-x. 3 root root    4096 Oct 11 07:27 resources
+drwxr-xr-x. 3 root root      82 Oct 11 07:27 t
+drwxr-xr-x. 2 root root     117 Oct 11 07:27 tools
+[root@localhost pgbadger-master]# 
+[root@localhost pgbadger-master]# 
+[root@localhost pgbadger-master]# ./pgbadger -f stderr -o report.html /var/lib/pgsql/10/data/log/tsi_postgresql-Thu.log   =========GENERATE OUR REPORT FROM THE LOGS=======
+[========================>] Parsed 20620 bytes of 20620 (100.00%), queries: 47, events: 9
+LOG: Ok, generating html report...
+[root@localhost pgbadger-master]# 
+[root@localhost pgbadger-master]# ll
+total 2620
+-rw-r--r--. 1 root root  116653 Oct 11 07:27 ChangeLog
+-rw-r--r--. 1 root root     878 Oct 11 07:27 CONTRIBUTING.md
+drwxr-xr-x. 2 root root      26 Oct 11 07:27 doc
+-rw-r--r--. 1 root root    1487 Oct 11 07:27 HACKING.md
+-rw-r--r--. 1 root root     910 Oct 11 07:27 LICENSE
+-rw-r--r--. 1 root root    2171 Oct 11 07:27 Makefile.PL
+-rw-r--r--. 1 root root      81 Oct 11 07:27 MANIFEST
+-rw-r--r--. 1 root root     250 Oct 11 07:27 META.yml
+-rwxr-xr-x. 1 root root 1481708 Oct 11 07:27 pgbadger
+-rw-r--r--. 1 root root   36142 Oct 11 07:27 README
+-rw-r--r--. 1 root root   34511 Oct 11 07:27 README.md
+-rw-r--r--. 1 root root  977963 Oct 24 17:17 report.html      ========NOW WE HAVE OUR REPORT READY================
+drwxr-xr-x. 3 root root    4096 Oct 11 07:27 resources
+drwxr-xr-x. 3 root root      82 Oct 11 07:27 t
+drwxr-xr-x. 2 root root     117 Oct 11 07:27 tools
+[root@localhost pgbadger-master]# 
+[root@localhost pgbadger-master]# pwd
+/home/waltonarielle/Downloads/pgbadger-master
+[root@localhost pgbadger-master]# 
+[root@localhost pgbadger-master]# pwd
+/home/waltonarielle/Downloads/pgbadger-master   =====COPY THIS LOCATION====
+[root@localhost pgbadger-master]# 
+
+====COPY THE ABOVE LOCATION AS INDECATED WHERE YOU HAVE YOU PGBADGER REPORT AND PUT IT IN THE BROWSER====
+CONTINUE AND FOLLOW ON THE WORD DOCUMENT ATTACHED
+
+
+
+                           
+
+
+
 
 
 
