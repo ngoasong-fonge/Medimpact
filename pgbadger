@@ -6,6 +6,17 @@ cd pgbadger
 perl Makefile.PL
 make
 sudo make install
+---------------------------------------------------------------------------------------------------------------------
+sudo yum install wget
+sudo wget https://github.com/darold/pgbadger/archive/v11.6.tar.gz
+sudo tar xzvf v11.6.tar.gz
+cd pgbadger-11.6
+
+sudo perl Makefile.PL
+sudo make
+sudo make install
+
+pgbadger -v
 --------------------------------------------------------------------------------------------------------
 
 
