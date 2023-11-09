@@ -1,0 +1,13 @@
+Sub GetSheets()
+'Updated by Excel Guide
+Path = " "
+FileName = Dir(Path & "*.xls")
+Do While FileName <> ""
+Workbooks.Open FileName:=Path & FileName, ReadOnly:=True
+For Each Sheet In ActiveWorkbook.Sheets
+Sheet.Copy After:=ThisWorkbook.Sheets(1)
+Next Sheet
+Workbooks(FileName).Close
+FileName = Dir()
+Loop
+End Sub
