@@ -190,4 +190,6 @@ order by category, name;
 
 
 SELECT pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_lsn()) AS replication_lag;
+SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_lsn())) AS replication_lag;
+
 
