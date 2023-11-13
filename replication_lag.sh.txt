@@ -25,7 +25,7 @@ DATABASE="your_database"
 MAX_LAG_SECONDS=300  # 5 minutes
 
 # Get the replication lag in seconds
-replication_lag=$(psql -h $PGHOST -U $PGUSER -d $DATABASE -c "SELECT EXTRACT(epoch FROM now() - pg_last_wal_replay_lsn()) AS replication_lag;" -t -A)
+replication_lag=$(psql -h $PGHOST -U $PGUSER -d $DATABASE -c "SELECT extract(seconds from (now() - pg_last_xact_replay_timestamp())) AS time_lag;" -t -A)
 
 # Check if replication lag exceeds the threshold
 if [ $replication_lag -gt $MAX_LAG_SECONDS ]; then
