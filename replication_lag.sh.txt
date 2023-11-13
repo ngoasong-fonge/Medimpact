@@ -22,7 +22,7 @@ PGUSER="your_postgres_user"
 DATABASE="your_database"
 
 # Define the maximum allowed replication lag in seconds
-MAX_LAG_SECONDS=300  # 5 minutes
+MAX_LAG_SECONDS=30  # 0.5 minutes
 
 # Get the replication lag in seconds
 replication_lag=$(psql -h $PGHOST -U $PGUSER -d $DATABASE -c "SELECT extract(seconds from (now() - pg_last_xact_replay_timestamp())) AS time_lag;" -t -A)
