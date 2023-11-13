@@ -1,0 +1,40 @@
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+In this example, the mail command is used to send an email. You need to have a mail server properly configured on your system to use this command. Additionally, replace your@email.com with the actual email address where you want to receive alerts.
+
+Ensure that the mail command is available on your system. If it's not installed, you might need to install a mail client, such as mailx or mailutils, depending on your system.
+
+If you're running this script as a cron job, make sure that the cron environment is set up correctly, including the MAILTO variable in your crontab file to specify the email address that will receive the cron job output. For example:
+
+MAILTO=your@email.com
+*/5 * * * * /path/to/your/script.sh >> /path/to/monitor_replication.log 2>&1
+
+
+
+#!/bin/bash
+
+# Source environment variables
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+# PostgreSQL connection parameters
+PGHOST="your_primary_host"
+PGUSER="your_postgres_user"
+DATABASE="your_database"
+
+# Define the maximum allowed replication lag in seconds
+MAX_LAG_SECONDS=300  # 5 minutes
+
+# Get the replication lag in seconds
+replication_lag=$(psql -h $PGHOST -U $PGUSER -d $DATABASE -c "SELECT EXTRACT(epoch FROM now() - pg_last_wal_replay_lsn()) AS replication_lag;" -t -A)
+
+# Check if replication lag exceeds the threshold
+if [ $replication_lag -gt $MAX_LAG_SECONDS ]; then
+  alert_message="Replication lag is too high: ${replication_lag} seconds."
+  echo $alert_message
+  # Send an email alert
+  echo "$alert_message" | mail -s "Replication Lag Alert" your@email.com
+else
+  echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
+fi
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
