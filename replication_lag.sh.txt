@@ -67,4 +67,31 @@ else
 fi
 
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#!/bin/bash
+
+# Source environment variables
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+# Define the maximum allowed replication lag in seconds
+MAX_LAG_SECONDS=0.5  # 0.5 minutes
+
+# Force replication lag to be higher than the threshold for testing
+# In a real-world scenario, you would not have this line
+replication_lag=1.0
+
+# Check if replication lag exceeds the threshold
+if [ -n "$replication_lag" ] && [ "$replication_lag" -gt "$MAX_LAG_SECONDS" ]; then
+  alert_message="Replication lag is too high: ${replication_lag} seconds."
+  echo $alert_message
+  # Send an email alert
+  echo "$alert_message" | mail -s "Replication Lag Alert" Ngoasong.Fonge@medimpact.com
+else
+  echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
+fi
+
+
+
 
