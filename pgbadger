@@ -1,3 +1,5 @@
+pgbadger /opt/app/postgres-data/data/log/postgresql-2023-11-14_000000.log -o /opt/app/postgres-data/badger.11.14.2023.html
+
 ------------------install--from---source--------
 git clone https://github.com/darold/pgbadger.git
 cd pgbadger
