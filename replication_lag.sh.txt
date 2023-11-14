@@ -92,6 +92,7 @@ else
   echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
 fi
 
+echo "Test email" | mail -s "Test" your@email.com
 
 
 
