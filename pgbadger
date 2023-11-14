@@ -1,24 +1,16 @@
-pgbadger /opt/app/postgres-data/data/log/postgresql-2023-11-14_000000.log -o /opt/app/postgres-data/badger.11.14.2023.html
 
-------------------install--from---source--------
-git clone https://github.com/darold/pgbadger.git
-cd pgbadger
-
-
-perl Makefile.PL
-make
-sudo make install
 ---------------------------------------------------------------------------------------------------------------------
 sudo yum install wget
-sudo wget https://github.com/darold/pgbadger/archive/v12.2.tar.gz
-sudo tar xzvf v11.6.tar.gz
-cd pgbadger-11.6
+wget https://github.com/darold/pgbadger/archive/v12.2.tar.gz
+tar xzvf v12.2.tar.gz
+cd pgbadger-12.2
 
-sudo perl Makefile.PL
-sudo make
-sudo make install
+export PATH=/opt/app/localhome/postgres/pgbadger-12.2:$PATH
+pgbadger --version
 
-pgbadger -v
+pgbadger -f /opt/app/postgres-data/data/log/postgresql-2023-11-14_000000.log -o /opt/app/postgres-data/badger.11.14.2023.html
+
+
 --------------------------------------------------------------------------------------------------------
 
 
