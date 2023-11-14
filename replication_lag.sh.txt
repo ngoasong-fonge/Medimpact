@@ -94,5 +94,11 @@ fi
 
 echo "Test email" | mail -s "Test" your@email.com
 
+[svcpostgres@uv2medpg0c2 scripts]$ echo "Test email" | mail -s "Test" Ngoasong.Fonge@medimpact.com
+[svcpostgres@uv2medpg0c2 scripts]$ send-mail: warning: inet_protocols: disabling IPv6 name/address support: Address family not supported by protocol
+postdrop: warning: inet_protocols: disabling IPv6 name/address support: Address family not supported by protocol
+postdrop: warning: unable to look up public/pickup: No such file or directory
+
+
 
 
