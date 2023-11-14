@@ -39,3 +39,7 @@ fi
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ./replication_lag.sh: line 13: [: -gt: unary operator expected
+
+# Check if replication lag exceeds the threshold
+if [ -n "$replication_lag" ] && [ "$replication_lag" -gt "$MAX_LAG_SECONDS" ]; then
+
