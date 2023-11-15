@@ -78,12 +78,11 @@ source /opt/app/localhome/svcpostgres/pg_env.sh
 # Define the maximum allowed replication lag in seconds
 MAX_LAG_SECONDS=0.5  # 0.5 minutes
 
-# Force replication lag to be higher than the threshold for testing
-# In a real-world scenario, you would not have this line
-replication_lag=1.0
+# Get the replication lag in seconds
+replication_lag=$(psql -h localhost -d citus -c "SELECT extract(seconds from (now() - pg_last_xact_replay_timestamp())) AS time_lag;" -t -A)
 
 # Check if replication lag exceeds the threshold
-if [ -n "$replication_lag" ] && [ "$replication_lag" -gt "$MAX_LAG_SECONDS" ]; then
+if [ -n "$replication_lag" ] && [ "$(awk 'BEGIN{print ("'$replication_lag'" > "'$MAX_LAG_SECONDS'") ? 1 : 0}')" -eq 1 ]; then
   alert_message="Replication lag is too high: ${replication_lag} seconds."
   echo $alert_message
   # Send an email alert
@@ -92,12 +91,6 @@ else
   echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
 fi
 
-echo "Test email" | mail -s "Test" your@email.com
-
-[svcpostgres@uv2medpg0c2 scripts]$ echo "Test email" | mail -s "Test" Ngoasong.Fonge@medimpact.com
-[svcpostgres@uv2medpg0c2 scripts]$ send-mail: warning: inet_protocols: disabling IPv6 name/address support: Address family not supported by protocol
-postdrop: warning: inet_protocols: disabling IPv6 name/address support: Address family not supported by protocol
-postdrop: warning: unable to look up public/pickup: No such file or directory
 
 
 
