@@ -194,16 +194,7 @@ SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_l
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-SELECT
-    schemaname AS schema_name,
-    pg_size_pretty(sum(pg_total_relation_size(tablename))) AS total_size
-FROM
-    pg_tables
-GROUP BY
-    schemaname
-ORDER BY
-    total_size DESC;
-
+ERROR: server closed the connection unexpectedly 	This probably means the server terminated abnormally 	before or while processing the request. server closed the connection unexpectedly 	This probably means the server terminated abnormally 	before or while processing the request.
 
 
 
