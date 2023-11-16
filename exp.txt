@@ -195,12 +195,15 @@ SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_l
 ------------------------------------------------------------------------------------------------------------------------------------
 
 SELECT
-    schema_name,
-    pg_size_pretty(pg_total_relation_size(schema_name)) AS total_size
+    schemaname AS schema_name,
+    pg_size_pretty(sum(pg_total_relation_size(tablename))) AS total_size
 FROM
-    information_schema.schemata
+    pg_tables
+GROUP BY
+    schemaname
 ORDER BY
-    pg_total_relation_size(schema_name) DESC;
+    total_size DESC;
+
 
 
 
