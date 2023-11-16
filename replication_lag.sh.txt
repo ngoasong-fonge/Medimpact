@@ -29,10 +29,10 @@ This script bellow captures error logs For example, if the psql command fails to
 source /opt/app/localhome/svcpostgres/pg_env.sh
 
 # Log file
-LOG_FILE="/path/to/your/logfile.log"
+LOG_FILE="/opt/backup/pguatdr1/replication_lag.log"
 
 # Define the maximum allowed replication lag in seconds
-MAX_LAG_SECONDS=0.5  # 0.5 minutes
+MAX_LAG_SECONDS=10  # seconds
 
 # Get the server hostname
 SERVER_NAME=$(hostname)
