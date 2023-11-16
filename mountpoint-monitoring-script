@@ -43,3 +43,12 @@ check_and_alert() {
 # Check and alert for each mount point
 check_and_alert "$BACKUP_MOUNT_POINT" "$CRITICAL_THRESHOLD"
 check_and_alert "$DATA_MOUNT_POINT" "$CRITICAL_THRESHOLD"
+
+
+---------------------------------------------------------------------------------------------------------------------------
+This script will use df to check the disk space and mail to send email alerts. Ensure you have the mail command properly configured on your system.
+Make sure to customize the script with your specific mount point, email address, and threshold values. Save the script to a file, for example, disk_space_monitor.sh, and make it executable using the following command:
+chmod +x disk_space_monitor.sh
+
+You can then schedule this script to run periodically using a cron job. For example, to run it every hour, add the following line to your crontab:
+0 * * * * /path/to/disk_space_monitor.sh
