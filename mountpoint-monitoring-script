@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Set the threshold values (in percentage) for different alert levels
+WARNING_THRESHOLD=80
+CRITICAL_THRESHOLD=90
+
+# Get the server name
+SERVER_NAME=$(hostname)
+
+# PostgreSQL server mount points
+BACKUP_MOUNT_POINT="/opt/backup"
+DATA_MOUNT_POINT="/opt/app/postgres-data"
+
+# Function to send email alert
+send_email() {
+    SUBJECT="PostgreSQL Server Alert - Disk Space Utilization"
+    TO="your.email@example.com"
+    BODY="Server: $SERVER_NAME\n\nThe disk space usage on the PostgreSQL server mount points is as follows:\n\n$1: $2%\n\nThis is a $3 alert."
+
+    echo -e "$BODY" | mail -s "$SUBJECT" "$TO"
+}
+
+# Function to check and alert on disk usage
+check_and_alert() {
+    local mount_point=$1
+    local threshold=$2
+
+    # Get the current disk usage for the specified mount point
+    local current_usage=$(df -h "$mount_point" | awk 'NR==2 {print $5}' | cut -d'%' -f1)
+
+    # Check if disk usage exceeds critical threshold
+    if [ "$current_usage" -ge "$threshold" ]; then
+        send_email "$mount_point" "$current_usage" "CRITICAL"
+    elif [ "$current_usage" -ge "$WARNING_THRESHOLD" ]; then
+        # Check if disk usage exceeds warning threshold
+        send_email "$mount_point" "$current_usage" "WARNING"
+    else
+        # No alert if disk usage is below thresholds
+        echo "Disk space usage for $mount_point is normal: $current_usage%"
+    fi
+}
+
+# Check and alert for each mount point
+check_and_alert "$BACKUP_MOUNT_POINT" "$CRITICAL_THRESHOLD"
+check_and_alert "$DATA_MOUNT_POINT" "$CRITICAL_THRESHOLD"
