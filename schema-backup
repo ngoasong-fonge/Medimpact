@@ -5,7 +5,7 @@ source /opt/app/localhome/svcpostgres/pg_env.sh
 
 # Specify backup and log file locations
 backup_location="/opt/backup"
-log_location="/opt/backup/backup_restore_log.txt"
+log_location="/opt/backup/schemabackup_restore_log.txt"
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
