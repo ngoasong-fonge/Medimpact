@@ -13,7 +13,7 @@ start_time=$(date +"%Y-%m-%d %H:%M:%S")
 # Backup the schema to /opt/backup using svcpostgres user
 pg_dump -h localhost -U svcpostgres -d citus -n mepstg -F c -f "$backup_location/mepstg_schema_backup.dump" 
 
-# Create the target schema (new_schema)
+# Create the target schema 
 psql -h localhost -U svcpostgres -d citus -c "CREATE SCHEMA IF NOT EXISTS newmepstg;"
 
 # Restore the schema within the same database using svcpostgres user
