@@ -30,3 +30,39 @@ echo "Completion Time: $end_time" >> "$log_location"
 echo "Backup and restore completed. Log file: $log_location"
 
 
+---------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
+
+# Specify backup and log file locations
+backup_location="/opt/backup"
+log_location="/opt/backup/schemabackup_restore_log.txt"
+
+# Record the start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Backup the schema to /opt/backup
+pg_dump -h localhost -U deployadmin -d citus -n mepstg --schema=schema "$backup_location/mepstg_schema_backup.sql"
+
+# Drop target schema if already exists
+psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXIST newmepstg CASCADE;"
+
+# Create the target schema
+psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS newmepstg;"
+
+# Restore the schema within the same database
+psql -h localhost -U deployadmin -d citus -F c -n newmepstg "$backup_location/mepstg_schema_backup.sql"
+
+# Record the completion time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Output the start and completion times to a log file
+echo "Start Time: $start_time" > "$log_location"
+echo "Completion Time: $end_time" >> "$log_location"
+
+# Display the log file path
+echo "Backup and restore completed. Log file: $log_location"
+~
