@@ -1,75 +1,4 @@
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-In this example, the mail command is used to send an email. You need to have a mail server properly configured on your system to use this command. Additionally, replace your@email.com with the actual email address where you want to receive alerts.
-
-Ensure that the mail command is available on your system. If it's not installed, you might need to install a mail client, such as mailx or mailutils, depending on your system.
-
-If you're running this script as a cron job, make sure that the cron environment is set up correctly, including the MAILTO variable in your crontab file to specify the email address that will receive the cron job output. For example:
-
-MAILTO=your@email.com
-*/5 * * * * /path/to/your/script.sh >> /path/to/monitor_replication.log 2>&1
-
-
-
-#!/bin/bash
-
-# Source environment variables
-source /opt/app/localhome/svcpostgres/pg_env.sh
-
-# PostgreSQL connection parameters
-PGHOST="your_primary_host"
-PGUSER="your_postgres_user"
-DATABASE="your_database"
-
-# Define the maximum allowed replication lag in seconds
-MAX_LAG_SECONDS=30  # 0.5 minutes
-
-# Get the replication lag in seconds
-replication_lag=$(psql -h $PGHOST -U $PGUSER -d $DATABASE -c "SELECT extract(seconds from (now() - pg_last_xact_replay_timestamp())) AS time_lag;" -t -A)
-
-# Check if replication lag exceeds the threshold
-if [ $replication_lag -gt $MAX_LAG_SECONDS ]; then
-  alert_message="Replication lag is too high: ${replication_lag} seconds."
-  echo $alert_message
-  # Send an email alert
-  echo "$alert_message" | mail -s "Replication Lag Alert" your@email.com
-else
-  echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
-fi
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-./replication_lag.sh: line 13: [: -gt: unary operator expected
-
-# Check if replication lag exceeds the threshold
-if [ -n "$replication_lag" ] && [ "$replication_lag" -gt "$MAX_LAG_SECONDS" ]; then
-
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#!/bin/bash
-
-# Source environment variables
-source /opt/app/localhome/svcpostgres/pg_env.sh
-
-# Define the maximum allowed replication lag in seconds
-MAX_LAG_SECONDS=0.5  # 0.5 minutes
-
-# Get the replication lag in seconds
-replication_lag=$(psql -h localhost -d citus -c "SELECT extract(seconds from (now() - pg_last_xact_replay_timestamp())) AS time_lag;" -t -A)
-
-# Check if replication lag exceeds the threshold
-if [ -n "$replication_lag" ] && [ "$replication_lag" -gt "$MAX_LAG_SECONDS" ]; then
-  alert_message="Replication lag is too high: ${replication_lag} seconds."
-  echo $alert_message
-  # Send an email alert
-  echo "$alert_message" | mail -s "Replication Lag Alert" Ngoasong.Fonge@medimpact.com
-else
-  echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
-fi
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 #!/bin/bash
 
 # Source environment variables
@@ -90,6 +19,45 @@ if [ -n "$replication_lag" ] && [ "$(awk 'BEGIN{print ("'$replication_lag'" > "'
 else
   echo "Replication lag is within acceptable limits: ${replication_lag} seconds."
 fi
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+This script bellow captures error logs For example, if the psql command fails to execute, it would be helpful to capture and handle that error and also tells you the server the email message is coming from.
+
+#!/bin/bash
+
+# Source environment variables
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+# Log file
+LOG_FILE="/path/to/your/logfile.log"
+
+# Define the maximum allowed replication lag in seconds
+MAX_LAG_SECONDS=0.5  # 0.5 minutes
+
+# Get the server hostname
+SERVER_NAME=$(hostname)
+
+# Get the replication lag in seconds
+replication_lag=$(psql -h localhost -d citus -c "SELECT extract(seconds from (now() - pg_last_xact_replay_timestamp())) AS time_lag;" -t -A 2>> "$LOG_FILE")
+
+# Check if the psql command was successful
+if [ $? -ne 0 ]; then
+  echo "Error executing psql command. Check the log file for details: $LOG_FILE"
+  exit 1
+fi
+
+# Check if replication lag exceeds the threshold
+if [ -n "$replication_lag" ] && [ "$(awk 'BEGIN{print ("'$replication_lag'" > "'$MAX_LAG_SECONDS'") ? 1 : 0}')" -eq 1 ]; then
+  alert_message="Server: $SERVER_NAME - Replication lag is too high: ${replication_lag} seconds."
+  echo $alert_message
+  # Send an email alert using mailx
+  echo "$alert_message" | mailx -s "Replication Lag Alert - $SERVER_NAME" Ngoasong.Fonge@medimpact.com
+  echo "$alert_message" >> "$LOG_FILE"  # Log the alert
+else
+  echo "Server: $SERVER_NAME - Replication lag is within acceptable limits: ${replication_lag} seconds."
+fi
+
+
 
 
 
