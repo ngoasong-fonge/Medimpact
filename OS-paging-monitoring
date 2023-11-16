@@ -47,4 +47,20 @@ It calculates the total paging activity (sum of pages swapped in and out).
 If the total paging activity exceeds the specified threshold (PAGING_THRESHOLD), an email alert is sent.
 The email alert includes information about the paging activity.
 Replace "your_email@example.com" with the actual email address where you want to receive the alert.
-Save the script to a file (e.g., paging_alert.sh), make it executable (chmod +x paging_alert.sh), and then you can run it periodically using a scheduler like cron (crontab -e). Adjust the threshold and email settings according to your requirements.
+Save the script to a file (e.g., paging_alert.sh), make it executable (chmod +x paging_alert.sh), and then you can run it periodically using a scheduler like cron (crontab -e). 
+Adjust the threshold and email settings according to your requirements.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+**  vmstat 1 5
+This command above runs vmstat with an interval of 1 second and a count of 5 iterations. 
+The output will include various columns, and the ones relevant to paging are si (swap in) and so (swap out). 
+These columns represent the number of kilobytes swapped in from and out to disk, respectively.
+si (swap in) is the number of kilobytes swapped in from disk.
+so (swap out) is the number of kilobytes swapped out to disk.
+The values in the si and so columns indicate the amount of data being moved between RAM and the swap space. 
+If these values are consistently non-zero and increasing, it may indicate that your system is actively using swap space, which could impact performance.
+
+If you want a summary of the total paging activity without the other information provided by vmstat, you can use bellow  command like:
+**  vmstat -s | grep "pages swapped in" && vmstat -s | grep "pages swapped out"
+This will show the total number of pages swapped in and out since the system was last booted.
+
