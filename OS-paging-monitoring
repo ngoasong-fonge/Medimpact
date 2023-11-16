@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Set the threshold for paging alerts (adjust as needed)
+PAGING_THRESHOLD=10
+
+# Function to check paging activity
+check_paging() {
+    # Get the system's paging statistics using vmstat
+    PAGING_STATS=$(vmstat 1 2 | tail -n 1)
+
+    # Extract the columns related to paging (si and so)
+    PAGING_IN=$(echo "$PAGING_STATS" | awk '{print $7}')
+    PAGING_OUT=$(echo "$PAGING_STATS" | awk '{print $8}')
+
+    # Calculate the total paging activity
+    TOTAL_PAGING=$((PAGING_IN + PAGING_OUT))
+}
+
+# Function to send an email alert
+send_email_alert() {
+    SERVER_NAME=$(hostname)
+    SUBJECT="Paging Alert on $SERVER_NAME"
+    BODY="Paging activity has exceeded the threshold on $SERVER_NAME. Paging In: $PAGING_IN, Paging Out: $PAGING_OUT"
+
+    # Replace the following with your email address
+    TO_EMAIL="your_email@example.com"
+
+    # Use the mail command to send the email
+    echo "$BODY" | mail -s "$SUBJECT" "$TO_EMAIL"
+}
+
+# Main script logic
+check_paging
+
+# Check if paging activity exceeds the threshold
+if [ "$TOTAL_PAGING" -gt "$PAGING_THRESHOLD" ]; then
+    send_email_alert
+    echo "Paging alert sent for $SERVER_NAME."
+else
+    echo "Paging activity within normal range on $SERVER_NAME."
+fi
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Explanation:
+The script uses the vmstat command to retrieve system paging statistics.
+It calculates the total paging activity (sum of pages swapped in and out).
+If the total paging activity exceeds the specified threshold (PAGING_THRESHOLD), an email alert is sent.
+The email alert includes information about the paging activity.
+Replace "your_email@example.com" with the actual email address where you want to receive the alert.
+Save the script to a file (e.g., paging_alert.sh), make it executable (chmod +x paging_alert.sh), and then you can run it periodically using a scheduler like cron (crontab -e). Adjust the threshold and email settings according to your requirements.
