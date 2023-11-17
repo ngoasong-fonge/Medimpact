@@ -146,13 +146,13 @@ The script bellow willcreate the schema with a new name
 #!/bin/bash
 
 # Source the environment file
-source /opt/app/localhome/svcpostgres/pg_env.sh
+source /opt/app/localhome/postgres/pg_env.sh
 
 # Specify backup file location
 backup_location="/opt/backup"
 log_location="/opt/backup/restore_log.txt"
-original_schema="ngmep"  # Replace with your original schema name
-new_schema="newngmep"    # Replace with your desired new schema name
+original_schema="mepstg"  # Replace with your original schema name
+new_schema="newmepstg"    # Replace with your desired new schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
@@ -160,8 +160,15 @@ start_time=$(date +"%Y-%m-%d %H:%M:%S")
 # Drop the target schema if it already exists
 psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema CASCADE"
 
+# Create the target schema
+psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
+
+# Replace the original schema name with the new schema name in the SQL file
+backup_file="$backup_location/$original_schema"_backup.sql
+sed -i "s/$original_schema/$new_schema/g" "$backup_file"
+
 # Restore the schema using psql with a new schema name
-psql -h localhost -U deployadmin -d citus -f "$backup_location/$original_schema"_backup.sql -v new_schema="$new_schema"
+psql -h localhost -U deployadmin -d citus -f "$backup_file" -v new_schema="$new_schema"
 
 # Check the status of the restore operation
 if [ $? -eq 0 ]; then
@@ -179,5 +186,3 @@ echo "Completion Time: $end_time" >> "$log_location"
 
 # Display the log file path
 echo "Restore completed. Log file: $log_location"
-
-
