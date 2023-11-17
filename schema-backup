@@ -146,7 +146,7 @@ The script bellow willcreate the schema with a new name
 #!/bin/bash
 
 # Source the environment file
-source /opt/app/localhome/postgres/pg_env.sh
+source /opt/app/localhome/svcpostgres/pg_env.sh
 
 # Specify backup file location
 backup_location="/opt/backup"
