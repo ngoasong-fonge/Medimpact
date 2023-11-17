@@ -325,19 +325,18 @@ echo "Backup completed. Log file: $log_location"
 #!/bin/bash
 
 # Source the environment file
-source /opt/app/localhome/svcpostgres/pg_env.sh
+source /opt/app/localhome/postgres/pg_env.sh
 
 # Specify backup and log file locations
 backup_location="/opt/backup"
-log_location="/opt/backup/schemabackup_log.txt"
-original_schema="ngmep"  # Replace with your desired schema name
+log_location="/opt/backup/schemabackup_restore_log.txt"
+original_schema="ngmep"  # Replace with your original schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
-backup_file="$backup_location/ngmep_schema_backup_$start_time.sql"
 
 # Backup the schema without parallelism
-pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" > "$backup_file"
+pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" > "$backup_location/$original_schema"_backup.sql
 
 # Check the status of the backup operation
 if [ $? -eq 0 ]; then
@@ -355,5 +354,6 @@ echo "Completion Time: $end_time" >> "$log_location"
 
 # Display the log file path
 echo "Backup completed. Log file: $log_location"
+
 
 
