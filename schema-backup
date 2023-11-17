@@ -320,4 +320,4 @@ echo "Completion Time: $end_time" >> "$log_location"
 echo "Backup completed. Log file: $log_location"
 
 
-
+pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" -j "$parallelism_dump" -F d -f "$backup_dir"
