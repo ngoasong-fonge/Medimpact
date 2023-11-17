@@ -175,16 +175,15 @@ source /opt/app/localhome/postgres/pg_env.sh
 # Specify backup and log file locations
 backup_location="/opt/backup"
 log_location="/opt/backup/schemabackup_restore_log.txt"
-original_schema="mepstg"  # Replace with your original schema name
+original_schema="schema"  # Replace with your original schema name
 new_schema="newmepstg"    # Replace with your desired new schema name
-parallelism=4             # Set the desired level of parallelism
 
 # Record the start time
 start_time=$(date +"%Y%m%d%H%M%S")
 backup_file="$backup_location/mepstg_schema_backup_$start_time.sql"
 
-# Backup the schema with parallelism
-pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" -j "$parallelism" > "$backup_file"
+# Backup the schema
+pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" > "$backup_file"
 
 # Replace the original schema name with the new schema name in the SQL file
 sed -i "s/$original_schema/$new_schema/g" "$backup_file"
@@ -195,8 +194,8 @@ psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema 
 # Create the target schema
 psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
 
-# Restore the schema with parallelism within the same database using psql
-psql -h localhost -U deployadmin -d citus -f "$backup_file" -j "$parallelism"
+# Restore the schema within the same database using psql
+psql -h localhost -U deployadmin -d citus -f "$backup_file"
 
 # Check the status of the restore operation
 if [ $? -eq 0 ]; then
@@ -220,6 +219,7 @@ echo "Completion Time: $end_time" >> "$log_location"
 
 # Display the log file path
 echo "Backup, restore, and analyze completed. Log file: $log_location"
+
 
 
 
