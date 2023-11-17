@@ -8,8 +8,8 @@ source /opt/app/localhome/postgres/pg_env.sh
 # Specify backup and log file locations
 backup_location="/opt/backup"
 log_location="/opt/backup/schemabackup_restore_log.txt"
-original_schema="mepstg"  # Replace with your original schema name
-new_schema="newmepstg"    # Replace with your desired new schema name
+original_schema="ngmep"  # Replace with your original schema name
+new_schema="newngmep"    # Replace with your desired new schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
@@ -146,13 +146,13 @@ The script bellow willcreate the schema with a new name
 #!/bin/bash
 
 # Source the environment file
-source /opt/app/localhome/postgres/pg_env.sh
+source /opt/app/localhome/svcpostgres/pg_env.sh
 
 # Specify backup file location
 backup_location="/opt/backup"
 log_location="/opt/backup/restore_log.txt"
-original_schema="mepstg"  # Replace with your original schema name
-new_schema="newmepstg"    # Replace with your desired new schema name
+original_schema="ngmep"  # Replace with your original schema name
+new_schema="newngmep"    # Replace with your desired new schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
