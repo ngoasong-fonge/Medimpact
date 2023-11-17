@@ -175,7 +175,7 @@ source /opt/app/localhome/postgres/pg_env.sh
 # Specify backup and log file locations
 backup_location="/opt/backup"
 log_location="/opt/backup/schemabackup_restore_log.txt"
-original_schema="schema"  # Replace with your original schema name
+original_schema="mepstg"  # Replace with your original schema name
 new_schema="newmepstg"    # Replace with your desired new schema name
 
 # Record the start time
