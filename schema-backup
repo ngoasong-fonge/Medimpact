@@ -150,8 +150,8 @@ source /opt/app/localhome/postgres/pg_env.sh
 
 # Specify backup file location
 backup_location="/opt/backup"
-original_schema="mepstg"  # Replace with your original schema name
-new_schema="newmepstg"    # Replace with your desired new schema name
+original_schema="ngmep"  # Replace with your original schema name
+new_schema="newngmep"    # Replace with your desired new schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
