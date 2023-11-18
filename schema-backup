@@ -238,24 +238,47 @@ echo "Restore completed. Log file: $log_location"
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 #!/bin/bash
-mv /tmp/db_list.log /tmp/db_list.log_old
-psql -t -c "SELECT datname FROM pg_database WHERE datistemplate = false;" > /tmp/db_list.log ; sed -i '/^$/d' /tmp/db_list.log
-file=/tmp/db_list.log
-#schema_name
-#DB
-date=$(date '+%Y-%m-%d')
-bkp_path=/var/lib/pgsql
 
-for DB in `cat $file`
-do
-echo "#################Starting the backup as on ${date} for ${DB}"
-pg_dump -U postgres -v -n '*' -N 'pg_toast' -N 'information_schema' -N 'pg_catalog' $DB -Ft -f ${bkp_path}/${DB}_schema_bkp_${date}.tar > `${bkp_path}/${DB}_schema_bkp_${date}.log)`
-echo "#################Backup Complited as on ${date} for ${DB}"
-done
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
 
-echo "listing files older than 15 Days"
-find ${bkp_path} -name "*schem*.tar" -type f -mtime +1 > ${bkp_path}/old_file_list.log
-find ${bkp_path} -name "*.log" -type f -mtime +1 > ${bkp_path}/old_file_list.log
+# Specify backup and log file locations
+backup_location="/opt/backup"
+log_location="/opt/backup/schemabackup_restore_log.txt"
+original_schema="ngmep"  # Replace with your original schema name
+new_schema="newngmep"    # Replace with your desired new schema name
 
-echo "deleting backup/log file older than 15 Days"
-find ${bkp_path} -name "*.tar" -type f -mtime +15 > ${bkp_path}/old_file_list.log -delete
+# Record the start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Backup the schema to /opt/backup in .dump format
+pg_dump -h localhost -U deployadmin -d citus -n mepstg --format=c --file="$backup_location/mepstg_schema_backup.dump" --schema="$original_schema"
+
+# Replace the original schema name with the new schema name in the dump file
+sed -i "s/$original_schema/$new_schema/g" "$backup_location/mepstg_schema_backup.dump"
+
+# Drop target schema if already exists
+psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema CASCADE;"
+
+# Create the target schema
+psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
+
+# Restore the schema within the same database using psql
+psql -h localhost -U deployadmin -d citus -f "$backup_location/mepstg_schema_backup.dump"
+
+# Check the status of the restore operation
+if [ $? -eq 0 ]; then
+  echo "Restore completed successfully."
+else
+  echo "Error: Restore operation failed."
+fi
+
+# Record the completion time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Output the start and completion times to a log file
+echo "Start Time: $start_time" > "$log_location"
+echo "Completion Time: $end_time" >> "$log_location"
+
+# Display the log file path
+echo "Backup and restore completed. Log file: $log_location"
