@@ -315,3 +315,13 @@ echo "Completion Time: $end_time" >> "$log_location"
 # Display the log file path
 echo "Backup and restore completed. Log file: $log_location"
 
+
+
+
+Compression: The custom dump format supports compression, which can significantly reduce the size of the backup file.
+You can use the -Fc option with pg_dump to create a custom-format dump file with compression.
+The resulting .dump file will likely be smaller compared to an equivalent plain SQL script (.sql) file.
+Performance: The custom dump format is more efficient in terms of both backup and restore operations. 
+It can capture the database structure, data, and additional metadata in a binary format, making it faster for large databases.
+Comprehensive Backup: The custom dump format includes additional information such as indexes, functions, and more, providing a more comprehensive backup of the entire schema.
+If you are specifically looking to backup the entire schema (including data, indexes, etc.), the custom dump format is well-suited for this purpose.
