@@ -245,8 +245,8 @@ source /opt/app/localhome/postgres/pg_env.sh
 # Specify backup and log file locations
 backup_location="/opt/backup"
 log_location="/opt/backup/schemabackup_restore_log.txt"
-original_schema="mepstg"  # Replace with your original schema name
-new_schema="testmepstg"    # Replace with your desired new schema name
+original_schema="ngmep"  # Replace with your original schema name
+new_schema="newngmep"    # Replace with your desired new schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
@@ -263,8 +263,8 @@ psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema 
 # Create the target schema
 psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
 
-# Restore the schema within the same database using psql
-psql -h localhost -U deployadmin -d citus -f "$backup_location/mepstg_schema_backup.dump"
+# Restore the schema using pg_restore
+pg_restore -h localhost -U deployadmin -d citus --schema="$new_schema" "$backup_location/mepstg_schema_backup.dump"
 
 # Check the status of the restore operation
 if [ $? -eq 0 ]; then
