@@ -104,7 +104,7 @@ echo "Completion Time: $end_time" >> "$log_location"
 echo "Backup, restore, and analyze completed. Log file: $log_location"
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-Bellow is a script that does backup of just original schema. 
+Bellow is a script that does backup of just original schema with .sql format
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 #!/bin/bash
 
@@ -138,6 +138,43 @@ echo "Completion Time: $end_time" >> "$log_location"
 
 # Display the log file path
 echo "Backup completed. Log file: $log_location"
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Bellow script will take the backup of original schema with .dump format
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+# Specify backup and log file locations
+backup_location="/opt/backup"
+log_location="/opt/backup/schemabackup_log.txt"
+original_schema="ngmep"  # Replace with your original schema name
+
+# Record the start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Backup the schema in .dump format without parallelism
+pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --format=c --file="$backup_location/$original_schema"_backup.dump
+
+# Check the status of the backup operation
+if [ $? -eq 0 ]; then
+  echo "Backup completed successfully."
+else
+  echo "Error: Backup operation failed."
+fi
+
+# Record the completion time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Output the start and completion times to a log file
+echo "Start Time: $start_time" > "$log_location"
+echo "Completion Time: $end_time" >> "$log_location"
+
+# Display the log file path
+echo "Backup completed. Log file: $log_location"
+
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 The script bellow will create the schema with a new name by using sed command
@@ -187,10 +224,9 @@ echo "Completion Time: $end_time" >> "$log_location"
 # Display the log file path
 echo "Restore completed. Log file: $log_location"
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------
-The bellow script will make renaming of schema/objects fatster by using awk command , good for bigger backupfiles
---------------------------------------------------------------------------------------------------------------------------------------------
-
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The Script bellow restores the dumfile without sed but using the pg_restore format
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #!/bin/bash
 
 # Source the environment file
@@ -211,12 +247,9 @@ psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema 
 # Create the target schema
 psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
 
-# Replace the original schema name with the new schema name in the SQL file using awk
-backup_file="$backup_location/$original_schema"_backup.sql
-awk -v old="$original_schema" -v new="$new_schema" '{gsub(old, new)}1' "$backup_file" > "$backup_file.tmp" && mv "$backup_file.tmp" "$backup_file"
-
-# Restore the schema using psql with a new schema name
-psql -h localhost -U deployadmin -d citus -f "$backup_file" -v new_schema="$new_schema"
+# Restore the schema using pg_restore with schema mapping
+restore_file="$backup_location/$original_schema"_backup.dump
+pg_restore -h localhost -U deployadmin -d citus --schema="$new_schema" --no-password --single-transaction "$restore_file"
 
 # Check the status of the restore operation
 if [ $? -eq 0 ]; then
