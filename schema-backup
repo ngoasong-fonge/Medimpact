@@ -325,3 +325,6 @@ Performance: The custom dump format is more efficient in terms of both backup an
 It can capture the database structure, data, and additional metadata in a binary format, making it faster for large databases.
 Comprehensive Backup: The custom dump format includes additional information such as indexes, functions, and more, providing a more comprehensive backup of the entire schema.
 If you are specifically looking to backup the entire schema (including data, indexes, etc.), the custom dump format is well-suited for this purpose.
+
+find /path/to/wal_archive -type f -name "*.pg_wal" -mtime +5 -exec rm {} \;
+
