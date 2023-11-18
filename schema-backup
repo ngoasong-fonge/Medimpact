@@ -235,3 +235,27 @@ echo "Completion Time: $end_time" >> "$log_location"
 # Display the log file path
 echo "Restore completed. Log file: $log_location"
 
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+mv /tmp/db_list.log /tmp/db_list.log_old
+psql -t -c "SELECT datname FROM pg_database WHERE datistemplate = false;" > /tmp/db_list.log ; sed -i '/^$/d' /tmp/db_list.log
+file=/tmp/db_list.log
+#schema_name
+#DB
+date=$(date '+%Y-%m-%d')
+bkp_path=/var/lib/pgsql
+
+for DB in `cat $file`
+do
+echo "#################Starting the backup as on ${date} for ${DB}"
+pg_dump -U postgres -v -n '*' -N 'pg_toast' -N 'information_schema' -N 'pg_catalog' $DB -Ft -f ${bkp_path}/${DB}_schema_bkp_${date}.tar > `${bkp_path}/${DB}_schema_bkp_${date}.log)`
+echo "#################Backup Complited as on ${date} for ${DB}"
+done
+
+echo "listing files older than 15 Days"
+find ${bkp_path} -name "*schem*.tar" -type f -mtime +1 > ${bkp_path}/old_file_list.log
+find ${bkp_path} -name "*.log" -type f -mtime +1 > ${bkp_path}/old_file_list.log
+
+echo "deleting backup/log file older than 15 Days"
+find ${bkp_path} -name "*.tar" -type f -mtime +15 > ${bkp_path}/old_file_list.log -delete
