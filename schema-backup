@@ -205,7 +205,10 @@ target_schema="ngmep"  # Replace with your desired schema name
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
 
 # Drop the target schema if it already exists
-psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $target_schema CASCADE"
+psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS newngmep CASCADE"
+
+# Create the target schema
+psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS newngmep;"
 
 # Restore the schema using psql
 psql -h localhost -U deployadmin -d citus -f "$backup_location/$target_schema"_backup.sql
