@@ -341,7 +341,7 @@ pg_restore -h localhost -U postgres -d citus -j <number_of_parallel_jobs> -Fc -c
 
 
 
------------- I didn't sed and the backup and restore worked---This is Fc Binary format---- 
+------------ I didn't sed and the backup and restore worked---This is Fc Binary format---- But when I sed the binary and try to use pg_restore its fails and also pqsl won't work because its not plain text backup
 
 pg_dump -h localhost -U postgres -d citus -n custom_schema -Fc > binary_backup.dump
 pg_restore -h localhost -U postgres -d citus -v binary_backup.dump
