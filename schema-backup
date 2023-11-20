@@ -315,7 +315,7 @@ echo "Completion Time: $end_time" >> "$log_location"
 # Display the log file path
 echo "Backup and restore completed. Log file: $log_location"
 
-
+------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Compression: The custom dump format supports compression, which can significantly reduce the size of the backup file.
@@ -327,4 +327,22 @@ Comprehensive Backup: The custom dump format includes additional information suc
 If you are specifically looking to backup the entire schema (including data, indexes, etc.), the custom dump format is well-suited for this purpose.
 
 find /path/to/wal_archive -type f -name "*.pg_wal" -mtime +5 -exec rm {} \;
+----------------------------------------------------------------------------------------------------------------------------------------------------
+pg_dump -h localhost -U postgres -d citus -n custom_schema | gzip > backup.dump.gz
+gunzip -c backup.dump.gz | sed 's/custom_schema/npmeg_schema/g'	 > modified_backup.dump
+psql -h localhost -U postgres -d citus -f modified_backup.dump
+
+-------------------------------------- This bellow worked because its plain text backup not binary using psql to res ----------------------
+pg_dump -h localhost -U postgres -d citus -n custom_schema > backup.dump
+sed 's/custom_schema/ngmep_schema/g' backup.dump > modified_backup.dump
+psql -h localhost -U postgres -d citus -f modified_backup.dump
+---------------------------------------------------------------------------------------------------------------------------
+pg_restore -h localhost -U postgres -d citus -j <number_of_parallel_jobs> -Fc -c -v backup.dump.gz
+
+
+
+------------ I didn't sed and the backup and restore worked---This is Fc Binary format---- 
+
+pg_dump -h localhost -U postgres -d citus -n custom_schema -Fc > binary_backup.dump
+pg_restore -h localhost -U postgres -d citus -v binary_backup.dump
 
