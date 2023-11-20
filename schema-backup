@@ -199,20 +199,16 @@ source /opt/app/localhome/svcpostgres/pg_env.sh
 # Specify backup file location
 backup_location="/opt/backup"
 log_location="/opt/backup/restore_log.txt"
-original_schema="ngmep"  # Replace with your original schema name
-new_schema="newngmep"    # Replace with your desired new schema name
+target_schema="ngmep"  # Replace with your desired schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
 
 # Drop the target schema if it already exists
-psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema CASCADE"
+psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $target_schema CASCADE"
 
-# Create the target schema
-psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema"
-
-# Restore the schema using psql with variable substitution for schema name
-psql -h localhost -U deployadmin -d citus -v new_schema="$new_schema" -f "$backup_location/${original_schema}_backup.sql"
+# Restore the schema using psql
+psql -h localhost -U deployadmin -d citus -f "$backup_location/$target_schema"_backup.sql
 
 # Check the status of the restore operation
 if [ $? -eq 0 ]; then
@@ -232,6 +228,7 @@ end_time=$(date +"%Y-%m-%d %H:%M:%S")
 
 # Display the log file path
 echo "Restore completed. Log file: $log_location"
+
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
