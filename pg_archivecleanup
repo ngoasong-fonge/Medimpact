@@ -1,0 +1,40 @@
+In a Patroni + Citus environment, where you have multiple Citus groups, each with its own leader and synchronous standby, you can implement pg_archivecleanup for each group separately.
+The goal is to clean up obsolete WAL files or those older than a certain threshold.
+Assuming you have a structure like:
+
+Group 0: /opt/backup/pgsandbox/group0
+Group 1: /opt/backup/pgsandbox/group1
+Group 2: /opt/backup/pgsandbox/group2
+
+You would need to configure pg_archivecleanup for each group individually.
+
+Group 0:
+
+In your recovery.conf (or postgresql.conf for the primary server if not using streaming replication), set the archive_cleanup_command as follows:
+archive_cleanup_command = 'pg_archivecleanup -d /opt/backup/pgsandbox/group0 -D 5 %r 2>>/opt/backup/pgsandbox/group0/cleanup.log'
+This command will clean up WAL files older than 5 days in the /opt/backup/pgsandbox/group0 directory.
+
+Group 1:
+
+Similarly, in the recovery.conf (or postgresql.conf) for Group 1:
+archive_cleanup_command = 'pg_archivecleanup -d /opt/backup/pgsandbox/group1 -D 5 %r 2>>/opt/backup/pgsandbox/group1/cleanup.log'
+
+Group 2:
+
+And for Group 2:
+archive_cleanup_command = 'pg_archivecleanup -d /opt/backup/pgsandbox/group2 -D 5 %r 2>>/opt/backup/pgsandbox/group2/cleanup.log'
+
+
+In these configurations:
+
+The -d option specifies the archive directory for each group.
+The -D 5 option sets the cleanup threshold to 5 days.
+%r is the placeholder for the last file successfully restored from the archive.
+2>> redirects standard error (stderr) to a log file, providing a record of cleanup activities. Adjust the log file paths as needed.
+
+Please note:
+
+Ensure that the paths are correct and that the PostgreSQL user has the necessary permissions to read from the archive directories and write to the cleanup log files.
+Adjust the cleanup threshold (-D) according to your retention policy.
+Regularly monitor the cleanup log files for any error messages or warnings.
+By configuring pg_archivecleanup separately for each group, you can manage cleanup activities for each Citus group independently in your multi-node setup.
