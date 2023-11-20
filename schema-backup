@@ -225,7 +225,7 @@ echo "Completion Time: $end_time" >> "$log_location"
 echo "Restore completed. Log file: $log_location"
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-The Script bellow restores the dumfile without sed but using the pg_restore format
+The Script bellow restores the .sql backup without sed 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #!/bin/bash
 
@@ -245,11 +245,10 @@ start_time=$(date +"%Y-%m-%d %H:%M:%S")
 psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema CASCADE"
 
 # Create the target schema
-psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
+psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema"
 
-# Restore the schema using pg_restore with schema mapping
-restore_file="$backup_location/$original_schema"_backup.dump
-pg_restore -h localhost -U deployadmin -d citus --schema="$new_schema" --no-password --single-transaction "$restore_file"
+# Restore the schema using psql with variable substitution for schema name
+psql -h localhost -U deployadmin -d citus -v new_schema="$new_schema" -f "$backup_location/${original_schema}_backup.sql"
 
 # Check the status of the restore operation
 if [ $? -eq 0 ]; then
@@ -262,62 +261,16 @@ fi
 end_time=$(date +"%Y-%m-%d %H:%M:%S")
 
 # Output the start and completion times to the log file
-echo "Start Time: $start_time" > "$log_location"
-echo "Completion Time: $end_time" >> "$log_location"
+{
+  echo "Start Time: $start_time"
+  echo "Completion Time: $end_time"
+} > "$log_location"
 
 # Display the log file path
 echo "Restore completed. Log file: $log_location"
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Bellow Is THE BEST script to take a schema bacup and restore with a different name using pg_restore option
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#!/bin/bash
-
-# Source the environment file
-source /opt/app/localhome/postgres/pg_env.sh
-
-# Specify backup and log file locations
-backup_location="/opt/backup"
-log_location="/opt/backup/backup_restore_log.txt"
-original_schema="mepstg"  # Replace with your original schema name
-new_schema="testmepstg"    # Replace with your desired new schema name
-
-# Record the start time
-start_time=$(date +"%Y-%m-%d %H:%M:%S")
-
-# Backup the schema to /opt/backup in .dump format
-pg_dump -h localhost -U deployadmin -d citus -n mepstg --format=c --file="$backup_location/mepstg_backup.dump" --schema="$original_schema"
-
-# Drop target schema if already exists
-psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema CASCADE;"
-
-# Create the target schema
-psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
-
-# Restore the schema using pg_restore with schema mapping
-pg_restore -h localhost -U deployadmin -d citus --schema="$new_schema" --no-password --single-transaction "$backup_location/mepstg_backup.dump"
-
-# Check the status of the restore operation
-if [ $? -eq 0 ]; then
-  echo "Restore completed successfully."
-else
-  echo "Error: Restore operation failed."
-fi
-
-# Record the completion time
-end_time=$(date +"%Y-%m-%d %H:%M:%S")
-
-# Output the start and completion times to a log file
-echo "Start Time: $start_time" > "$log_location"
-echo "Completion Time: $end_time" >> "$log_location"
-
-# Display the log file path
-echo "Backup and restore completed. Log file: $log_location"
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Compression: The custom dump format supports compression, which can significantly reduce the size of the backup file.
 You can use the -Fc option with pg_dump to create a custom-format dump file with compression.
 The resulting .dump file will likely be smaller compared to an equivalent plain SQL script (.sql) file.
