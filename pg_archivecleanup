@@ -38,3 +38,24 @@ Ensure that the paths are correct and that the PostgreSQL user has the necessary
 Adjust the cleanup threshold (-D) according to your retention policy.
 Regularly monitor the cleanup log files for any error messages or warnings.
 By configuring pg_archivecleanup separately for each group, you can manage cleanup activities for each Citus group independently in your multi-node setup.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The archive_cleanup_command in PostgreSQL is not executed on a regular schedule; rather, it is triggered in response to specific events within the system. 
+Its primary purpose is to clean up obsolete WAL (Write-Ahead Log) files in the archive directory when they are no longer needed for replication or point-in-time recovery.
+
+Here are the typical scenarios in which archive_cleanup_command is triggered:
+
+During Recovery:
+If you have a standby server with streaming replication or point-in-time recovery, PostgreSQL triggers the archive_cleanup_command when it needs to remove obsolete WAL files.
+
+Asynchronous Archiving:
+If you are using asynchronous archiving (archive_mode = on with archive_command specified), the archive_cleanup_command might also be triggered when PostgreSQL archives a new WAL file.
+In both cases, the cleanup is typically initiated when the system determines that certain WAL files are no longer needed for recovery purposes. 
+This could be due to the fact that a standby server has successfully caught up with the primary server or that a specific point in time has been reached.
+
+It's important to note that the cleanup process is event-driven and not time-driven. The frequency at which archive_cleanup_command is triggered depends on the activity and state of your PostgreSQL replication setup.
+
+If you have specific requirements for more regular cleanup, you may need to consider custom solutions, such as a scheduled task or cron job that periodically runs the cleanup command. However,
+care should be taken not to interfere with ongoing replication or recovery processes when manually triggering cleanup.
+
+Remember that in a streaming replication setup, the primary responsibility for retaining or removing WAL segments often lies with the wal_keep_segments parameter, as discussed in the previous responses. 
+archive_cleanup_command is more commonly used in scenarios where physical archiving of WAL segments is employed.
