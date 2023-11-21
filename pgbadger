@@ -8,9 +8,8 @@ cd pgbadger-12.2
 export PATH=/opt/app/localhome/postgres/pgbadger-12.2:$PATH
 pgbadger --version
 
-pgbadger -f /opt/app/postgres-data/data/log/postgresql-2023-11-14_000000.log -o /opt/app/postgres-data/badger.11.14.2023.html
-pgbadger -f /opt/app/postgres-data/data/log/postgresql-2023-11-20_223404.log -o /opt/app/patroni/scripts/badger.11.20.2023.html
-pgbadger -f /opt/app/postgres-data/data/log/postgresql-2023-11-21_000000.log -o /opt/app/patroni/scripts/badger.11.21.2023.html
+
+pgbadger -f stderr /opt/app/postgres-data/data/log/postgresql-2023-11-21_000000.log -o /opt/app/patroni/scripts/badger.11.21.2023.html
 
 
 
