@@ -197,4 +197,7 @@ SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_l
 ERROR: server closed the connection unexpectedly 	This probably means the server terminated abnormally 	before or while processing the request. server closed the connection unexpectedly 	This probably means the server terminated abnormally 	before or while processing the request.
 
 
-
+Group | Member      | Host       | Role         | State   | TL | Lag in MB |
++-------+-------------+------------+--------------+---------+----+-----------+
+|     0 | dv1medpgsc1 | 10.13.3.75 | Replica      | running | 77 |         1 |
+|     0 | dv1medpgsc2 | 10.13.3.76 | Replica      | running | 76 |         0 |
