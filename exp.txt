@@ -234,3 +234,7 @@ Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: patroni.service: Found lef
 Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
 Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: patroni.service: Found left-over process 596860 (postgres) in control group while starting unit. Ignoring.
 
+2023-11-22 18:46:11.340 UTC [602043] STATEMENT:  START_REPLICATION SLOT "dv1medpgsc2" B2/49000000 TIMELINE 78
+2023-11-22 18:46:16.342 UTC [602093] ERROR:  requested WAL segment 0000004E000000B200000049 has already been removed
+2023-11-22 18:46:16.342 UTC [602093] STATEMENT:  START_REPLICATION SLOT "dv1medpgsc2" B2/49000000 TIMELINE 78
+2023-11-22 18:46:21.337 UTC [602110] ERROR:  requested WAL segment 0000004E000000B200000049 has already been removed
