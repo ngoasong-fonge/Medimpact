@@ -201,3 +201,9 @@ Group | Member      | Host       | Role         | State   | TL | Lag in MB |
 +-------+-------------+------------+--------------+---------+----+-----------+
 |     0 | dv1medpgsc1 | 10.13.3.75 | Replica      | running | 77 |         1 |
 |     0 | dv1medpgsc2 | 10.13.3.76 | Replica      | running | 76 |         0 |
+
+2023-11-22 00:43:00.511 UTC [3619182] LOG:  started streaming WAL from primary at AC/F2000000 on timeline 78
+2023-11-22 00:43:00.512 UTC [3619182] FATAL:  could not receive data from WAL stream: ERROR:  requested WAL segment 0000004E000000AC000000F2 has already been removed
+2023-11-22 00:43:00.512 UTC [3618249] LOG:  waiting for WAL to become available at AC/F2001559
+2023-11-22 00:43:00.644 UTC [3619183] FATAL:  the database system is not yet accepting connections
+
