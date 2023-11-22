@@ -214,3 +214,13 @@ Group | Member      | Host       | Role         | State   | TL | Lag in MB |
 
 /opt/app/postgres-data/data/pg_wal
 test ! -f /opt/backup/pgsandbox/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgsandbox/group0/wal_archive/%f
+
+# Navigate to the PostgreSQL data directory
+cd /opt/app/postgres-data/data
+
+# Execute the Archive Command Manually
+test ! -f /opt/backup/pgsandbox/group0/wal_archive/%f && /usr/bin/cp pg_wal/%p /opt/backup/pgsandbox/group0/wal_archive/%f
+
+# Check for Errors
+echo $?
+
