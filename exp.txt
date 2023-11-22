@@ -207,3 +207,8 @@ Group | Member      | Host       | Role         | State   | TL | Lag in MB |
 2023-11-22 00:43:00.512 UTC [3618249] LOG:  waiting for WAL to become available at AC/F2001559
 2023-11-22 00:43:00.644 UTC [3619183] FATAL:  the database system is not yet accepting connections
 
+
+2023-11-22 03:15:20.955 UTC [352645] WARNING:  archiving write-ahead log file "0000004C0000007800000078.00000028.backup" failed too many times, will try again later
+2023-11-22 03:15:20.963 UTC [352645] LOG:  archive command failed with exit code 1
+2023-11-22 03:15:20.963 UTC [352645] DETAIL:  The failed archive command was: test ! -f /opt/backup/pgsandbox/group0/wal_archive/0000004C0000007800000078.00000028.backup && /usr/bin/cp pg_wal/0000004C0000007800000078.00000028.backup /opt/backup/pgsandbox/group0/wal_archive/0000004C0000007800000078.00000028.backup
+
