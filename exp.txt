@@ -212,4 +212,5 @@ Group | Member      | Host       | Role         | State   | TL | Lag in MB |
 2023-11-22 03:15:20.963 UTC [352645] LOG:  archive command failed with exit code 1
 2023-11-22 03:15:20.963 UTC [352645] DETAIL:  The failed archive command was: test ! -f /opt/backup/pgsandbox/group0/wal_archive/0000004C0000007800000078.00000028.backup && /usr/bin/cp pg_wal/0000004C0000007800000078.00000028.backup /opt/backup/pgsandbox/group0/wal_archive/0000004C0000007800000078.00000028.backup
 
+/opt/app/postgres-data/data/pg_wal
 test ! -f /opt/backup/pgsandbox/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgsandbox/group0/wal_archive/%f
