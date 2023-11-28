@@ -263,3 +263,108 @@ pg_restore -h localhost -U postgres -d citus -j <number_of_parallel_jobs> -Fc -c
 pg_dump -h localhost -U postgres -d citus -n custom_schema -Fc > binary_backup.dump
 pg_restore -h localhost -U postgres -d citus -v binary_backup.dump
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------taking schema backup then overright old backup------------------------------------------------------------------------------------------------------------
+After the backup operation, it checks the number of existing backup files. If there are more than two, it finds and removes the oldest one.
+This modification ensures that you keep at least two copies of the _backup.sql file while overwriting the oldest one. 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+# Specify backup and log file locations
+backup_location="/opt/backup"
+log_location="/opt/backup/schemabackup_log.txt"
+original_schema="ngmep"  # Replace with your original schema name
+
+# Record the start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Backup the schema without parallelism
+pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" > "$backup_location/$original_schema"_backup_new.sql
+
+# Check the status of the backup operation
+if [ $? -eq 0 ]; then
+  echo "Backup completed successfully."
+else
+  echo "Error: Backup operation failed."
+fi
+
+# Keep at least two copies of the backup, overwriting the oldest
+backup_count=$(ls -1 "$backup_location"/*_backup*.sql | wc -l)
+if [ "$backup_count" -gt 1 ]; then
+  oldest_backup=$(ls -1t "$backup_location"/*_backup*.sql | tail -n 1)
+  rm "$oldest_backup"
+fi
+
+# Record the completion time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Output the start and completion times to a log file
+echo "Start Time: $start_time" > "$log_location"
+echo "Completion Time: $end_time" >> "$log_location"
+
+# Display the log file path
+echo "Backup completed. Log file: $log_location"
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+To modify your restore script to use the new backup file, you need to pass the file path of the new backup file to the script. You can modify the script to accept the backup file path as an argument
+the script expects the backup file name to have the suffix "_backup_new.sql." When running the script, provide the full path to the backup file as an argument:
+
+./restore_script.sh /opt/backup/ngmep_backup_new.sql
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+# Specify backup file location
+log_location="/opt/backup/restore_log.txt"
+original_schema="ngmep"  # Replace with your original schema name
+new_schema="newngmep"    # Replace with your desired new schema name
+
+# Check if the backup file path is provided as an argument
+if [ "$#" -ne 1 ]; then
+  echo "Error: Please provide the path to the backup file."
+  exit 1
+fi
+
+# Assign the backup file path from the argument
+backup_file="$1"
+
+# Record the start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Drop the target schema if it already exists
+psql -h localhost -U deployadmin -d citus -c "DROP SCHEMA IF EXISTS $new_schema CASCADE"
+
+# Create the target schema
+psql -h localhost -U deployadmin -d citus -c "CREATE SCHEMA IF NOT EXISTS $new_schema;"
+
+# Replace the original schema name with the new schema name in the SQL file
+sed -i "s/$original_schema/$new_schema/g" "$backup_file"
+
+# Restore the schema using psql with a new schema name
+psql -h localhost -U deployadmin -d citus -f "$backup_file" -v new_schema="$new_schema"
+
+# Check the status of the restore operation
+if [ $? -eq 0 ]; then
+  echo "Restore completed successfully."
+else
+  echo "Error: Restore operation failed."
+fi
+
+# Record the completion time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Output the start and completion times to the log file
+echo "Start Time: $start_time" > "$log_location"
+echo "Completion Time: $end_time" >> "$log_location"
+
+# Display the log file path
+echo "Restore completed. Log file: $log_location"
