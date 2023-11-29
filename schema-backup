@@ -197,12 +197,12 @@ backup with every backup file having a unique name in the backup location. This 
 #!/bin/bash
 
 # Source the environment file
-source /opt/app/localhome/svcpostgres/pg_env.sh
+source /opt/app/localhome/postgres/pg_env.sh
 
 # Specify backup file location
-backup_location="/opt/backup"
+backup_location="/opt/backup/overwrite_backup"
 log_location="/opt/backup/backup_log.txt"
-original_schema="ngmep"  # Replace with your original schema name
+original_schema="mepstg"  # Replace with your original schema name
 timestamp=$(date +"%Y%m%d%H%M%S")
 backup_file="$backup_location/${original_schema}_backup_${timestamp}.sql"
 
@@ -240,13 +240,13 @@ The sed command is used to replace the original schema name with the new schema 
 #!/bin/bash
 
 # Source the environment file
-source /opt/app/localhome/svcpostgres/pg_env.sh
+source /opt/app/localhome/postgres/pg_env.sh
 
 # Specify backup and log file locations
-backup_location="/opt/backup"
+backup_location="/opt/backup/overwrite_backup"
 log_location="/opt/backup/restore_log.txt"
-original_schema="ngmep"  # Replace with your original schema name
-new_schema="newngmep"    # Replace with your desired new schema name
+original_schema="mepstg"  # Replace with your original schema name
+new_schema="newmepstg"    # Replace with your desired new schema name
 
 # Find the most recent backup file
 latest_backup=$(ls -t "$backup_location/${original_schema}_backup_"*".sql" | head -n1)
