@@ -203,7 +203,7 @@ source /opt/app/localhome/postgres/pg_env.sh
 backup_location="/opt/backup/overwrite_backup"
 log_location="/opt/backup/backup_log.txt"
 original_schema="mepstg"  # Replace with your original schema name
-timestamp=$(date +"%Y%m%d%H%M%S")
+timestamp=$(date +"%Y-%m-%d-%H%M%S")
 backup_file="$backup_location/${original_schema}_backup_${timestamp}.sql"
 
 # Record the start time
