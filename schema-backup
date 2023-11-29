@@ -276,7 +276,7 @@ This modification ensures that you keep at least two copies of the _backup.sql f
 source /opt/app/localhome/svcpostgres/pg_env.sh
 
 # Specify backup and log file locations
-backup_location="/opt/backup"
+backup_location="/opt/backup/overwrite_backup"
 log_location="/opt/backup/schemabackup_log.txt"
 original_schema="ngmep"  # Replace with your original schema name
 
