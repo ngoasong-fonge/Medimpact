@@ -283,9 +283,48 @@ echo "Completion Time: $end_time" >> "$log_location"
 # Display the log file path
 echo "Restore completed. Log file: $log_location"
 
+---------------------------------------------------------------------------------------------removing--oldest--backup-------------------------------------------------------------------------
 
 
+#!/bin/bash
 
--rw-rw-r-- 1 svcpostgres svcpostgres 2.7G Nov 29 22:52 mepstg_backup_2023-11-29-225103.sql
--rw-rw-r-- 1 svcpostgres svcpostgres 2.7G Nov 29 23:00 mepstg_backup_2023-11-29-225751.sql
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
+
+# Specify backup file location
+backup_location="/opt/backup/overwrite_backup"
+log_location="/opt/backup/backup_log.txt"
+original_schema="mepstg"  # Replace with your original schema name
+
+# Remove the oldest backup file
+oldest_backup=$(ls -t "$backup_location/${original_schema}_backup_"*".sql" | tail -n 1)
+if [ -n "$oldest_backup" ]; then
+  rm "$oldest_backup"
+  echo "Removed the oldest backup file: $oldest_backup"
+fi
+
+# Record the start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Backup the schema without parallelism
+timestamp=$(date +"%Y-%m-%d-%H%M%S")
+backup_file="$backup_location/${original_schema}_backup_${timestamp}.sql"
+pg_dump -h localhost -U deployadmin -d citus -n "$original_schema" --schema="$original_schema" > "$backup_file"
+
+# Check the status of the backup operation
+if [ $? -eq 0 ]; then
+  echo "Backup completed successfully. Backup file: $backup_file"
+else
+  echo "Error: Backup operation failed."
+fi
+
+# Record the completion time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Output the start and completion times to a log file
+echo "Start Time: $start_time" > "$log_location"
+echo "Completion Time: $end_time" >> "$log_location"
+
+# Display the log file path
+echo "Backup completed. Log file: $log_location"
 
