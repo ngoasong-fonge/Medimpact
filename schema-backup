@@ -278,7 +278,7 @@ source /opt/app/localhome/svcpostgres/pg_env.sh
 # Specify backup and log file locations
 backup_location="/opt/backup/overwrite_backup"
 log_location="/opt/backup/schemabackup_log.txt"
-original_schema="ngmep"  # Replace with your original schema name
+original_schema="mepstg"  # Replace with your original schema name
 
 # Record the start time
 start_time=$(date +"%Y-%m-%d %H:%M:%S")
@@ -314,7 +314,7 @@ echo "Backup completed. Log file: $log_location"
 To modify your restore script to use the new backup file, you need to pass the file path of the new backup file to the script. You can modify the script to accept the backup file path as an argument
 the script expects the backup file name to have the suffix "_backup_new.sql." When running the script, provide the full path to the backup file as an argument:
 
-./restore_script.sh /opt/backup/ngmep_backup_new.sql
+./restore_script.sh /opt/backup/mepstg_backup_new.sql
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
