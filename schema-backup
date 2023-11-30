@@ -328,3 +328,4 @@ echo "Completion Time: $end_time" >> "$log_location"
 # Display the log file path
 echo "Backup completed. Log file: $log_location"
 
+0 18 * * 6,0,1,2 /path/to/your/script.sh
