@@ -115,3 +115,23 @@ ODBC PostgreSQL Wire Protocol driver]Optional feature not implemented.[Informati
 |     2 | dv1medpgsw4 | 10.13.3.73 | Sync Standby | running | 46 |         0 |
 +-------+-------------+------------+--------------+---------+----+-----------+
 [svcpostgres@dv1medpgsc1 data]$
+
+
+
+$ df -h
+Filesystem                                                Size  Used Avail Use% Mounted on
+devtmpfs                                                  1.8G     0  1.8G   0% /dev
+tmpfs                                                     1.8G  4.0K  1.8G   1% /dev/shm
+tmpfs                                                     1.8G  9.0M  1.8G   1% /run
+tmpfs                                                     1.8G     0  1.8G   0% /sys/fs/cgroup
+/dev/mapper/ol-root                                        17G  4.7G   12G  29% /
+/dev/sda2                                                1014M  481M  534M  48% /boot
+/dev/mapper/userdata-app                                   15G  176M   15G   2% /opt/app
+/dev/sda1                                                 599M  5.1M  594M   1% /boot/efi
+10.15.130.119:/vol_pv2medvfiler4_pgbackrest/qtree_backup  500G  352K  500G   1% /opt/backup
+tmpfs                                                     360M     0  360M   0% /run/user/16558
+$ hostname
+pv2medpgbr1.medimpact.com
+$ hostname -i
+10.15.134.99
+$
