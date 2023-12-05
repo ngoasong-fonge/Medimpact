@@ -98,154 +98,20 @@ https://www.crunchydata.com/blog/managing-transaction-id-wraparound-in-postgresq
 
 
 ODBC PostgreSQL Wire Protocol driver]Optional feature not implemented.[Informatica][ODBC PostgreSQL Wire Protocol driver]Driver's SQLSetConnectAttr failed.[Informatica][ODBC PostgreSQL Wire Protocol driver]SSL I/O Error.[Informatica][ODBC PostgreSQL Wire Protocol driver]SSL I/O Error.[Informatica][ODBC PostgreSQL Wire Protocol driver]01006[Informatica][ODBC PostgreSQL Wire Protocol driver]01006
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-In order to better organize the data collection, we suggest you use a temporary directory (indicated below by /tmp/pt/collected/$(hostname), 
-but you can use any other at your convenience) to store the data being collected before providing it to us:
-
-PTDEST=/tmp/pt/collected/$(hostname)
-mkdir -p ${PTDEST}
-
-The database server's Operating System logs are also a source of valuable information. 
-Please attach your current log file and anything historical in this context that may prove useful:
-
-cp /var/log/{messages,syslog} ${PTDEST}/
-
-journalctl -e > ${PTDEST}/journal.out
-
-sudo dmesg -T > ${PTDEST}/dmesg.out
-
-curl -LO https://raw.githubusercontent.com/percona/support-snippets/master/postgresql/pg_gather/gather.sql
-psql <connection_parameters_if_any> -d <dbname> -X -f gather.sql > ${PTDEST}/out.txt
+-------------------------------------------------------------------------------------------
 
 
-
-
-Hint: You are currently not seeing messages from other users and the system.
-      Users in the 'systemd-journal' group can see all messages. Pass -q to
-      turn off this notice.
-No journal files were opened due to insufficient permissions.
-
-[svcpostgres@pv2medpg1c1 ~]$ tar czvf "/tmp/pt-pgdatacollection-`hostname`.tar.gz" ${PTDEST}
-tar: Removing leading `/' from member names
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-select
-  name as "Parameter",
-  case when setting in ('-1', '0', 'off', 'on') then setting else
-    case unit
-      when '8kB' then pg_size_pretty(setting::int8 * 8 * 1024)
-      when '16MB' then pg_size_pretty(setting::int8 * 16 * 1024 * 1024)
-      when 'kB' then pg_size_pretty(setting::int8 * 1024)
-      else setting || coalesce ('', ' ' || unit)
-    end
-  end as "Value",
-  case when boot_val in ('-1', '0', 'off', 'on') then boot_val else
-    case unit
-      when '8kB' then pg_size_pretty(boot_val::int8 * 8 * 1024)
-      when '16MB' then pg_size_pretty(boot_val::int8 * 16 * 1024 * 1024)
-      when 'kB' then pg_size_pretty(boot_val::int8 * 1024)
-      else boot_val || coalesce ('', ' ' || unit)
-    end
-  end as "Default",
-  category as "Category"
-from pg_settings
-where
-  name in (
-    'max_connections',
-    'shared_buffers',
-    'effective_cache_size',
-    'maintenance_work_mem',
-    'work_mem',
-    'min_wal_size',
-    'max_wal_size',
-    'checkpoint_completion_target',
-    'wal_buffers',
-    'default_statistics_target',
-    'random_page_cost',
-    'effective_io_concurrency',
-    'max_worker_processes',
-    'max_parallel_workers_per_gather',
-    'log_destination',
-    'logging_collector',
-    'log_directory',
-    'log_filename',
-    'log_truncate_on_rotation',
-    'log_rotation_age',
-    'log_rotation_size',
-    'log_min_duration_statement',
-    'log_statement',
-    'max_parallel_workers',
-    'autovacuum',
-    'autovacuum_max_workers',
-    'autovacuum_vacuum_scale_factor',
-    'autovacuum_vacuum_threshold', 
-    'autovacuum_naptime',
-    'max_replication_slots',
-    'random_page_cost',
-    'checkpoint_timeout'
-    'seq_page_cost'
-  )
-order by category, name;
-
-
-SELECT pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_lsn()) AS replication_lag;
-SELECT pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), pg_last_wal_replay_lsn())) AS replication_lag;
-
-------------------------------------------------------------------------------------------------------------------------------------
-
-ERROR: server closed the connection unexpectedly 	This probably means the server terminated abnormally 	before or while processing the request. server closed the connection unexpectedly 	This probably means the server terminated abnormally 	before or while processing the request.
-
-
-Group | Member      | Host       | Role         | State   | TL | Lag in MB |
+[svcpostgres@dv1medpgsc1 data]$ pwd
+/opt/app/postgres-data/data
+[svcpostgres@dv1medpgsc1 data]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
++ Citus cluster: pgsandbox --------+--------------+---------+----+-----------+
+| Group | Member      | Host       | Role         | State   | TL | Lag in MB |
 +-------+-------------+------------+--------------+---------+----+-----------+
-|     0 | dv1medpgsc1 | 10.13.3.75 | Replica      | running | 77 |         1 |
-|     0 | dv1medpgsc2 | 10.13.3.76 | Replica      | running | 76 |         0 |
-
-2023-11-22 00:43:00.511 UTC [3619182] LOG:  started streaming WAL from primary at AC/F2000000 on timeline 78
-2023-11-22 00:43:00.512 UTC [3619182] FATAL:  could not receive data from WAL stream: ERROR:  requested WAL segment 0000004E000000AC000000F2 has already been removed
-2023-11-22 00:43:00.512 UTC [3618249] LOG:  waiting for WAL to become available at AC/F2001559
-2023-11-22 00:43:00.644 UTC [3619183] FATAL:  the database system is not yet accepting connections
-
-
-2023-11-22 03:15:20.955 UTC [352645] WARNING:  archiving write-ahead log file "0000004C0000007800000078.00000028.backup" failed too many times, will try again later
-2023-11-22 03:15:20.963 UTC [352645] LOG:  archive command failed with exit code 1
-2023-11-22 03:15:20.963 UTC [352645] DETAIL:  The failed archive command was: test ! -f /opt/backup/pgsandbox/group0/wal_archive/0000004C0000007800000078.00000028.backup && /usr/bin/cp pg_wal/0000004C0000007800000078.00000028.backup /opt/backup/pgsandbox/group0/wal_archive/0000004C0000007800000078.00000028.backup
-
-/opt/app/postgres-data/data/pg_wal
-test ! -f /opt/backup/pgsandbox/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgsandbox/group0/wal_archive/%f
-
-# Navigate to the PostgreSQL data directory
-cd /opt/app/postgres-data/data
-
-# Execute the Archive Command Manually
-test ! -f /opt/backup/pgsandbox/group0/wal_archive/%f && /usr/bin/cp pg_wal/%p /opt/backup/pgsandbox/group0/wal_archive/%f
-
-# Check for Errors
-echo $?
-
-[svcpostgres@dv1medpgsc1 data]$ test ! -f /opt/backup/pgsandbox/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgsandbox/group0/wal_archive/%f
-/usr/bin/cp: cannot stat '%p': No such file or directory
-
-
-Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: patroni.service: Found left-over process 592568 (postgres) in control group while starting unit. Ignoring.
-Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
-Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: patroni.service: Found left-over process 596808 (postgres) in control group while starting unit. Ignoring.
-Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
-Nov 22 18:28:45 dv1medpgsc1.medimpact.com systemd[1]: patroni.service: Found left-over process 596860 (postgres) in control group while starting unit. Ignoring.
-
-2023-11-22 18:46:11.340 UTC [602043] STATEMENT:  START_REPLICATION SLOT "dv1medpgsc2" B2/49000000 TIMELINE 78
-2023-11-22 18:46:16.342 UTC [602093] ERROR:  requested WAL segment 0000004E000000B200000049 has already been removed
-2023-11-22 18:46:16.342 UTC [602093] STATEMENT:  START_REPLICATION SLOT "dv1medpgsc2" B2/49000000 TIMELINE 78
-2023-11-22 18:46:21.337 UTC [602110] ERROR:  requested WAL segment 0000004E000000B200000049 has already been removed
-
-SELECT pg_terminate_backend(pg_stat_activity.pid)
-FROM pg_stat_activity
-WHERE pg_stat_activity.datname = 'medimpact' AND pid <> pg_backend_pid;
-
-SELECT pg_terminate_backend(pg_stat_activity.pid)
-FROM pg_stat_activity
-WHERE datname='medimpact' AND pid<>pg_backend_pid();
-
-
-https://pgstef.github.io/2022/07/12/patroni_and_pgbackrest_combined.html
+|     0 | dv1medpgsc1 | 10.13.3.75 | Sync Standby | running | 94 |         0 |
+|     0 | dv1medpgsc2 | 10.13.3.76 | Leader       | running | 94 |           |
+|     1 | dv1medpgsw1 | 10.13.3.77 | Leader       | running | 41 |           |
+|     1 | dv1medpgsw2 | 10.13.3.78 | Sync Standby | running | 41 |         0 |
+|     2 | dv1medpgsw3 | 10.13.3.79 | Leader       | running | 46 |           |
+|     2 | dv1medpgsw4 | 10.13.3.73 | Sync Standby | running | 46 |         0 |
++-------+-------------+------------+--------------+---------+----+-----------+
+[svcpostgres@dv1medpgsc1 data]$
