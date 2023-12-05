@@ -1,0 +1,207 @@
+- After you have you have your postgres installed, configured and running
+- connect as postgres
+- sudo yum install pgbackrest --nobest ('--nobest' to use not only best candidate packages)
+- file /usr/bin/pgbackrest
+
+*- Creation of log and repository for pgbackrest
+sudo su - postgres
+file /usr/bin/pgbackrest
+
+** as ec2 root
+
+sudo mkdir /var/lib/pgbackrest
+sudo chmod postgres:postgres /var/lib/pgbackrest
+sudo mkdir -p /var/log/pgbackrest
+sudo chmod postgres:postgres /var/log/pgbackrest
+
+** configure file for pgbackrest
+
+What is stanza in postgres?
+A stanza defines the backup configuration for a specific Postgresql database cluster.
+Any global configuration sections can be overridden to define stanza-specific settings.
+
+sudo su - postgres
+sudo mkdir /etc/pgbackrest 
+
+sudo bash -c 'cat << EOF > /etc/pgbackrest/pgbackrest.conf
+[global]
+repo1-path=/var/lib/pgbackrest
+repo1-retention-full=2
+
+[medimpact]
+pg1-path=/var/lib/pgsql/13/data
+pg1-port=5432
+EOF'
+
+cat /etc/pgbackrest/pgbackrest.conf
+
+Note: Backup repository location is = /var/lib/pgbackrest
+
+** Creation of stanza
+
+sudo su - postgres
+pgbackrest stanza-create --stanza=medimpact --log-level-console=info
+
+output bellow:
+2023-12-05 14:03:35.096 P00   INFO: stanza-create command begin 2.46: --exec-id=1926-167035eb --log-level-console=info --pg1-path=/var/lib/pgsql/13/data --pg1-port=5432 --repo1-path=/var/lib/pgbackrest --stanza=medimpact
+2023-12-05 14:03:35.700 P00   INFO: stanza-create for stanza 'medimpact' on repo1
+2023-12-05 14:03:35.708 P00   INFO: stanza-create command end: completed successfully (615ms)
+[postgres@ip-172-31-28-95 ~]$
+
+
+**Sample postgresql parameter change required
+su - postgres
+
+ alter system set wal_level = 'replica';
+alter system set archive_mode = 'on';
+alter system set archive_command = 'pgbackrest --stanza=medimpact archive-push %p';
+alter system set max_wal_senders = 'on';
+alter system set hot_standby = 'on';
+
+show wal_level;
+show archive_mode;
+show archive_command;
+show max_wal_senders;
+show hot_standby;
+
+
+** Basic Backup configuration post backup verification
+
+su - postgres
+pgbackrest check --stanza-medimpact --log-level-console=info
+
+output bellow:
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest check --stanza=medimpact --log-level-console=info
+2023-12-05 14:19:32.907 P00   INFO: check command begin 2.46: --exec-id=1996-ec874581 --log-level-console=info --pg1-path=/var/lib/pgsql/13/data --pg1-port=5432 --repo1-path=/var/lib/pgbackrest --stanza=medimpact
+2023-12-05 14:19:33.512 P00   INFO: check repo1 configuration (primary)
+2023-12-05 14:19:33.713 P00   INFO: check repo1 archive for WAL (primary)
+2023-12-05 14:19:34.915 P00   INFO: WAL segment 000000010000000000000027 successfully archived to '/var/lib/pgbackrest/archive/medimpact/13-1/0000000100000000/000000010000000000000027-d1c39d38e5b9cbecf7213023f89187f815542d76.gz' on repo1
+2023-12-05 14:19:34.916 P00   INFO: check command end: completed successfully (2011ms)
+
+
+** Initiate Full Backup
+
+pgbackrest backup --stanza=medimpact --log-level-console=info
+
+output bellow:
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest backup --stanza=medimpact --log-level-console=info
+2023-12-05 14:22:39.071 P00   INFO: backup command begin 2.46: --exec-id=2093-9767bca5 --log-level-console=info --pg1-path=/var/lib/pgsql/13/data --pg1-port=5432 --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=medimpact
+WARN: no prior backup exists, incr backup has been changed to full
+2023-12-05 14:22:39.776 P00   INFO: execute non-exclusive backup start: backup begins after the next regular checkpoint completes
+2023-12-05 14:22:40.277 P00   INFO: backup start archive = 000000010000000000000029, lsn = 0/29000028
+2023-12-05 14:22:40.277 P00   INFO: check archive for prior segment 000000010000000000000028
+2023-12-05 14:23:03.353 P00   INFO: execute non-exclusive backup stop and wait for all WAL segments to archive
+2023-12-05 14:23:03.553 P00   INFO: backup stop archive = 000000010000000000000029, lsn = 0/29000138
+2023-12-05 14:23:03.556 P00   INFO: check archive for segment(s) 000000010000000000000029:000000010000000000000029
+2023-12-05 14:23:03.677 P00   INFO: new backup label = 20231205-142239F
+2023-12-05 14:23:03.716 P00   INFO: full backup size = 778.8MB, file total = 1238
+2023-12-05 14:23:03.716 P00   INFO: backup command end: completed successfully (24647ms)
+2023-12-05 14:23:03.716 P00   INFO: expire command begin 2.46: --exec-id=2093-9767bca5 --log-level-console=info --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=medimpact
+2023-12-05 14:23:03.721 P00   INFO: expire command end: completed successfully (5ms)
+[postgres@ip-172-31-28-95 data]$
+
+Note: there was no prior full backup so that has been taken by pgbackrest
+
+** How to verify backup related information
+
+su - postgres
+pgbackrest info 
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest info
+stanza: medimpact
+    status: ok
+    cipher: none
+
+    db (current)
+        wal archive min/max (13): 000000010000000000000027/000000010000000000000029
+
+        full backup: 20231205-142239F
+            timestamp start/stop: 2023-12-05 14:22:39 / 2023-12-05 14:23:03
+            wal start/stop: 000000010000000000000029 / 000000010000000000000029
+            database size: 778.8MB, database backup size: 778.8MB
+            repo1: backup set size: 43.9MB, backup size: 43.9MB
+
+Note: Please note that a post full backup executes an incremental backup
+
+pgbackrest backup --stanza=medimpact --log-level-console=info
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest backup --stanza=medimpact --log-level-console=info
+2023-12-05 14:30:21.234 P00   INFO: backup command begin 2.46: --exec-id=2148-ccac9da9 --log-level-console=info --pg1-path=/var/lib/pgsql/13/data --pg1-port=5432 --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=medimpact
+2023-12-05 14:30:21.948 P00   INFO: last backup label = 20231205-142239F, version = 2.46
+2023-12-05 14:30:21.948 P00   INFO: execute non-exclusive backup start: backup begins after the next regular checkpoint completes
+2023-12-05 14:30:22.254 P00   INFO: backup start archive = 00000001000000000000002B, lsn = 0/2B000028
+2023-12-05 14:30:22.254 P00   INFO: check archive for prior segment 00000001000000000000002A
+2023-12-05 14:30:23.322 P00   INFO: execute non-exclusive backup stop and wait for all WAL segments to archive
+2023-12-05 14:30:23.523 P00   INFO: backup stop archive = 00000001000000000000002B, lsn = 0/2B000100
+2023-12-05 14:30:23.526 P00   INFO: check archive for segment(s) 00000001000000000000002B:00000001000000000000002B
+2023-12-05 14:30:23.644 P00   INFO: new backup label = 20231205-142239F_20231205-143021I
+2023-12-05 14:30:23.688 P00   INFO: incr backup size = 8.3KB, file total = 1238
+2023-12-05 14:30:23.689 P00   INFO: backup command end: completed successfully (2457ms)
+2023-12-05 14:30:23.689 P00   INFO: expire command begin 2.46: --exec-id=2148-ccac9da9 --log-level-console=info --repo1-path=/var/lib/pgbackrest --repo1-retention-full=2 --stanza=medimpact
+2023-12-05 14:30:23.696 P00   INFO: expire command end: completed successfully (7ms)
+
+** Again check backup status with pgbackrest info
+pgbackrest info
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest info
+stanza: medimpact
+    status: ok
+    cipher: none
+
+    db (current)
+        wal archive min/max (13): 000000010000000000000027/00000001000000000000002B
+
+        full backup: 20231205-142239F
+            timestamp start/stop: 2023-12-05 14:22:39 / 2023-12-05 14:23:03
+            wal start/stop: 000000010000000000000029 / 000000010000000000000029
+            database size: 778.8MB, database backup size: 778.8MB
+            repo1: backup set size: 43.9MB, backup size: 43.9MB
+
+        incr backup: 20231205-142239F_20231205-143021I
+            timestamp start/stop: 2023-12-05 14:30:21 / 2023-12-05 14:30:23
+            wal start/stop: 00000001000000000000002B / 00000001000000000000002B
+            database size: 778.8MB, database backup size: 8.3KB
+            repo1: backup set size: 43.9MB, backup size: 427B
+            backup reference list: 20231205-142239F
+
+
+** How to restore backup using pgbackrest
+
+pgbackrest detects succesful full backup, differencial backup, incremental backup and does restore as well
+restore command is :
+
+Note: Always stop postgres before doing restore
+
+pgbackrest restore --stanza=medimpact --log-level-console=info  (this will work if your database does not have data files)
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest restore --stanza=medimpact --log-level-console=info
+2023-12-05 14:38:58.846 P00   INFO: restore command begin 2.46: --exec-id=2185-bc523b4f --log-level-console=info --pg1-path=/var/lib/pgsql/13/data --repo1-path=/var/lib/pgbackrest --stanza=medimpact
+2023-12-05 14:38:58.856 P00   INFO: repo1: restore backup set 20231205-142239F_20231205-143021I, recovery will start at 2023-12-05 14:30:21
+ERROR: [040]: unable to restore to path '/var/lib/pgsql/13/data' because it contains files
+       HINT: try using --delta if this is what you intended.
+
+Note: restoring postgres with database and objects use bellow command 
+
+pgbackrest restore --stanza=medimpact --delta --log-level-console=info
+
+successful output bellow:
+
+[postgres@ip-172-31-28-95 data]$ pgbackrest restore --stanza=medimpact --delta --log-level-console=info
+2023-12-05 14:39:43.519 P00   INFO: restore command begin 2.46: --delta --exec-id=2186-628cd33d --log-level-console=info --pg1-path=/var/lib/pgsql/13/data --repo1-path=/var/lib/pgbackrest --stanza=medimpact
+2023-12-05 14:39:43.529 P00   INFO: repo1: restore backup set 20231205-142239F_20231205-143021I, recovery will start at 2023-12-05 14:30:21
+2023-12-05 14:39:43.530 P00   INFO: remove invalid files/links/paths from '/var/lib/pgsql/13/data'
+2023-12-05 14:39:55.670 P00   INFO: write updated /var/lib/pgsql/13/data/postgresql.auto.conf
+2023-12-05 14:39:55.674 P00   INFO: restore global/pg_control (performed last to ensure aborted restores cannot be started)
+2023-12-05 14:39:55.675 P00   INFO: restore size = 778.8MB, file total = 1238
+2023-12-05 14:39:55.675 P00   INFO: restore command end: completed successfully (12159ms)
+
+Note: Always stop postgres before doing restore 
+
+
+
+
+
+
+
