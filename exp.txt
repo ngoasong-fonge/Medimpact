@@ -1,29 +1,45 @@
-3 Configure pgbackrest in the /etc/pgbackrest/pgbackrest.conf 
+                             Configure and Install Pgbackrest
+
+1.	Install pgBackrest on patroni servers
+2.	Configure pgBackrest to use dedicated backup server
+3.	Configure patroni to use pgBackrest
+4.	Run the pgBackrest’s first backup
+
+1 Install pgBackRest package
+sudo yum install pgbackrest 
+
+2 Create the pgBackRest repository
+sudo mkdir -p /var/lib/pgbackrest
+sudo chmod 750 /var/lib/pgbackrest
+sudo chown postgres:postgres /var/lib/pgbackrest
+
+3 Configure pgBackrest in the /etc/pgbackrest/pgbackrest.conf 
 [global] 
 # Server repo details
-repo1-path=/opt/backup
-repo1-retention-archive-type=full 
-repo1-retention-full=4 
+repo1-path=/opt/backup  (path to backup repository) 
+repo1-retention-archive-type=full (archive retention policy type )
+repo1-retention-full=4 (number of full backups retained) 
 # Server general options
-process-max=12
+process-max=12  (maximum number of parallel processes)
 log-level-console=info
 #log-level-file=debug
 log-level-file=info
 start-fast=y
-delta=y
-backup-standby=y 
+delta=y 
+backup-standby=y ( enable backup from standby)
+
 
 ### Clusters and nodes ###
 [pgsandbox]
 pg1-host=${ dv1medpgsc1 }
-pg1-host-port=8432
+pg1-host-port= host port for connecting to postgres
 pg1-port=5432
 pg1-path= /opt/app/postgres-data/data
 pg1-host-type=tls
-pg1-host-cert-file=/pg_ha/certs/${SRV_NAME}.crt
-pg1-host-key-file=/pg_ha/certs/${SRV_NAME}.key
-pg1-host-ca-file=/pg_ha/certs/ca.crt
-pg1-socket-path=/var/run/postgresql 
+pg1-host-cert-file=/pg_ha/certs/${SRV_NAME}.crt (path to host certificate file)
+pg1-host-key-file=/pg_ha/certs/${SRV_NAME}.key (path to host key file)
+pg1-host-ca-file=/pg_ha/certs/ca.crt (path to certificate authority)
+pg1-socket-path=/var/run/postgresql (path to server unix socket)
 
 
 pg2-host=${ dv1medpgsc2 }
@@ -35,3 +51,121 @@ pg2-host-cert-file=/pg_ha/certs/${SRV_NAME}.crt
 pg2-host-key-file=/pg_ha/certs/${SRV_NAME}.key
 pg2-host-ca-file=/pg_ha/certs/ca.crt
 pg2-socket-path=/var/run/postgresql 
+
+4 Create the systemd unit file at the path /etc/systemd/system/pgbackrest.service
+[Unit]
+Description=pgBackRest Server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=postgres
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/pgbackrest server
+#ExecStartPost=/bin/sleep 3
+#ExecStartPost=/bin/bash -c "[ ! -z $MAINPID ]"
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+Reload , enable and start pgBackrest service 
+sudo systemctl daemon-reload
+sudo systemctl enable --now pgbackrest
+
+5 Configure Database Servers
+Create the configuration file in dv1medpgsc1 and dv1medpgsc2. The default path is /etc/pgbackrest /pgbackrest.conf
+[global]
+repo1-host=bkp-srv
+repo1-host-user=postgres
+repo1-host-type=tls
+repo1-host-cert-file=/pg_ha/certs/${NODE_NAME}.crt
+repo1-host-key-file=/pg_ha/certs/${NODE_NAME}.key
+repo1-host-ca-file=/pg_ha/certs/ca.crt
+
+# general options
+process-max=16
+log-level-console=info
+log-level-file=debug
+
+# tls server options
+tls-server-address=*
+tls-server-cert-file=/pg_ha/certs/${NODE_NAME}.crt
+tls-server-key-file=/pg_ha/certs/${NODE_NAME}.key
+tls-server-ca-file=/pg_ha/certs/ca.crt
+tls-server-auth=bkp-srv=cluster_1
+
+[pgsandbox]
+pg1-path= /opt/app/postgres-data/data 
+[pgsandbox]
+Pg2-path= /opt/app/postgres-data/data   for dv1medpgsc2
+
+6 Create the systemd unit file in dv1medpgsc1 and dv1medpgsc2 /etc/systemd/system/pgbackrest.service
+
+[Unit]
+Description=pgBackRest Server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=postgres
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/pgbackrest server
+#ExecStartPost=/bin/sleep 3
+#ExecStartPost=/bin/bash -c "[ ! -z $MAINPID ]"
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+
+7 reload, enable and start the pgBackrest server
+sudo systemctl daemon-reload
+sudo systemctl enable --now pgbackrest 
+
+
+8  Change Patroni configuration to use pgBackRest. Run this command on one node only
+On dv1medpgsc1 edit the /opt/app/patroni/patroni.yml  file
+For example:
+loop_wait: 10
+maximum_lag_on_failover: 1048576
+postgresql:
+  parameters:
+    archive_command: pgbackrest --stanza=pgsandbox archive-push "/opt/app/postgres-data/data/pg_wal/%f"
+    archive_mode: true
+    archive_timeout: 1800s
+    hot_standby: true
+    logging_collector: 'on'
+    max_replication_slots: 10
+    max_wal_senders: 5
+    wal_keep_size: 4096
+    wal_level: logical
+    wal_log_hints: true
+  recovery_conf:
+    recovery_target_timeline: latest
+    restore_command: pgbackrest --config=/etc/pgbackrest/pgbackrest.conf --stanza=stanza archive-get %f "%p"
+  use_pg_rewind: true
+  use_slots: true
+retry_timeout: 10
+slots:
+  percona_cluster_1:
+    type: physical
+9 Configure Backup 
+
+First create stanza
+
+ pgbackrest --stanza=pgsandbox stanza-create
+
+
+run check command to ensure archiving and backups are properly configured.
+pgbackrest check –stanza=pgsandbox info
+
+
+Take First Full Backup
+
+pgbackrest --stanza=pgsandbox stanza-full backup
+
+
+
