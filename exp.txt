@@ -168,4 +168,4 @@ Take First Full Backup
 pgbackrest --stanza=pgsandbox stanza-full backup
 
 
-
+https://www.cybertec-postgresql.com/en/remote-backup-and-restore-with-pgbackrest/?gclid=EAIaIQobChMIrNzGlvr2ggMVmKlmAh2vygAjEAAYASAAEgLLUfD_BwE
