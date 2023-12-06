@@ -16,6 +16,11 @@ pgbadger -f stderr /opt/app/postgres-data/data/log/postgresql-2023-11-21_000000.
 [========================>] Parsed 1195660 bytes of 1195660 (100.00%), queries: 0, events: 0
 LOG: Ok, generating html report...
 
+pgbadger -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' /opt/app/postgres-data/data/log/postgresql-2023-12-05_000000.log -o /opt/app/patroni/scripts/badger.12.5.2023.html
+
+pgbadger -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' /opt/app/postgres-data/data/log/postgresql-2023-12-05_000000.log -o /opt/app/patroni/scripts/badger.12.5.2023.html 2> error.log
+
+
 --------------------------------------------------------------------------------------------------------
 
 
