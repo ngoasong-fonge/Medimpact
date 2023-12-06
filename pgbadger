@@ -37,6 +37,23 @@ BEGIN
     END LOOP;
 END $$;
 
+-- vacuum_analyze_script.sql
+DO $$
+DECLARE
+    table_name text;
+BEGIN
+    FOR table_name IN (SELECT table_name FROM information_schema.tables WHERE table_schema = 'xray')
+    LOOP
+        EXECUTE 'VACUUM ANALYZE VERBOSE' || table_name;
+    END LOOP;
+END $$;
+psql:/opt/app/patroni/scripts/vacuum_analyze_script.sql:11: ERROR:  column reference "table_name" is ambiguous
+LINE 1: (SELECT table_name FROM information_schema.tables WHERE tabl...
+                ^
+DETAIL:  It could refer to either a PL/pgSQL variable or a table column.
+QUERY:  (SELECT table_name FROM information_schema.tables WHERE table_schema = 'xray')
+CONTEXT:  PL/pgSQL function inline_code_block line 5 at FOR over SELECT rows
+[svcpostgres@dv1medpgsc2 ~]$
 
 --------------------------------------------------------------------------------------------------------
 
