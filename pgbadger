@@ -25,6 +25,19 @@ pgbadger -v -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' /opt/ap
 cat postgresql-2023-12-05_*.log > combined.log
 pgbadger -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' combined.log -o report.html
 
+-- vacuum_analyze_script.sql
+
+DO $$ 
+DECLARE 
+    table_name text;
+BEGIN
+    FOR table_name IN (SELECT table_name FROM information_schema.tables WHERE table_schema = 'your_schema') 
+    LOOP
+        EXECUTE 'VACUUM ANALYZE ' || table_name;
+    END LOOP;
+END $$;
+
+
 --------------------------------------------------------------------------------------------------------
 
 
