@@ -20,6 +20,8 @@ pgbadger -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' /opt/app/p
 
 pgbadger -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' /opt/app/postgres-data/data/log/postgresql-2023-12-05_000000.log -o /opt/app/patroni/scripts/badger.12.5.2023.html 2> error.log
 
+pgbadger -v -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' /opt/app/postgres-data/data/log/postgresql-2023-12-06_000000.log -o /opt/app/patroni/scripts/badger.2023-12-06.html
+
 cat postgresql-2023-12-05_*.log > combined.log
 pgbadger -f stderr -p '%m [%r] [%p] : [%1-1] user=%u, db=%d, host=%h' combined.log -o report.html
 
