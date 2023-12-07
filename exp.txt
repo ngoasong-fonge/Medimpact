@@ -9,3 +9,5 @@ VACUUM
 
 [svcpostgres@pv2medpgbr1 ~]$ /opt/app/pgbackrest/bin/pgbackrest version
 pgBackRest 2.49
+
+git clone https://github.com/laurenz/oracle_fdw.git
