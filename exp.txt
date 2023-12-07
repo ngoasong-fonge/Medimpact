@@ -7,3 +7,5 @@ DETAIL:  0 dead row versions cannot be removed yet.
 CPU: user: 0.22 s, system: 0.03 s, elapsed: 0.28 s.
 VACUUM
 
+[svcpostgres@pv2medpgbr1 ~]$ /opt/app/pgbackrest/bin/pgbackrest version
+pgBackRest 2.49
