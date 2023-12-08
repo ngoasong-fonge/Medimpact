@@ -11,3 +11,21 @@ VACUUM
 pgBackRest 2.49
 
 git clone https://github.com/laurenz/oracle_fdw.git
+
+Exchange ssh keys to allow password-less login between all 3 hosts
+On the pgbackup server as svcpostgres user:
+
+ mkdir -m 750 /home/pgbackrest/.ssh
+ ssh-keygen -f /home/pgbackrest/.ssh/id_rsa \ -t rsa -b 4096 -N ""
+
+On db1 as svcpostgres user:
+ mkdir -m 750 -p /var/lib/postgresql/.ssh
+ ssh-keygen -f /var/lib/postgresql/.ssh/id_rsa \ -t rsa -b 4096 -N ""
+
+Exchange the public keys generated between the servers
+On pgbackup:
+cat ~/.ssh/id_rsa.pub | ssh postgres@db1 "cat >> ~/.ssh/authorized_keys"
+ 
+On db1:
+cat ~/.ssh/id_rsa.pub | ssh pgbackrest@pgbackup "cat >> ~/.ssh/authorized_keys"
+
