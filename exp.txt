@@ -50,6 +50,8 @@ ssh postgres@db1
 From db1 to pgbackup:
 ssh pgbackrest@pgbackup
 
+-------------------------------------------------------------------------------------------------------------------------------
 
+https://bun.uptrace.dev/postgres/pgbackrest-s3-backups.html#differential-backup
 
 
