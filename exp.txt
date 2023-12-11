@@ -54,4 +54,7 @@ ssh pgbackrest@pgbackup
 
 https://bun.uptrace.dev/postgres/pgbackrest-s3-backups.html#differential-backup
 
+2023-12-11 11:16:41.848 UTC [10.13.3.56(45684)] [1504535]: [16-1] user=devngcsuser,db=citus,host=10.13.3.56ERROR:  null value in column "answer_text" of relation "answer" violates not-null constraint
+2023-12-11 11:16:41.848 UTC [10.13.3.56(45684)] [1504535]: [17-1] user=devngcsuser,db=citus,host=10.13.3.56DETAIL:  Failing row contains (1837, 2023-12-11 11:16:41.843, System, 409, 667, null, null, 0).
+
 
