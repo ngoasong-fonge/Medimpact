@@ -63,18 +63,7 @@ https://bun.uptrace.dev/postgres/pgbackrest-s3-backups.html#differential-backup
 
 cat /opt/app/localhome/svcpostgres/.ssh/id_rsa.pub | ssh svcpostgres@qv1medpgc1 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
 
- pgbackrest --stanza=pgqa1 --log-level-console=info stanza-create
-ERROR: [037]: stanza-create command requires option: pg1-path
-       HINT: does this stanza exist?
+ 
+sudo -iu svcpostgres pgbackrest --stanza=pgqa1 --log-level-console=info stanza-create --pg1-path=/opt/app/postgres-data/data --log-path=/opt/backup/log/pgbackrest
+svcpostgres is not in the sudoers file.  This incident will be reported.
 
-
-[svcpostgres@pv2medpgbr1 ~]$ pgbackrest --stanza=pgqa1 --log-level-console=info stanza-create --pg1-path=/opt/app/postgres-data/data
-WARN: unable to open log file '/var/log/pgbackrest/pgqa1-stanza-create.log': No such file or directory
-      NOTE: process will continue without log file.
-2023-12-12 23:08:10.105 P00   INFO: stanza-create command begin 2.49: --exec-id=695076-0650c483 --log-level-console=info --log-level-file=off --pg1-path=/opt/app/postgres-data/data --stanza=pgqa1
-WARN: unable to check pg1: [DbConnectError] unable to connect to 'dbname='postgres' port=5432': could not connect to server: No such file or directory
-        Is the server running locally and accepting
-        connections on Unix domain socket "/var/run/postgresql/.s.PGSQL.5432"?
-ERROR: [056]: unable to find primary cluster - cannot proceed
-       HINT: are all available clusters in recovery?
-2023-12-12 23:08:10.106 P00   INFO: stanza-create command end: aborted with exception [056]
