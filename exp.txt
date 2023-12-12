@@ -61,3 +61,5 @@ https://bun.uptrace.dev/postgres/pgbackrest-s3-backups.html#differential-backup
 -rw------- 1 svcpostgres svcpostgres  11M Dec 11 04:32 postgresql-2023-12-11_023944.log
 -rw------- 1 svcpostgres svcpostgres 8.3M Dec 11 15:20 postgresql-2023-12-11_043206.log
 
+cat /opt/app/localhome/svcpostgres/.ssh/id_rsa.pub | ssh svcpostgres@qv1medpgc1 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+
