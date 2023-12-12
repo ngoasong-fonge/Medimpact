@@ -63,3 +63,7 @@ https://bun.uptrace.dev/postgres/pgbackrest-s3-backups.html#differential-backup
 
 cat /opt/app/localhome/svcpostgres/.ssh/id_rsa.pub | ssh svcpostgres@qv1medpgc1 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
 
+ERROR: [037]: stanza-create command requires option: pg1-path
+       HINT: does this stanza exist?
+
+
