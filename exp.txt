@@ -74,3 +74,7 @@ ERROR:  no schema has been selected to create in
 sbdme1=# CREATE EXTENSION oracle_fdw SCHEMA dmeapps;
 ERROR:  could not load library "/opt/app/postgresql-15.1/lib/oracle_fdw.so": libnsl.so.1: cannot open shared object file: No such file or directory
 
+sbdme1=# CREATE EXTENSION oracle_fdw SCHEMA dmeapps;
+ERROR:  could not load library "/opt/app/postgresql-15.1/lib/oracle_fdw.so": /opt/app/postgresql-15.1/lib/oracle_fdw.so: undefined symbol: get_rel_all_updated_cols
+
+
