@@ -67,3 +67,6 @@ cat /opt/app/localhome/svcpostgres/.ssh/id_rsa.pub | ssh svcpostgres@qv1medpgc1 
 sudo -iu svcpostgres pgbackrest --stanza=pgqa1 --log-level-console=info stanza-create --pg1-path=/opt/app/postgres-data/data --log-path=/opt/backup/log/pgbackrest
 svcpostgres is not in the sudoers file.  This incident will be reported.
 
+
+sbdme1=# CREATE EXTENSION oracle_fdw;
+ERROR:  no schema has been selected to create in
