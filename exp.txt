@@ -68,13 +68,10 @@ sudo -iu svcpostgres pgbackrest --stanza=pgqa1 --log-level-console=info stanza-c
 svcpostgres is not in the sudoers file.  This incident will be reported.
 
 
-sbdme1=# CREATE EXTENSION oracle_fdw;
-ERROR:  no schema has been selected to create in
-
 sbdme1=# CREATE EXTENSION oracle_fdw SCHEMA dmeapps;
-ERROR:  could not load library "/opt/app/postgresql-15.1/lib/oracle_fdw.so": libnsl.so.1: cannot open shared object file: No such file or directory
-
-sbdme1=# CREATE EXTENSION oracle_fdw SCHEMA dmeapps;
-ERROR:  could not load library "/opt/app/postgresql-15.1/lib/oracle_fdw.so": /opt/app/postgresql-15.1/lib/oracle_fdw.so: undefined symbol: get_rel_all_updated_cols
+ERROR:  extension "oracle_fdw" is not available
+DETAIL:  Could not open extension control file "/opt/app/postgresql-15.1/share/extension/oracle_fdw.control": No such file or directory.
+HINT:  The extension must first be installed on the system where PostgreSQL is running.
+CONTEXT:  while executing command on dv1meddmepsw1.medimpact.com:5432
 
 
