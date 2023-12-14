@@ -86,13 +86,28 @@ sudo ln -s /opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf /etc/pgbackrest/p
 
 
 [global]
-repo1-host= pv2medpgbr1
-repo1-host-user=svcpostgres
+# Server repo details
+repo1-path=/opt/backup/pgbackrest
+repo1-retention-archive-type=full
+repo1-retention-full=2
 process-max=4
+log-path=/opt/backup/log/pgbackrest
 log-level-console=info
-log-level-file=detail
+log-level-file=info
+start-fast=y
+delta=y
+#backup-standby=y
 
+### Clusters and nodes ###
 [pgqa1]
-pg1-path=/opt/app/postgres-data/data
+pg1-host=qv1medpgc1
+pg1-host-user=svcpostgres
 pg1-port=5432
+pg1-path=/opt/app/postgres-data/data
+pg2-host=qv1medpgc2
+pg2-host-user=svcpostgres
+pg2-port=5432
+pg2-path=/opt/app/postgres-data/data
+~
+
 
