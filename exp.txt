@@ -77,79 +77,9 @@ CONTEXT:  while executing command on dv1meddmepsw1.medimpact.com:5432
 
 sudo ln -s /opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
 
-[svcpostgres@pv2medpgbr1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info stanza-create
-2023-12-14 19:00:23.962 P00   INFO: stanza-create command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=794740-7b13964f --log-level-console=info --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
-WARN: unable to check pg1: [UnknownError] remote-0 process on 'qv1medpgc1' terminated unexpectedly [255]: postgres@qv1medpgc1: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
-WARN: unable to check pg2: [UnknownError] remote-0 process on 'qv1medpgc2' terminated unexpectedly [255]: postgres@qv1medpgc2: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
-ERROR: [056]: unable to find primary cluster - cannot proceed
-       HINT: are all available clusters in recovery?
-2023-12-14 19:00:24.763 P00   INFO: stanza-create command end: aborted with exception [056]
-[svcpostgres@pv2medpgbr1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=debug stanza-create
-2023-12-14 19:01:55.751 P00  DEBUG:     common/io/socket/common::sckInit: (block: false, keepAlive: true, tcpKeepAliveCount: 0, tcpKeepAliveIdle: 0, tcpKeepAliveInterval: 0)
-2023-12-14 19:01:55.751 P00  DEBUG:     common/io/socket/common::sckInit: => void
-2023-12-14 19:01:55.752 P00   INFO: stanza-create command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=794824-d1f470fd --log-level-console=debug --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
-2023-12-14 19:01:55.752 P00  DEBUG:     common/lock::lockInit: (path: {"/tmp/pgbackrest"}, execId: {"794824-d1f470fd"}, type: 2)
-2023-12-14 19:01:55.752 P00  DEBUG:     common/lock::lockInit: => void
-2023-12-14 19:01:55.752 P00  DEBUG:     common/lock::lockAcquire: (param.timeout: 0, param.returnOnNoLock: false)
-2023-12-14 19:01:55.753 P00  DEBUG:     common/lock::lockAcquire: => true
-2023-12-14 19:01:55.753 P00  DEBUG:     config/load::cfgLoad: => void
-2023-12-14 19:01:55.753 P00  DEBUG:     command/stanza/create::cmdStanzaCreate: (void)
-2023-12-14 19:01:55.753 P00  DEBUG:     command/control/common::lockStopTest: (void)
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageExists: (this: {type: posix, path: /, write: false}, pathExp: {"/tmp/pgbackrest/pgqa1.stop"}, param.timeout: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageInfo: (this: {type: posix, path: /, write: false}, fileExp: {"/tmp/pgbackrest/pgqa1.stop"}, param.level: 3, param.ignoreMissing: true, param.followLink: true, param.noPathEnforce: false)
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageInfo: => {StorageInfo}
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageExists: => false
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageExists: (this: {type: posix, path: /, write: false}, pathExp: {"/tmp/pgbackrest/all.stop"}, param.timeout: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageInfo: (this: {type: posix, path: /, write: false}, fileExp: {"/tmp/pgbackrest/all.stop"}, param.level: 3, param.ignoreMissing: true, param.followLink: true, param.noPathEnforce: false)
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageInfo: => {StorageInfo}
-2023-12-14 19:01:55.753 P00  DEBUG:     storage/storage::storageExists: => false
-2023-12-14 19:01:55.753 P00  DEBUG:     command/control/common::lockStopTest: => void
-2023-12-14 19:01:55.753 P00  DEBUG:     db/helper::dbGet: (primaryOnly: false, primaryRequired: true, standbyRequired: false)
-2023-12-14 19:01:55.753 P00  DEBUG:     db/helper::dbGetIdx: (pgIdx: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::pgIsLocal: (pgIdx: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::pgIsLocal: => false
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::pgIsLocal: (pgIdx: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::pgIsLocal: => false
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::protocolRemoteGet: (protocolStorageType: pg, hostIdx: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::protocolRemoteParamSsh: (protocolStorageType: pg, hostIdx: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::protocolRemoteParam: (protocolStorageType: pg, hostIdx: 0)
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::protocolRemoteParam: => {["--exec-id=794824-d1f470fd", "--log-level-console=off", "--log-level-file=off", "--log-level-stderr=error", "--pg1-path=/opt/app/postgres-data/data", "--pg1-port=5432", "--process=0", "--remote-type=pg", "--stanza=pgqa1", "stanza-create:remote"]}
-2023-12-14 19:01:55.753 P00  DEBUG:     protocol/helper::protocolRemoteParamSsh: => {["-o", "LogLevel=error", "-o", "Compression=no", "-o", "PasswordAuthentication=no", "postgres@qv1medpgc1", "pgbackrest --exec-id=794824-d1f470fd --log-level-console=off --log-level-file=off --log-level-stderr=error --pg1-path=/opt/app/postgres-data/data --pg1-port=5432 --process=0 --remote-type=pg --stanza=pgqa1 stanza-create:remote"]}
-2023-12-14 19:01:55.753 P00  DEBUG:     common/exec::execNew: (command: {"ssh"}, param: {["-o", "LogLevel=error", "-o", "Compression=no", "-o", "PasswordAuthentication=no", "postgres@qv1medpgc1", "pgbackrest --exec-id=794824-d1f470fd --log-level-console=off --log-level-file=off --log-level-stderr=error --pg1-path=/opt/app/postgres-data/data --pg1-port=5432 --process=0 --remote-type=pg --stanza=pgqa1 stanza-create:remote"]}, name: {"remote-0 process on 'qv1medpgc1'"}, timeout: 1830000)
-2023-12-14 19:01:55.753 P00  DEBUG:     common/exec::execNew: => {Exec}
-2023-12-14 19:01:55.753 P00  DEBUG:     common/exec::execOpen: (this: {Exec})
-2023-12-14 19:01:55.753 P00  DEBUG:     common/exec::execOpen: => void
-WARN: unable to check pg1: [UnknownError] remote-0 process on 'qv1medpgc1' terminated unexpectedly [255]: postgres@qv1medpgc1: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
-2023-12-14 19:01:55.894 P00  DEBUG:     db/helper::dbGetIdx: (pgIdx: 1)
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::pgIsLocal: (pgIdx: 1)
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::pgIsLocal: => false
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::pgIsLocal: (pgIdx: 1)
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::pgIsLocal: => false
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::protocolRemoteGet: (protocolStorageType: pg, hostIdx: 1)
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::protocolRemoteParamSsh: (protocolStorageType: pg, hostIdx: 1)
-2023-12-14 19:01:55.894 P00  DEBUG:     protocol/helper::protocolRemoteParam: (protocolStorageType: pg, hostIdx: 1)
-2023-12-14 19:01:55.895 P00  DEBUG:     protocol/helper::protocolRemoteParam: => {["--exec-id=794824-d1f470fd", "--log-level-console=off", "--log-level-file=off", "--log-level-stderr=error", "--pg1-path=/opt/app/postgres-data/data", "--pg1-port=5432", "--process=0", "--remote-type=pg", "--stanza=pgqa1", "stanza-create:remote"]}
-2023-12-14 19:01:55.895 P00  DEBUG:     protocol/helper::protocolRemoteParamSsh: => {["-o", "LogLevel=error", "-o", "Compression=no", "-o", "PasswordAuthentication=no", "postgres@qv1medpgc2", "pgbackrest --exec-id=794824-d1f470fd --log-level-console=off --log-level-file=off --log-level-stderr=error --pg1-path=/opt/app/postgres-data/data --pg1-port=5432 --process=0 --remote-type=pg --stanza=pgqa1 stanza-create:remote"]}
-2023-12-14 19:01:55.895 P00  DEBUG:     common/exec::execNew: (command: {"ssh"}, param: {["-o", "LogLevel=error", "-o", "Compression=no", "-o", "PasswordAuthentication=no", "postgres@qv1medpgc2", "pgbackrest --exec-id=794824-d1f470fd --log-level-console=off --log-level-file=off --log-level-stderr=error --pg1-path=/opt/app/postgres-data/data --pg1-port=5432 --process=0 --remote-type=pg --stanza=pgqa1 stanza-create:remote"]}, name: {"remote-0 process on 'qv1medpgc2'"}, timeout: 1830000)
-2023-12-14 19:01:55.895 P00  DEBUG:     common/exec::execNew: => {Exec}
-2023-12-14 19:01:55.895 P00  DEBUG:     common/exec::execOpen: (this: {Exec})
-2023-12-14 19:01:55.896 P00  DEBUG:     common/exec::execOpen: => void
-WARN: unable to check pg2: [UnknownError] remote-0 process on 'qv1medpgc2' terminated unexpectedly [255]: postgres@qv1medpgc2: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
-2023-12-14 19:01:56.039 P00  DEBUG:     command/exit::exitSafe: (result: 0, error: true, signalType: 0)
-ERROR: [056]: unable to find primary cluster - cannot proceed
-       HINT: are all available clusters in recovery?
-       --------------------------------------------------------------------
-       If SUBMITTING AN ISSUE please provide the following information:
-
-       version: 2.49
-       command: stanza-create
-       options: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=794824-d1f470fd --log-level-console=debug --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
-
-       stack trace:
-       db/helper.c:dbGet:135:(primaryOnly: false, primaryRequired: true, standbyRequired: false)
-       command/stanza/create.c:cmdStanzaCreate:(void)
-       main.c:main:(debug log level required for parameters)
-       --------------------------------------------------------------------
-2023-12-14 19:01:56.039 P00   INFO: stanza-create command end: aborted with exception [056]
-2023-12-14 19:01:56.039 P00  DEBUG:     command/exit::exitSafe: => 56
-2023-12-14 19:01:56.039 P00  DEBUG:     main::main: => 56
+2023-12-14 22:05:03.093 P00   INFO: stanza-create command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=827417-0be7e239 --log-level-console=debug --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
+2023-12-14 22:05:03.372 P00   WARN: unable to check pg1: [UnknownError] remote-0 process on 'qv1medpgc1' terminated unexpectedly [127]: bash: pgbackrest: command not found
+2023-12-14 22:05:03.717 P00   WARN: unable to check pg2: [UnknownError] remote-0 process on 'qv1medpgc2' terminated unexpectedly [127]: bash: pgbackrest: command not found
+2023-12-14 22:05:03.717 P00  ERROR: [056]: unable to find primary cluster - cannot proceed
+                                    HINT: are all available clusters in recovery?
+2023-12-14 22:05:03.717 P00   INFO: stanza-create command end: aborted with exception [056]
