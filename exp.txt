@@ -76,3 +76,12 @@ CONTEXT:  while executing command on dv1meddmepsw1.medimpact.com:5432
 
 
 sudo ln -s /opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
+
+[svcpostgres@pv2medpgbr1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info stanza-create
+2023-12-14 19:00:23.962 P00   INFO: stanza-create command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=794740-7b13964f --log-level-console=info --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
+WARN: unable to check pg1: [UnknownError] remote-0 process on 'qv1medpgc1' terminated unexpectedly [255]: postgres@qv1medpgc1: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+WARN: unable to check pg2: [UnknownError] remote-0 process on 'qv1medpgc2' terminated unexpectedly [255]: postgres@qv1medpgc2: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+ERROR: [056]: unable to find primary cluster - cannot proceed
+       HINT: are all available clusters in recovery?
+2023-12-14 19:00:24.763 P00   INFO: stanza-create command end: aborted with exception [056]
+
