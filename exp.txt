@@ -83,3 +83,16 @@ sudo ln -s /opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf /etc/pgbackrest/p
 2023-12-14 22:05:03.717 P00  ERROR: [056]: unable to find primary cluster - cannot proceed
                                     HINT: are all available clusters in recovery?
 2023-12-14 22:05:03.717 P00   INFO: stanza-create command end: aborted with exception [056]
+
+
+[global]
+repo1-host= pv2medpgbr1
+repo1-host-user=svcpostgres
+process-max=4
+log-level-console=info
+log-level-file=detail
+
+[pgqa1]
+pg1-path=/opt/app/postgres-data/data
+pg1-port=5432
+
