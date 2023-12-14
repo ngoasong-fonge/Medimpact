@@ -110,4 +110,6 @@ pg2-port=5432
 pg2-path=/opt/app/postgres-data/data
 ~
 
-
+# Custom paths to pgBackRest binaries on remote servers
+pg1-host-cmd = /path/to/pgbackrest
+pg2-host-cmd = /path/to/pgbackrest
