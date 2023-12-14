@@ -75,3 +75,4 @@ HINT:  The extension must first be installed on the system where PostgreSQL is r
 CONTEXT:  while executing command on dv1meddmepsw1.medimpact.com:5432
 
 
+sudo ln -s /opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
