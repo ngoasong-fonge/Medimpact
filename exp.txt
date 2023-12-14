@@ -128,4 +128,9 @@ ERROR: [056]: unable to find primary cluster - cannot proceed
 
 
 
+sbdme1=# DROP EXTENSION oracle_fdw CASCADE;
+ERROR:  Citus can only be loaded via shared_preload_libraries
+HINT:  Add citus to shared_preload_libraries configuration variable in postgresql.conf in master and workers. Note that citus should be at the beginning of shared_preload_libraries.
+CONTEXT:  SQL statement "SELECT master_unmark_object_distributed(v_obj.classid, v_obj.objid, v_obj.objsubid)"
+PL/pgSQL function citus_drop_trigger() line 32 at PERFORM
 
