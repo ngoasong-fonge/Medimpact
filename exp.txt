@@ -135,3 +135,8 @@ CONTEXT:  SQL statement "SELECT master_unmark_object_distributed(v_obj.classid, 
 PL/pgSQL function citus_drop_trigger() line 32 at PERFORM
 
 OPTIONS (dbserver 'host_ora:1521/XEPDB1');
+
+
+WARN: unable to check pg1: [UnknownError] remote-0 process on 'qv1medpgc1' terminated unexpectedly [127]: bash: pgbackrest: command not found
+WARN: unable to check pg2: [UnknownError] remote-0 process on 'qv1medpgc2' terminated unexpectedly [127]: bash: pgbackrest: command not found
+
