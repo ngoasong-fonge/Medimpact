@@ -134,3 +134,4 @@ HINT:  Add citus to shared_preload_libraries configuration variable in postgresq
 CONTEXT:  SQL statement "SELECT master_unmark_object_distributed(v_obj.classid, v_obj.objid, v_obj.objsubid)"
 PL/pgSQL function citus_drop_trigger() line 32 at PERFORM
 
+OPTIONS (dbserver 'host_ora:1521/XEPDB1');
