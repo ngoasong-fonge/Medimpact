@@ -140,14 +140,14 @@ OPTIONS (dbserver 'host_ora:1521/XEPDB1');
 WARN: unable to check pg1: [UnknownError] remote-0 process on 'qv1medpgc1' terminated unexpectedly [127]: bash: pgbackrest: command not found
 WARN: unable to check pg2: [UnknownError] remote-0 process on 'qv1medpgc2' terminated unexpectedly [127]: bash: pgbackrest: command not found
 
+
 sbdme1=# CREATE FOREIGN TABLE dmeapps.departments_tst
 sbdme1-# (
 sbdme1(#   DEPARTMENT_ID    NUMBER(10)                   NOT NULL,
-sbdme1(#   DEPARTMENT_NAME  VARCHAR2(30 BYTE)            NOT NULL,
+sbdme1(#   DEPARTMENT_NAME  CHARACTER VARYING(30)         NOT NULL,
 sbdme1(#   MANAGER_ID       NUMBER(6),
 sbdme1(#   LOCATION_ID      NUMBER(4)
 sbdme1(# ) SERVER ora_sv OPTIONS (SCHEMA 'PSAMY' , TABLE 'DEPARTMENTS_TST');
-ERROR:  syntax error at or near "BYTE"
-LINE 4:   DEPARTMENT_NAME  VARCHAR2(30 BYTE)            NOT NULL,
-                                       ^
-sbdme1=#
+ERROR:  type "number" does not exist
+LINE 3:   DEPARTMENT_ID    NUMBER(10)                   NOT NULL,
+                           ^
