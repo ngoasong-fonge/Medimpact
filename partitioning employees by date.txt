@@ -198,3 +198,42 @@ select * from employees where created_at between '2013-01-01' and '2014-01-01';
 
 
 
+
+-- Step 1: Create a parent table without partitions
+CREATE TABLE stg_mep_claim_10r_parent (
+    claim_id SERIAL PRIMARY KEY,
+    claim_date DATE,
+    -- Other columns...
+);
+
+-- Step 2: Create range partitions for each week within the specified date range
+CREATE TABLE stg_mep_claim_10r_week_1 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-08-11') TO ('2023-08-18');
+
+CREATE TABLE stg_mep_claim_10r_week_2 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-08-19') TO ('2023-08-25');
+
+-- Continue creating partitions for each week within the date range...
+
+CREATE TABLE stg_mep_claim_10r_week_13 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-11-01') TO ('2023-11-07');
+
+-- Step 3: Create an INSERT trigger to route data to the correct partition
+CREATE OR REPLACE FUNCTION insert_stg_mep_claim_10r()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Determine the week from claim_date and route to the appropriate partition
+    INSERT INTO stg_mep_claim_10r_parent
+    VALUES (NEW.*)
+    PARTITION FOR (EXTRACT(WEEK FROM NEW.claim_date));
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER insert_stg_mep_claim_10r_trigger
+BEFORE INSERT ON stg_mep_claim_10r
+FOR EACH ROW
+EXECUTE FUNCTION insert_stg_mep_claim_10r();
+
+
