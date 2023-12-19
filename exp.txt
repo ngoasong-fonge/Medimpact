@@ -130,9 +130,9 @@ ERROR: [056]: unable to find primary cluster - cannot proceed
 
 citus=# CREATE TABLE IF NOT EXISTS mepstg.mepstg.stg_mep_claim_10r_new
 citus-# (
-citus(#     mepstg.stg_mep_claim_10r_new_id bigint NOT NULL DEFAULT nextval('mepstg.mepstg.stg_mep_claim_10r_new_mepstg.stg_mep_claim_10r_new_id_seq'::regclass),
+citus(#     stg_mep_claim_10r_new_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_10r_stg_mep_claim_10r_new_id_seq'::regclass),
 citus(#     created timestamp without time zone NOT NULL,
-og.citus(#     created_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+citus(#     created_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
 citus(#     entered timestamp without time zone NOT NULL,
 citus(#     entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
 citus(#     stg_mep_claim_file_id bigint,
@@ -210,6 +210,6 @@ citus(#     autovacuum_enabled = TRUE
 citus(# )
 citus-# PARTITION BY RANGE (created);
 ERROR:  syntax error at or near "."
-LINE 3:     mepstg.stg_mep_claim_10r_new_id bigint NOT NULL DEFAULT ...
-                  ^
+LINE 75:     CONSTRAINT mepstg.stg_mep_claim_10r_new_pkey PRIMARY KEY...
+
 
