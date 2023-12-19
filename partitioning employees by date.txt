@@ -1,0 +1,200 @@
+** Check if there is sufficient available disk space to do partitioning (df -h)
+1/ Schema backup of employees table
+2/Create the duplicate of employees using thesame schema backup 
+3/ Create the child tables from the master/duplicate table (The table is partitioned into "ranges" defined by a key column, with no overlap between the ranges of values assigned to different partitions)
+4/Make sure indexes are created for the child tables on the date colunms 
+5/ Create procedure/trigger for the purpose of insert statements to the right child table
+6/ Insert the data from the employees table to the duplicate master_table
+7/ Rename the master employees table to old_master
+
+NOTE: Since primary keys are not supported on partitioned tables, foreign keys referencing partitioned tables are not supported, nor are foreign key references from a partitioned table to some other table.
+
+** df -h
+** select created_at from employees order by created_at desc limit 10;   (returning values on a table in desc order)
+** select created_at from employees order by created_at asc limit 10;   (returning values on a table in asc order)
+1/-- Table: public.employees
+
+-- DROP TABLE public.employees;
+
+CREATE TABLE public.new_employees
+(
+    id integer NOT NULL ,
+    business_id integer NOT NULL,
+    type character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    external_employee_id character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    customer_data hstore NOT NULL
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.employees
+    OWNER to mobi;
+
+GRANT ALL ON TABLE public.employees TO mobi;
+
+GRANT SELECT ON TABLE public.employees TO operations;
+
+GRANT SELECT ON TABLE public.employees TO tangoeqbr;
+
+-- Index: index_employees_on_business_id_and_external_employee_id
+
+-- DROP INDEX public.new_index_employees_on_business_id_and_external_employee_id;
+
+CREATE UNIQUE INDEX index_employees_on_business_id_and_external_employee_id
+    ON public.new_employees USING btree
+    (business_id, external_employee_id COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: index_employees_on_business_id_and_id
+
+-- DROP INDEX public.index_employees_on_business_id_and_id;
+
+CREATE INDEX index_employees_on_business_id_and_id
+    ON public.new_employees USING btree
+    (business_id, id)
+    TABLESPACE pg_default;
+
+-- Index: index_employees_on_type_and_external_employee_id
+
+-- DROP INDEX public.index_employees_on_type_and_external_employee_id;
+
+CREATE INDEX index_employees_on_type_and_external_employee_id
+    ON public.new_employees USING btree
+    (type COLLATE pg_catalog."default", external_employee_id COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+-- Index: upper_employees_external_employee_id
+
+-- DROP INDEX public.upper_employees_external_employee_id;
+
+CREATE INDEX upper_employees_external_employee_id
+    ON public.new_employees USING btree
+    (upper(external_employee_id::text) COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+2/ CREATE TABLE public.new_employees
+mobi-# (
+mobi(#     id integer NOT NULL ,
+mobi(#     business_id integer NOT NULL,
+mobi(#     type character varying(255) COLLATE pg_catalog."default" NOT NULL,
+mobi(#     external_employee_id character varying(255) COLLATE pg_catalog."default" NOT NULL,
+mobi(#     created_at timestamp without time zone,
+mobi(#     updated_at timestamp without time zone,
+mobi(#     customer_data hstore NOT NULL
+mobi(# )
+mobi-# WITH (
+mobi(#     OIDS = FALSE
+mobi(# )
+mobi-# TABLESPACE pg_default;
+CREATE TABLE
+mobi=# \d new_employees
+                  Table "public.new_employees"
+        Column        |            Type             | Modifiers
+----------------------+-----------------------------+-----------
+ id                   | integer                     | not null
+ business_id          | integer                     | not null
+ type                 | character varying(255)      | not null
+ external_employee_id | character varying(255)      | not null
+ created_at           | timestamp without time zone |
+ updated_at           | timestamp without time zone |
+ customer_data        | hstore                      | not null
+
+3/(creating check constraints)
+CREATE TABLE new_employees_2012 (CHECK (created_at >= timestamp without time zone '2012-01-01 00:00:00'
+                   AND created_at < timestamp without time zone '2013-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2013 (CHECK (created_at >= timestamp without time zone '2013-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2014-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2014 (CHECK (created_at >= timestamp without time zone '2014-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2015-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2015 (CHECK (created_at >= timestamp without time zone '2015-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2016-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2016 (CHECK (created_at >= timestamp without time zone '2016-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2017-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2017 (CHECK (created_at >= timestamp without time zone '2017-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2018-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2018 (CHECK (created_at >= timestamp without time zone '2018-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2019-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2019 (CHECK (created_at >= timestamp without time zone '2019-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2020-01-01 00:00:00')) INHERITS (new_employees);
+CREATE TABLE new_employees_2020 (CHECK (created_at >= timestamp without time zone '2020-01-01 00:00:00'
+                    AND created_at < timestamp without time zone '2021-01-01 00:00:00')) INHERITS (new_employees);
+
+
+
+
+
+
+4**Indexes** (create indexes on child tables)
+CREATE UNIQUE INDEX index_employees_2020_on_business_id_and_external_employee_id
+    ON public.new_employees_2020 USING btree
+    (business_id, external_employee_id COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+CREATE INDEX index_employees_2020_on_business_id_and_id
+    ON public.new_employees_2020 USING btree
+    (business_id, id)
+    TABLESPACE pg_default;
+CREATE INDEX index_employees_2020_on_type_and_external_employee_id
+    ON public.new_employees_2020 USING btree
+    (type COLLATE pg_catalog."default", external_employee_id COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+CREATE INDEX upper_employees_2020_external_employee_id
+    ON public.new_employees_2020 USING btree
+    (upper(external_employee_id::text) COLLATE pg_catalog."default")
+    TABLESPACE pg_default;
+
+5/ (create funtion)
+CREATE OR REPLACE FUNCTION employees_insert() RETURNS TRIGGER AS
+$$
+BEGIN
+    IF (NEW.created_at >= timestamp without time zone '2012-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2013-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2012 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2013-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2014-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2013 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2014-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2015-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2014 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2015-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2016-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2015 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2016-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2017-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2016 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2017-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2018-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2017 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2018-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2019-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2018 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2019-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2020-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2019 VALUES (NEW.*);
+   ELSIF (NEW.created_at >= timestamp without time zone '2020-01-01 00:00:00' AND NEW.created_at < timestamp without time zone '2021-01-01 00:00:00') THEN
+       INSERT INTO new_employees_2020 VALUES (NEW.*);
+   ELSE
+       RAISE EXCEPTION 'Date out of range. check employees_insert() function!';
+   END IF;
+   RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+6/( create trigger to direct queries to right child tables)  
+CREATE TRIGGER employees_insert_trigger
+BEFORE INSERT ON employees
+FOR EACH ROW EXECUTE PROCEDURE employees_insert();
+
+7/(insert all data from old_table to new_table)
+INSERT INTO new_employees SELECT * FROM  employees;
+
+8/(Rename the old_table to new_table)
+ALTER TABLE employees RENAME TO old_employees_backup;
+ALTER TABLE new_employees RENAME TO employees;
+ 
+9/ drop function+casade to drop the old trigger and create another function inorder to create a new trigger with the new_table name.  
+
+10/(run a query if the partition works)
+select * from employees where created_at between '2013-01-01' and '2014-01-01';
+
+
+ 
+
+
+
