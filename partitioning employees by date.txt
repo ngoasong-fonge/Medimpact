@@ -237,3 +237,39 @@ FOR EACH ROW
 EXECUTE FUNCTION insert_stg_mep_claim_10r();
 
 
+-- Create range partitions for each week within the specified date range
+CREATE TABLE stg_mep_claim_10r_week_2 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-08-19') TO ('2023-08-25');
+
+CREATE TABLE stg_mep_claim_10r_week_3 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-08-26') TO ('2023-09-01');
+
+CREATE TABLE stg_mep_claim_10r_week_4 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-09-02') TO ('2023-09-08');
+
+CREATE TABLE stg_mep_claim_10r_week_5 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-09-09') TO ('2023-09-15');
+
+CREATE TABLE stg_mep_claim_10r_week_6 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-09-16') TO ('2023-09-22');
+
+CREATE TABLE stg_mep_claim_10r_week_7 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-09-23') TO ('2023-09-29');
+
+CREATE TABLE stg_mep_claim_10r_week_8 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-09-30') TO ('2023-10-06');
+
+CREATE TABLE stg_mep_claim_10r_week_9 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-10-07') TO ('2023-10-13');
+
+CREATE TABLE stg_mep_claim_10r_week_10 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-10-14') TO ('2023-10-20');
+
+CREATE TABLE stg_mep_claim_10r_week_11 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-10-21') TO ('2023-10-27');
+
+CREATE TABLE stg_mep_claim_10r_week_12 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-10-28') TO ('2023-11-03');
+
+CREATE TABLE stg_mep_claim_10r_week_13 PARTITION OF stg_mep_claim_10r_parent
+    FOR VALUES FROM ('2023-11-01') TO ('2023-11-07');
