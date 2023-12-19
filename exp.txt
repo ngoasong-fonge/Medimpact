@@ -130,6 +130,7 @@ ERROR: [056]: unable to find primary cluster - cannot proceed
 
 citus=# CREATE TABLE IF NOT EXISTS mepstg.mepstg.stg_mep_claim_10r_new
 citus-# (
+    historicaldispositionstatus character varying(20) COLLATE pg_catalog."default",
 citus(#     stg_mep_claim_10r_new_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_10r_stg_mep_claim_10r_new_id_seq'::regclass),
 citus(#     created timestamp without time zone NOT NULL,
 citus(#     created_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
@@ -202,14 +203,15 @@ citus(#     filler_4 character varying(50) COLLATE pg_catalog."default",
 citus(#     filler_5 character varying(100) COLLATE pg_catalog."default",
 citus(#     monetaryamountchangeflag character varying(2) COLLATE pg_catalog."default",
 citus(#     claimsequencenumber character varying(20) COLLATE pg_catalog."default",
-citus(#     CONSTRAINT mepstg.stg_mep_claim_10r_new_pkey PRIMARY KEY (mepstg.stg_mep_claim_10r_new_id)
+citus(#     CONSTRAINT stg_mep_claim_10r_new_pkey PRIMARY KEY (stg_mep_claim_10r_new_id)
 citus(# )
 citus-#
 citus-# WITH (
 citus(#     autovacuum_enabled = TRUE
 citus(# )
 citus-# PARTITION BY RANGE (created);
-ERROR:  syntax error at or near "."
-LINE 75:     CONSTRAINT mepstg.stg_mep_claim_10r_new_pkey PRIMARY KEY...
+ERROR:  syntax error at or near "PARTITION"
+LINE 80: PARTITION BY RANGE (created);
+         ^
 
 
