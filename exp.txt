@@ -52,6 +52,8 @@ ssh pgbackrest@pgbackup
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info –type=full backup
-pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info –type=diff backup
+# Schedule a full backup on Saturdays at 2:00 AM
+0 2 * * 6 /usr/bin/pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info --type=full backup
 
+# Schedule a differential backup every day at 3:00 AM
+0 3 * * * /usr/bin/pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info --type=diff backup
