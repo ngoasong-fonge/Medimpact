@@ -54,3 +54,6 @@ ssh pgbackrest@pgbackup
 
 insert into stg_mep_claim_10r_new select * from mepstg.stg_mep_claim_10r
 nohup psql -h your_host -U your_username -d your_database -c "INSERT INTO mepstg.stg_mep_claim_10r_new SELECT * FROM mepstg.stg_mep_claim_10r;" > insert_log.txt 2>&1 &
+ERROR:  no partition of relation "stg_mep_claim_10r_new" found for row
+DETAIL:  Partition key of the failing row contains (created) = (2023-09-08 14:43:03).
+
