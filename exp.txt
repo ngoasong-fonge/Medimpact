@@ -52,8 +52,17 @@ ssh pgbackrest@pgbackup
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-insert into stg_mep_claim_10r_new select * from mepstg.stg_mep_claim_10r
-nohup psql -h your_host -U your_username -d your_database -c "INSERT INTO mepstg.stg_mep_claim_10r_new SELECT * FROM mepstg.stg_mep_claim_10r;" > insert_log.txt 2>&1 &
-ERROR:  no partition of relation "stg_mep_claim_10r_new" found for row
-DETAIL:  Partition key of the failing row contains (created) = (2023-09-08 14:43:03).
+Partitions: mepstg.stg_mep_claim_10r_new_week_1 FOR VALUES FROM ('2023-08-11 00:00:00') TO ('2023-08-18 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_10 FOR VALUES FROM ('2023-10-14 00:00:00') TO ('2023-10-20 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_11 FOR VALUES FROM ('2023-10-21 00:00:00') TO ('2023-10-27 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_12 FOR VALUES FROM ('2023-10-28 00:00:00') TO ('2023-11-03 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_2 FOR VALUES FROM ('2023-08-19 00:00:00') TO ('2023-08-25 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_3 FOR VALUES FROM ('2023-08-26 00:00:00') TO ('2023-09-01 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_4 FOR VALUES FROM ('2023-09-02 00:00:00') TO ('2023-09-08 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_5 FOR VALUES FROM ('2023-09-09 00:00:00') TO ('2023-09-15 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_6 FOR VALUES FROM ('2023-09-16 00:00:00') TO ('2023-09-22 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_7 FOR VALUES FROM ('2023-09-23 00:00:00') TO ('2023-09-29 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_8 FOR VALUES FROM ('2023-09-30 00:00:00') TO ('2023-10-06 00:00:00'),
+            mepstg.stg_mep_claim_10r_new_week_9 FOR VALUES FROM ('2023-10-07 00:00:00') TO ('2023-10-13 00:00:00')
+
 
