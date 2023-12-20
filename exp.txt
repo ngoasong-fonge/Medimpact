@@ -52,9 +52,4 @@ ssh pgbackrest@pgbackup
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-citus=# CREATE UNIQUE INDEX IF NOT EXISTS stg_mep_claim_10r_new
-citus-#     ON mepstg.stg_mep_claim_10r_new USING btree
-citus-#     (stg_mep_claim_10r_new_id ASC NULLS LAST)
-citus-#     TABLESPACE pg_default;
-ERROR:  cannot specify default tablespace for partitioned relations
-citus=#
+insert into stg_mep_claim_10r_new select * from mepstg.stg_mep_claim_10r
