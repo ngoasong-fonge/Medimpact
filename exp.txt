@@ -56,8 +56,6 @@ citus=# CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_10r_new
 citus-# (
 citus(#     stg_mep_claim_10r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_10r_stg_mep_claim_10r_id_seq'::regclass),
 citus(#     created timestamp without time zone NOT NULL,
-    historicalencountericn character varying(50) COLLATE pg_catalog."default",
-    historicalencounterid character varying(50) COLLATE pg_catalog."default",
 citus(#     created_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
 citus(#     entered timestamp without time zone NOT NULL,
 citus(#     entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
@@ -128,8 +126,6 @@ citus(#     filler_4 character varying(50) COLLATE pg_catalog."default",
 citus(#     filler_5 character varying(100) COLLATE pg_catalog."default",
 citus(#     monetaryamountchangeflag character varying(2) COLLATE pg_catalog."default",
 citus(#     claimsequencenumber character varying(20) COLLATE pg_catalog."default",
-citus(#     CONSTRAINT stg_mep_claim_10r_pkey PRIMARY KEY (stg_mep_claim_10r_id)
+citus(#     CONSTRAINT stg_mep_claim_10r_pkey PRIMARY KEY (stg_mep_claim_10r_id, created)
 citus(# ) PARTITION BY RANGE (created);
-ERROR:  unique constraint on partitioned table must include all partitioning columns
-DETAIL:  PRIMARY KEY constraint on table "stg_mep_claim_10r_new" lacks column "created" which is part of the partition key.
-citus=#
+ERROR:  relation "stg_mep_claim_10r_pkey" already exists
