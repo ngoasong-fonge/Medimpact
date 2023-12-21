@@ -50,10 +50,16 @@ ssh postgres@db1
 From db1 to pgbackup:
 ssh pgbackrest@pgbackup
 
-[svcpostgres@pv2medpgbr1 pgbackrest]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info check
-2023-12-21 20:01:59.599 P00   INFO: check command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=1212494-c9a952d4 --log-level-console=info --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
-2023-12-21 20:02:01.801 P00   INFO: check repo1 (standby)
-2023-12-21 20:02:01.804 P00   INFO: switch wal not performed because this is a standby
-ERROR: [068]: archive_command 'test ! -f /opt/backup/pgqa1/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgqa1/group0/wal_archive/%f' must contain pgbackrest
-2023-12-21 20:02:01.818 P00   INFO: check command end: aborted with exception [068]
+[svcpostgres@pv2medpgbr1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info check
+2023-12-21 20:31:48.135 P00   INFO: check command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=1213646-9565b7e9 --log-level-console=info --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
+2023-12-21 20:31:50.244 P00   INFO: check repo1 (standby)
+2023-12-21 20:31:50.248 P00   INFO: switch wal not performed because this is a standby
+2023-12-21 20:31:50.260 P00   INFO: check repo1 configuration (primary)
+2023-12-21 20:31:50.483 P00   INFO: check repo1 archive for WAL (primary)
+ERROR: [082]: WAL segment 0000001B0000001A000000F5 was not archived before the 60000ms timeout
+       HINT: check the archive_command to ensure that all options are correct (especially --stanza).
+       HINT: check the PostgreSQL server log for errors.
+       HINT: run the 'start' command if the stanza was previously stopped.
+2023-12-21 20:32:50.484 P00   INFO: check command end: aborted with exception [082]
+[svcpostgres@pv2medpgbr1 ~]$
 
