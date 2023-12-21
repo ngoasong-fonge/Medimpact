@@ -50,46 +50,10 @@ ssh postgres@db1
 From db1 to pgbackup:
 ssh pgbackrest@pgbackup
 
------------------------------------------------------------------------------------------------------------------------------CREATE TABLE mepstg.stg_mep_claim_10r_new_week_1 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-08-11') TO ('2023-08-18');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_2 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-08-18') TO ('2023-08-25');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_3 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-08-25') TO ('2023-09-01');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_4 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-09-01') TO ('2023-09-08');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_5 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-09-08') TO ('2023-09-15');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_6 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-09-15') TO ('2023-09-22');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_7 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-09-22') TO ('2023-09-29');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_8 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-09-29') TO ('2023-10-06');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_9 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-10-06') TO ('2023-10-13');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_10 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-10-13') TO ('2023-10-20');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_11 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-10-20') TO ('2023-10-27');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_12 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-11-03') TO ('2023-11-10');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_new_week_13 PARTITION OF mepstg.stg_mep_claim_10r_new
-    FOR VALUES FROM ('2023-11-10') TO ('2023-11-17');
-
-ERROR:  no partition of relation "stg_mep_claim_10r_new" found for row
-DETAIL:  Partition key of the failing row contains (created) = (2023-10-27 14:39:24).
-
+[svcpostgres@pv2medpgbr1 pgbackrest]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info check
+2023-12-21 20:01:59.599 P00   INFO: check command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=1212494-c9a952d4 --log-level-console=info --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
+2023-12-21 20:02:01.801 P00   INFO: check repo1 (standby)
+2023-12-21 20:02:01.804 P00   INFO: switch wal not performed because this is a standby
+ERROR: [068]: archive_command 'test ! -f /opt/backup/pgqa1/group0/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgqa1/group0/wal_archive/%f' must contain pgbackrest
+2023-12-21 20:02:01.818 P00   INFO: check command end: aborted with exception [068]
 
