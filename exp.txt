@@ -50,37 +50,9 @@ ssh postgres@db1
 From db1 to pgbackup:
 ssh pgbackrest@pgbackup
 
-2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageList: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.errorOnMissing: false, param.nullOnMissing: false, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
-2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageNewItr: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.level: 0, param.errorOnMissing: false, param.recurse: false, param.nullOnMissing: false, param.sortOrder: 0, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"}, param.recurse: false)
-2023-12-22 16:31:49.365 P00  DEBUG:     storage/iterator::storageItrNew: (driver: *void, path: {"/opt/backup/pgbackrest/archive/pgqa1/15-1/0000001B0000001B"}, level: 4, errorOnMissing: false, nullOnMissing: false, recurse: false, sortOrder: 0, expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
-2023-12-22 16:31:49.365 P00  DEBUG:     storage/iterator::storageItrNew: => {stack: {size: 0}}
-2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageNewItr: => {stack: {size: 0}}
-2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageList: => {[]}
-2023-12-22 16:32:11.862 P00  DEBUG:     storage/storage::storageList: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.errorOnMissing: false, param.nullOnMissing: false, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
-2023-12-22 16:32:11.862 P00  DEBUG:     storage/storage::storageNewItr: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.level: 0, param.errorOnMissing: false, param.recurse: false, param.nullOnMissing: false, param.sortOrder: 0, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"}, param.recurse: false)
-2023-12-22 16:32:11.862 P00  DEBUG:     storage/iterator::storageItrNew: (driver: *void, path: {"/opt/backup/pgbackrest/archive/pgqa1/15-1/0000001B0000001B"}, level: 4, errorOnMissing: false, nullOnMissing: false, recurse: false, sortOrder: 0, expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
-2023-12-22 16:32:11.874 P00  DEBUG:     storage/iterator::storageItrNew: => {stack: {size: 0}}
-2023-12-22 16:32:11.874 P00  DEBUG:     storage/storage::storageNewItr: => {stack: {size: 0}}
-2023-12-22 16:32:11.874 P00  DEBUG:     storage/storage::storageList: => {[]}
-2023-12-22 16:32:11.874 P00  DEBUG:     command/exit::exitSafe: (result: 0, error: true, signalType: 0)
-ERROR: [082]: WAL segment 0000001B0000001B00000029 was not archived before the 60000ms timeout
-       HINT: check the archive_command to ensure that all options are correct (especially --stanza).
-       HINT: check the PostgreSQL server log for errors.
-       HINT: run the 'start' command if the stanza was previously stopped.
-       --------------------------------------------------------------------
-       If SUBMITTING AN ISSUE please provide the following information:
+[svcpostgres@qv1medpgc1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 archive-push 0000001B0000001B00000029
+2023-12-22 16:45:24.584 P00   INFO: archive-push command begin 2.49: [0000001B0000001B00000029] --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=2275376-1e36e8b5 --log-level-console=info --log-level-file=detail --pg1-path=/opt/app/postgres-data/data --process-max=4 --repo1-host=pv2medpgbr1 --repo1-host-user=svcpostgres --stanza=pgqa1
+ERROR: [032]: PostgreSQL working directory '/opt/app/localhome/svcpostgres' is not the same as option pg1-path '/opt/app/postgres-data/data'
+       HINT: is the PostgreSQL data_directory configured the same as the pg1-path option?
+2023-12-22 16:45:24.584 P00   INFO: archive-push command end: aborted with exception [032]
 
-       version: 2.49
-       command: check
-       options: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=1261617-f6f385c8 --log-level-console=debug --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
-
-       stack trace:
-       command/archive/find.c:walSegmentFind:197:(this: {WalSegmentFind}, walSegment: {"0000001B0000001B00000029"})
-       command/archive/find.c:walSegmentFindOne:(storage: {type: posix, path: /opt/backup/pgbackrest, write: false}, archiveId: {"15-1"}, walSegment: {"0000001B0000001B00000029"}, timeout: 60000)
-       command/check/check.c:checkPrimary:(dbGroup: {DbGetResult}, storage: {type: posix, path: /opt/backup/pgbackrest, write: false}, pgVersion: 150000, pgSystemId: 7229588039154074448, cipherType: none)
-       command/check/check.c:cmdCheck:(void)
-       main.c:main:(debug log level required for parameters)
-       --------------------------------------------------------------------
-2023-12-22 16:32:11.874 P00   INFO: check command end: aborted with exception [082]
-2023-12-22 16:32:11.874 P00  DEBUG:     command/exit::exitSafe: => 82
-2023-12-22 16:32:12.075 P00  DEBUG:     main::main: => 82
