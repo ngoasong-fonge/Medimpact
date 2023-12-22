@@ -50,9 +50,7 @@ ssh postgres@db1
 From db1 to pgbackup:
 ssh pgbackrest@pgbackup
 
-[svcpostgres@qv1medpgc1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 archive-push 0000001B0000001B00000029
-2023-12-22 16:45:24.584 P00   INFO: archive-push command begin 2.49: [0000001B0000001B00000029] --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=2275376-1e36e8b5 --log-level-console=info --log-level-file=detail --pg1-path=/opt/app/postgres-data/data --process-max=4 --repo1-host=pv2medpgbr1 --repo1-host-user=svcpostgres --stanza=pgqa1
-ERROR: [032]: PostgreSQL working directory '/opt/app/localhome/svcpostgres' is not the same as option pg1-path '/opt/app/postgres-data/data'
-       HINT: is the PostgreSQL data_directory configured the same as the pg1-path option?
-2023-12-22 16:45:24.584 P00   INFO: archive-push command end: aborted with exception [032]
+archive_command: pgbackrest --stanza=cluster_1 archive-push "/var/lib/postgresql/15/main/pg_wal/%f"
+pgbackrest --stanza=pgqa1 archive-push %p
+
 
