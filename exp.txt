@@ -53,4 +53,5 @@ ssh pgbackrest@pgbackup
 archive_command: pgbackrest --stanza=cluster_1 archive-push "/var/lib/postgresql/15/main/pg_wal/%f"
 pgbackrest --stanza=pgqa1 archive-push %p
 
+archive_command: pgbackrest --stanza=pgqa1 archive-push "/opt/app/postgres-data/data/pg_wal/%f"
 
