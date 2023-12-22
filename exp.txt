@@ -50,23 +50,37 @@ ssh postgres@db1
 From db1 to pgbackup:
 ssh pgbackrest@pgbackup
 
-[svcpostgres@pv2medpgbr1 ~]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info check
-2023-12-21 20:31:48.135 P00   INFO: check command begin 2.49: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=1213646-9565b7e9 --log-level-console=info --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
-2023-12-21 20:31:50.244 P00   INFO: check repo1 (standby)
-2023-12-21 20:31:50.248 P00   INFO: switch wal not performed because this is a standby
-2023-12-21 20:31:50.260 P00   INFO: check repo1 configuration (primary)
-2023-12-21 20:31:50.483 P00   INFO: check repo1 archive for WAL (primary)
-ERROR: [082]: WAL segment 0000001B0000001A000000F5 was not archived before the 60000ms timeout
+2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageList: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.errorOnMissing: false, param.nullOnMissing: false, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
+2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageNewItr: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.level: 0, param.errorOnMissing: false, param.recurse: false, param.nullOnMissing: false, param.sortOrder: 0, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"}, param.recurse: false)
+2023-12-22 16:31:49.365 P00  DEBUG:     storage/iterator::storageItrNew: (driver: *void, path: {"/opt/backup/pgbackrest/archive/pgqa1/15-1/0000001B0000001B"}, level: 4, errorOnMissing: false, nullOnMissing: false, recurse: false, sortOrder: 0, expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
+2023-12-22 16:31:49.365 P00  DEBUG:     storage/iterator::storageItrNew: => {stack: {size: 0}}
+2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageNewItr: => {stack: {size: 0}}
+2023-12-22 16:31:49.365 P00  DEBUG:     storage/storage::storageList: => {[]}
+2023-12-22 16:32:11.862 P00  DEBUG:     storage/storage::storageList: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.errorOnMissing: false, param.nullOnMissing: false, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
+2023-12-22 16:32:11.862 P00  DEBUG:     storage/storage::storageNewItr: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.level: 0, param.errorOnMissing: false, param.recurse: false, param.nullOnMissing: false, param.sortOrder: 0, param.expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"}, param.recurse: false)
+2023-12-22 16:32:11.862 P00  DEBUG:     storage/iterator::storageItrNew: (driver: *void, path: {"/opt/backup/pgbackrest/archive/pgqa1/15-1/0000001B0000001B"}, level: 4, errorOnMissing: false, nullOnMissing: false, recurse: false, sortOrder: 0, expression: {"^0000001B0000001B00000029-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
+2023-12-22 16:32:11.874 P00  DEBUG:     storage/iterator::storageItrNew: => {stack: {size: 0}}
+2023-12-22 16:32:11.874 P00  DEBUG:     storage/storage::storageNewItr: => {stack: {size: 0}}
+2023-12-22 16:32:11.874 P00  DEBUG:     storage/storage::storageList: => {[]}
+2023-12-22 16:32:11.874 P00  DEBUG:     command/exit::exitSafe: (result: 0, error: true, signalType: 0)
+ERROR: [082]: WAL segment 0000001B0000001B00000029 was not archived before the 60000ms timeout
        HINT: check the archive_command to ensure that all options are correct (especially --stanza).
        HINT: check the PostgreSQL server log for errors.
        HINT: run the 'start' command if the stanza was previously stopped.
-2023-12-21 20:32:50.484 P00   INFO: check command end: aborted with exception [082]
-[svcpostgres@pv2medpgbr1 ~]$
+       --------------------------------------------------------------------
+       If SUBMITTING AN ISSUE please provide the following information:
 
+       version: 2.49
+       command: check
+       options: --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=1261617-f6f385c8 --log-level-console=debug --log-level-file=info --log-path=/opt/backup/log/pgbackrest --pg1-host=qv1medpgc1 --pg2-host=qv1medpgc2 --pg1-host-user=svcpostgres --pg2-host-user=svcpostgres --pg1-path=/opt/app/postgres-data/data --pg2-path=/opt/app/postgres-data/data --pg1-port=5432 --pg2-port=5432 --repo1-path=/opt/backup/pgbackrest --stanza=pgqa1
 
-
-2023-12-22 16:23:13.213 P00  DEBUG:     storage/storage::storageNewItr: (this: {type: posix, path: /opt/backup/pgbackrest, write: false}, pathExp: {"<REPO:ARCHIVE>/15-1/0000001B0000001B"}, param.level: 0, param.errorOnMissing: false, param.recurse: false, param.nullOnMissing: false, param.sortOrder: 0, param.expression: {"^0000001B0000001B00000028-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"}, param.recurse: false)
-2023-12-22 16:23:13.213 P00  DEBUG:     storage/iterator::storageItrNew: (driver: *void, path: {"/opt/backup/pgbackrest/archive/pgqa1/15-1/0000001B0000001B"}, level: 4, errorOnMissing: false, nullOnMissing: false, recurse: false, sortOrder: 0, expression: {"^0000001B0000001B00000028-[0-f]{40}(\.gz|\.lz4|\.zst|\.xz|\.bz2){0,1}$"})
-2023-12-22 16:23:13.213 P00  DEBUG:     storage/iterator::storageItrNew: => {stack: {size: 0}}
-2023-12-22 16:23:13.213 P00  DEBUG:     storage/storage::storageNewItr: => {stack: {size: 0}}
-2023-12-22 16:23:13.213 P00  DEBUG:     storage/storage::storageList: => {[]}
+       stack trace:
+       command/archive/find.c:walSegmentFind:197:(this: {WalSegmentFind}, walSegment: {"0000001B0000001B00000029"})
+       command/archive/find.c:walSegmentFindOne:(storage: {type: posix, path: /opt/backup/pgbackrest, write: false}, archiveId: {"15-1"}, walSegment: {"0000001B0000001B00000029"}, timeout: 60000)
+       command/check/check.c:checkPrimary:(dbGroup: {DbGetResult}, storage: {type: posix, path: /opt/backup/pgbackrest, write: false}, pgVersion: 150000, pgSystemId: 7229588039154074448, cipherType: none)
+       command/check/check.c:cmdCheck:(void)
+       main.c:main:(debug log level required for parameters)
+       --------------------------------------------------------------------
+2023-12-22 16:32:11.874 P00   INFO: check command end: aborted with exception [082]
+2023-12-22 16:32:11.874 P00  DEBUG:     command/exit::exitSafe: => 82
+2023-12-22 16:32:12.075 P00  DEBUG:     main::main: => 82
