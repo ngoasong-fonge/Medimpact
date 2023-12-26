@@ -58,3 +58,5 @@ archive_command: pgbackrest --stanza=pgqa1 archive-push "/opt/app/postgres-data/
 
 ln -s /opt/app/pgbackrest-2.49/bin/pgbackrest /opt/app/pgbackrest/bin/pgbackrest
 
+run the query (CALL partman.run_maintenance_proc();)  calling the partman.run_maintenance_proc function
+
