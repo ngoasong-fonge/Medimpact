@@ -105,3 +105,6 @@ retention_keep_table=true – Configures the table so that when the retention pe
 Run the command SELECT cron.schedule . . . to make a pg_cron function call. This call defines how often the scheduler runs the pg_partman maintenance procedure, partman.run_maintenance_proc. For this example, the procedure runs every hour.
 In My case I will use crontab in linux to schedule the partman.run_maintenance_proc function
 
+* * * * * psql -h your_postgresql_host -U your_postgresql_user -d your_database_name -c "CALL partman.run_maintenance_proc();"
+
+
