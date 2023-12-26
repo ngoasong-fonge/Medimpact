@@ -1,0 +1,107 @@
+Enabling the pg_partman extension
+
+If you have multiple databases inside the same PostgreSQL DB instance for which you want to manage partitions, enable the pg_partman extension separately for each database. 
+To enable the pg_partman extension for a specific database, create the partition maintenance schema and then create the pg_partman extension as follows
+
+CREATE SCHEMA partman;
+CREATE EXTENSION pg_partman WITH SCHEMA partman;
+
+
+For the examples that show using the pg_partman extension, we use the following sample database table and partition. This database uses a partitioned table based on a timestamp.
+A schema data_mart contains a table named events with a column named created_at. The following settings are included in the events table:
+
+Primary keys event_id and created_at, which must have the column used to guide the partition.
+
+A check constraint ck_valid_operation to enforce values for an operation table column.
+
+Two foreign keys, where one (fk_orga_membership) points to the external table organization and the other (fk_parent_event_id) is a self-referenced foreign key.
+
+Two indexes, where one (idx_org_id) is for the foreign key and the other (idx_event_type) is for the event type.
+
+The following DDL statements create these objects, which are automatically included on each partition.
+
+
+
+CREATE SCHEMA data_mart;
+CREATE TABLE data_mart.organization ( org_id BIGSERIAL,
+        org_name TEXT,
+        CONSTRAINT pk_organization PRIMARY KEY (org_id)  
+    );
+
+CREATE TABLE data_mart.events(
+        event_id        BIGSERIAL, 
+        operation       CHAR(1), 
+        value           FLOAT(24), 
+        parent_event_id BIGINT, 
+        event_type      VARCHAR(25), 
+        org_id          BIGSERIAL, 
+        created_at      timestamp, 
+        CONSTRAINT pk_data_mart_event PRIMARY KEY (event_id, created_at), 
+        CONSTRAINT ck_valid_operation CHECK (operation = 'C' OR operation = 'D'), 
+        CONSTRAINT fk_orga_membership 
+            FOREIGN KEY(org_id) 
+            REFERENCES data_mart.organization (org_id),
+        CONSTRAINT fk_parent_event_id 
+            FOREIGN KEY(parent_event_id, created_at) 
+            REFERENCES data_mart.events (event_id,created_at)
+    ) PARTITION BY RANGE (created_at);
+
+CREATE INDEX idx_org_id     ON  data_mart.events(org_id);
+CREATE INDEX idx_event_type ON  data_mart.events(event_type);
+
+
+
+Configuring partitions using the create_parent function
+
+SELECT partman.create_parent( p_parent_table => 'data_mart.events',
+ p_control => 'created_at',
+ p_type => 'native',
+ p_interval=> 'daily',
+ p_premake => 30);
+
+ The parameters are as follows:
+
+p_parent_table – The parent partitioned table. This table must already exist and be fully qualified, including the schema.
+
+p_control – The column on which the partitioning is to be based. The data type must be an integer or time-based.
+
+p_type – The type is either 'native' or 'partman'. You typically use the native type for its performance improvements and flexibility. The partman type relies on inheritance.
+
+p_interval – The time interval or integer range for each partition. Example values include daily, hourly, and so on.
+
+p_premake – The number of partitions to create in advance to support new inserts.
+
+
+
+Configuring partition maintenance using the run_maintenance_proc function
+
+CREATE EXTENSION pg_cron;
+
+UPDATE partman.part_config 
+SET infinite_time_partitions = true,
+    retention = '3 months', 
+    retention_keep_table=true 
+WHERE parent_table = 'data_mart.events';
+SELECT cron.schedule('@hourly', $$CALL partman.run_maintenance_proc()$$);
+
+
+
+Following, you can find a step-by-step explanation of the preceding example:
+
+Modify the parameter group associated with your DB instance and add pg_cron to the shared_preload_libraries parameter value. This change requires a DB instance restart for it to take effect. For more information, see Modifying parameters in a DB parameter group.
+
+Run the command CREATE EXTENSION pg_cron; using an account that has the rds_superuser permissions. Doing this enables the pg_cron extension. For more information, see Scheduling maintenance with the PostgreSQL pg_cron extension.
+
+Run the command UPDATE partman.part_config to adjust the pg_partman settings for the data_mart.events table.
+
+Run the command SET . . . to configure the data_mart.events table, with these clauses:
+
+infinite_time_partitions = true, – Configures the table to be able to automatically create new partitions without any limit.
+
+retention = '3 months', – Configures the table to have a maximum retention of three months.
+
+retention_keep_table=true – Configures the table so that when the retention period is due, the table isn't deleted automatically. Instead, partitions that are older than the retention period are only detached from the parent table.
+
+Run the command SELECT cron.schedule . . . to make a pg_cron function call. This call defines how often the scheduler runs the pg_partman maintenance procedure, partman.run_maintenance_proc. For this example, the procedure runs every hour.
+In My case I will use crontab in linux to schedule the partman.run_maintenance_proc function
+
