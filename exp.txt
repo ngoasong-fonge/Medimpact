@@ -60,3 +60,6 @@ ln -s /opt/app/pgbackrest-2.49/bin/pgbackrest /opt/app/pgbackrest/bin/pgbackrest
 
 run the query (CALL partman.run_maintenance_proc();)  calling the partman.run_maintenance_proc function
 
+citus=# select * from dmeapps.departments_tst limit 2;
+ERROR:  connection for foreign table "departments_tst" cannot be authenticated
+DETAIL:  ORA-01017: invalid username/password; logon denied
