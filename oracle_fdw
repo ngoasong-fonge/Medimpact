@@ -29,19 +29,6 @@ DETAIL:  ORA-00942: table or view does not exist
 HINT:  Oracle table names are case sensitive (normally all uppercase).
 
 
-citus=# \d dmeapps.departments_tst
-                        Foreign table "dmeapps.departments_tst"
-     Column      |         Type          | Collation | Nullable | Default | FDW options
------------------+-----------------------+-----------+----------+---------+-------------
- department_id   | numeric(10,0)         |           | not null |         |
- department_name | character varying(30) |           | not null |         |
- manager_id      | numeric(6,0)          |           |          |         |
- location_id     | numeric(4,0)          |           |          |         |
-Server: ora_sv
-FDW options: (schema 'PSAMY', "table" 'DEPARTMENTS_TST')
-
-citus=# \det+
-               List of foreign tables
- Schema | Table | Server | FDW options | Description
---------+-------+--------+-------------+-------------
-(0 rows)
+GRANT USAGE ON FOREIGN SERVER ora_sv TO postgres;
+GRANT SELECT ON dmeapps.departments_tst TO postgres;
+SELECT pg_reload_foreign_table('dmeapps.departments_tst');
