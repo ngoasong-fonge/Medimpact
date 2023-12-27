@@ -21,3 +21,9 @@ CREATE FOREIGN TABLE dmeapps.departments_tst
   MANAGER_ID       NUMERIC(6,0),
   LOCATION_ID      NUMERIC(4,0)
 ) SERVER ora_sv OPTIONS (SCHEMA 'PSAMY' , TABLE 'DEPARTMENTS_TST');
+
+
+citus=# select * from dmeapps.departments_tst limit 2;
+ERROR:  Oracle table "PSAMY"."DEPARTMENTS_TST" for foreign table "departments_tst" does not exist or does not allow read access
+DETAIL:  ORA-00942: table or view does not exist
+HINT:  Oracle table names are case sensitive (normally all uppercase).
