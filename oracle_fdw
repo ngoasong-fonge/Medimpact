@@ -1,0 +1,16 @@
+create extension oracle_fdw schema dmeapps;
+CREATE SERVER ora_sv FOREIGN DATA WRAPPER oracle_fdw
+OPTIONS (dbserver 'dp1medex2-scan1:2025/RTESTPDB');
+
+GRANT USAGE ON FOREIGN SERVER ora_sv TO postgres;
+
+CREATE USER MAPPING FOR postgres SERVER ora_sv
+OPTIONS ( USER 'pglink', PASSWORD 't3str0n');
+
+CREATE FOREIGN TABLE dmeapps.departments_tst
+(
+  DEPARTMENT_ID    NUMERIC(10,0)                   NOT NULL,
+  DEPARTMENT_NAME  CHARACTER VARYING(30)         NOT NULL,
+  MANAGER_ID       NUMERIC(6,0),
+  LOCATION_ID      NUMERIC(4,0)
+) SERVER ora_sv OPTIONS (SCHEMA 'PSAMY' , TABLE 'DEPARTMENTS_TST');
