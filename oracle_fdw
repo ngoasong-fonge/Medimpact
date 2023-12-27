@@ -1,3 +1,10 @@
+export LD_LIBRARY_PATH=/opt/app/oracle/product/instantclient_19_21
+export LIBPATH=/opt/app/oracle/product/instantclient_19_21
+export ORACLE_HOME=/opt/app/oracle/product/instantclient_19_21
+export PATH=$ORACLE_HOME:$PATH
+sqlplus
+
+
 create extension oracle_fdw schema dmeapps;
 CREATE SERVER ora_sv FOREIGN DATA WRAPPER oracle_fdw
 OPTIONS (dbserver 'dp1medex2-scan1:2025/RTESTPDB');
