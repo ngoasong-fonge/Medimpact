@@ -27,3 +27,21 @@ citus=# select * from dmeapps.departments_tst limit 2;
 ERROR:  Oracle table "PSAMY"."DEPARTMENTS_TST" for foreign table "departments_tst" does not exist or does not allow read access
 DETAIL:  ORA-00942: table or view does not exist
 HINT:  Oracle table names are case sensitive (normally all uppercase).
+
+
+citus=# \d dmeapps.departments_tst
+                        Foreign table "dmeapps.departments_tst"
+     Column      |         Type          | Collation | Nullable | Default | FDW options
+-----------------+-----------------------+-----------+----------+---------+-------------
+ department_id   | numeric(10,0)         |           | not null |         |
+ department_name | character varying(30) |           | not null |         |
+ manager_id      | numeric(6,0)          |           |          |         |
+ location_id     | numeric(4,0)          |           |          |         |
+Server: ora_sv
+FDW options: (schema 'PSAMY', "table" 'DEPARTMENTS_TST')
+
+citus=# \det+
+               List of foreign tables
+ Schema | Table | Server | FDW options | Description
+--------+-------+--------+-------------+-------------
+(0 rows)
