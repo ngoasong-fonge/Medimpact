@@ -66,3 +66,16 @@ DETAIL:  ORA-01017: invalid username/password; logon denied
 
 
 find /path/to/your/directory -type f -mtime +0
+
+
+citus=# SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_10r_01new',
+citus(#  p_control => 'created',
+citus(#  p_type => 'native',
+citus(#  p_interval=> 'weekly',
+citus(#  p_premake => 5);
+ERROR:  Special partition interval values from old pg_partman versions (weekly) are no longer supported. Please use a supported interval time value from core PostgreSQL (https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT)
+CONTEXT: PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 74 at RAISE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 629 at RAISE
+citus=#
