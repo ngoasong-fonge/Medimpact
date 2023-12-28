@@ -68,14 +68,40 @@ DETAIL:  ORA-01017: invalid username/password; logon denied
 find /path/to/your/directory -type f -mtime +0
 
 
-citus=# SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_10r_01new',
-citus(#  p_control => 'created',
-citus(#  p_type => 'native',
-citus(#  p_interval=> '1 week',
-citus(#  p_premake => 5);
-ERROR:  native is not a valid partitioning type for pg_partman
-CONTEXT: PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 111 at RAISE
-DETAIL:
+ERROR:  duplicate key value violates unique constraint "part_config_parent_table_pkey"
+CONTEXT: SQL statement "INSERT INTO partman.part_config (
+        parent_table
+        , partition_type
+        , partition_interval
+        , epoch
+        , control
+        , premake
+        , constraint_cols
+        , datetime_string
+        , automatic_maintenance
+        , jobmon
+        , template_table
+        , inherit_privileges
+        , default_table
+        , date_trunc_interval)
+    VALUES (
+        p_parent_table
+        , p_type
+        , v_time_interval
+        , p_epoch
+        , p_control
+        , p_premake
+        , p_constraint_cols
+        , v_datetime_string
+        , p_automatic_maintenance
+        , p_jobmon
+        , v_template_schema||'.'||v_template_tablename
+        , v_inherit_privileges
+        , p_default_table
+        , p_date_trunc_interval)"
+PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 331 at SQL statement
+DETAIL: Key (parent_table)=(mepstg.stg_mep_claim_10r_01new) already exists.
 HINT:
 CONTEXT:  PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 629 at RAISE
 citus=#
+
