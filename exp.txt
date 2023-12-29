@@ -68,10 +68,8 @@ DETAIL:  ORA-01017: invalid username/password; logon denied
 find /path/to/your/directory -type f -mtime +0
 
 
-2023-12-28 22:33:45.111 P00   INFO: archive-push command begin 2.49: [pg_wal/0000001B0000001C0000005F] --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=2968727-5ace519f --log-level-console=info --log-level-file=detail --pg1-path=/opt/app/postgres-data/data --process-max=4 --repo1-host=pv2medpgbr1 --repo1-host-user=svcpostgres --stanza=pgqa1
-ERROR: [103]: unable to find a valid repository:
-       repo1: [ExecuteError] remote-0 process on 'pv2medpgbr1' terminated unexpectedly [102]: unable to execute 'ssh': [2] No such file or directory
-2023-12-28 22:33:45.117 P00   INFO: archive-push command end: aborted with exception [103]
-2023-12-28 22:33:45.117 UTC [] [2968321]: [40-1] user=,db=,host=LOG:  archive command failed with exit code 103
-2023-12-28 22:33:45.117 UTC [] [2968321]: [41-1] user=,db=,host=DETAIL:  The failed archive command was: /opt/app/pgbackrest-2.49/bin/pgbackrest --stanza=pgqa1 --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf archive-push pg_wal/0000001B0000001C0000005F
+2023-12-29 20:38:43.849 P00   INFO: archive-push command begin 2.49: [pg_wal/0000001B0000001C0000005F] --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --exec-id=3071315-925193fb --log-level-console=info --log-level-file=detail --pg1-path=/opt/app/postgres-data/data --process-max=4 --repo1-host=pv2medpgbr1 --repo1-host-user=svcpostgres --repo1-path=/opt/backup/pgbackrest/ --stanza=pgqa1
+ERROR: [055]: unable to open missing file '/opt/app/postgres-data/data/pg_wal/0000001B0000001C0000005F' for read
+2023-12-29 20:38:44.240 P00   INFO: archive-push command end: aborted with exception [055]
+
 
