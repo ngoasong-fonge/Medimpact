@@ -60,25 +60,8 @@ ln -s /opt/app/pgbackrest-2.49/bin/pgbackrest /opt/app/pgbackrest/bin/pgbackrest
 
 run the query (CALL partman.run_maintenance_proc();)  calling the partman.run_maintenance_proc function
 -----------------------------------------------------------------------------------------------------------------------------------
-Complexity: Citus adds complexity to your PostgreSQL setup. Managing a distributed database system like Citus can be more challenging than a standalone PostgreSQL instance. You'll need to configure and maintain multiple worker nodes, which can increase the overall complexity of your infrastructure.
+# Schedule a full backup on Saturdays 
+* * * * /opt/app/pgbackrest/bin --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info --type=full backup
 
-Limited compatibility: Not all PostgreSQL features and extensions are fully compatible with Citus. Some advanced features or custom extensions may not work seamlessly with Citus, which can limit your application's capabilities.
-
-Data distribution and sharding complexity: Sharding your data can be a complex process, and you need to carefully plan your data distribution strategy. Poorly chosen shard keys or distribution methods can lead to uneven data distribution and performance issues.
-
-Migration and backup challenges: Backing up and migrating data in a Citus cluster can be more complex compared to a single PostgreSQL instance. You need to consider the distribution of data across nodes and implement appropriate backup and restore strategies.
-
-Increased maintenance overhead: Citus clusters require ongoing maintenance, including monitoring, scaling, and managing worker nodes. This can lead to increased operational overhead compared to managing a single PostgreSQL instance.
-
-Query planning and performance: While Citus can significantly improve read scalability for distributed workloads, it may not provide the same level of improvement for write-heavy workloads. Depending on your use case, you may need to carefully optimize your queries and monitor performance.
-
-Cost considerations: Scaling out with Citus often involves adding more nodes to your cluster, which can increase infrastructure costs. You need to carefully assess the cost implications of using Citus for sharding compared to other scaling solutions.
-
-Compatibility with Patroni: Ensure that the version of Citus you're using is compatible with your Patroni-managed PostgreSQL version. Compatibility issues between extensions, PostgreSQL versions, and Patroni configurations can lead to operational challenges.
-
-Learning curve: Using Citus effectively requires a good understanding of distributed database concepts and Citus-specific configurations. It may require additional training for your team to operate and maintain Citus clusters effectively.
-
-Potential lock-in: Depending on your use case, choosing Citus for sharding may create vendor lock-in if you rely heavily on its specific features and functionality. Consider the long-term implications of your technology choices.
-
-While Citus can provide significant benefits for scaling out PostgreSQL, it's essential to carefully evaluate your use case, infrastructure, and team's expertise to determine whether it's the right solution for your needs and to mitigate the potential
-
+# Schedule a differential backup every 
+* * * * /opt/app/pgbackrest/bin --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info --type=diff backup
