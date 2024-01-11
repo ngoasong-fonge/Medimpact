@@ -99,3 +99,8 @@ pg6-path=/opt/app/postgres-data/data
 
 pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=wgroup1 --log-level-console=info stanza-create
 pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=wgroup2 --log-level-console=info stanza-create
+
+[svcpostgres@pv2medpgbr1 pgbackrest]$ pgbackrest --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=wgroup1 --log-level-console=info stanza-create
+ERROR: [037]: stanza-create command requires option: pg1-path
+       HINT: does this stanza exist?
+
