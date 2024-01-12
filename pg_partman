@@ -228,4 +228,40 @@ SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_10r_01new'
  p_premake => 5);
 
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
+
+# Retention period (in weeks)
+RETENTION_PERIOD=6
+
+# Calculate the date threshold for retention
+THRESHOLD_DATE=$(date -d "-$RETENTION_PERIOD weeks" "+%Y-%m-%d %H:%M:%S")
+
+# Build the SQL query to drop old partitions
+SQL_QUERY="DO \$\$
+BEGIN
+   EXECUTE (
+      SELECT 'DROP TABLE IF EXISTS archive_schema.' || table_name || ' CASCADE'
+      FROM information_schema.tables
+      WHERE table_schema = 'archive_schema'
+      AND table_name LIKE 'your_prefix_%' -- You can customize this prefix
+      AND create_date < '$THRESHOLD_DATE'
+   );
+END
+\$\$;"
+
+# Execute the SQL query using psql with the specified database and retention_schema
+psql -h $PG_HOST -p $PG_PORT -d citus -U $PG_USER -c "$SQL_QUERY" -v retention_schema='mepstg_archive'
+
+# Check for errors
+if [ $? -eq 0 ]; then
+  echo "Dropped archived partitions older than $RETENTION_PERIOD weeks."
+else
+  echo "Error: Failed to drop partitions."
+fi
 
