@@ -1,77 +1,11 @@
 
 
-citus=# vacuum full verbose xray.impact_paths;
-INFO:  vacuuming "xray.impact_paths"
-INFO:  "xray.impact_paths": found 0 removable, 62839 nonremovable row versions in 2190 pages
-DETAIL:  0 dead row versions cannot be removed yet.
-CPU: user: 0.22 s, system: 0.03 s, elapsed: 0.28 s.
-VACUUM
-
-[svcpostgres@pv2medpgbr1 ~]$ /opt/app/pgbackrest/bin/pgbackrest version
-pgBackRest 2.49
-
-git clone https://github.com/laurenz/oracle_fdw.git
------------------------------------------------------------------------------------------------------------
-On pgbackup Server (as svcpostgres user):
-# Create .ssh directory
-mkdir -m 750 /home/pgbackrest/.ssh
-
-# Generate SSH key pair
-ssh-keygen -f /home/pgbackrest/.ssh/id_rsa -t rsa -b 4096 -N ""
-
-On db1 Server (as svcpostgres user):
-# Create .ssh directory
-mkdir -m 750 -p /var/lib/postgresql/.ssh
-
-# Generate SSH key pair
-ssh-keygen -f /var/lib/postgresql/.ssh/id_rsa -t rsa -b 4096 -N ""
-
-Exchange Public Keys:
-On pgbackup, add the public key to db1's authorized_keys:
-cat /home/pgbackrest/.ssh/id_rsa.pub | ssh postgres@db1 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-
-On db1, add the public key to pgbackup's authorized_keys:
-cat /var/lib/postgresql/.ssh/id_rsa.pub | ssh pgbackrest@pgbackup "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-
-After these steps, you should be able to SSH between the servers without being prompted for a password.
-Always ensure that the permissions on the ~/.ssh directory and the authorized_keys file are set correctly for security reasons:
-# On pgbackup
-chmod 700 /home/pgbackrest/.ssh
-chmod 600 /home/pgbackrest/.ssh/authorized_keys
-
-# On db1
-chmod 700 /var/lib/postgresql/.ssh
-chmod 600 /var/lib/postgresql/.ssh/authorized_keys
-
-To test if the SSH setup is working:
-From pgbackup to db1:
-ssh postgres@db1
-
-From db1 to pgbackup:
-ssh pgbackrest@pgbackup
-
-archive_command: pgbackrest --stanza=cluster_1 archive-push "/var/lib/postgresql/15/main/pg_wal/%f"
-pgbackrest --stanza=pgqa1 archive-push %p
-
-archive_command: pgbackrest --stanza=pgqa1 archive-push "/opt/app/postgres-data/data/pg_wal/%f"
-
-
-ln -s /opt/app/pgbackrest-2.49/bin/pgbackrest /opt/app/pgbackrest/bin/pgbackrest
-
-run the query (CALL partman.run_maintenance_proc();)  calling the partman.run_maintenance_proc function
------------------------------------------------------------------------------------------------------------------------------------
-# Schedule a full backup on Saturdays 
-* * * * /opt/app/pgbackrest/bin --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info --type=full backup
-
-# Schedule a differential backup every 
-* * * * /opt/app/pgbackrest/bin --config=/opt/app/pgbackrest-data/pgbackrest/pgbackrest.conf --stanza=pgqa1 --log-level-console=info --type=diff backup
-
-
-
-UPDATE partman.part_config 
-SET infinite_time_partitions=true,
-retention='3 week',
-retention_schema='mepstg_archive',
-retention_keep_table=true, 
-retention_keep_index=true 
-WHERE parent_table='mepstg.stg_mep_claim_10r_01new' ;
++ Citus cluster: pgdev2 -----------+--------+---------+----+-----------+
+| Group | Member      | Host       | Role   | State   | TL | Lag in MB |
++-------+-------------+------------+--------+---------+----+-----------+
+|     0 | dv1medpg1c1 | 10.13.3.47 | Leader | running |  1 |           |
+|     1 | dv1medpg1w1 | 10.13.3.48 | Leader | running |  1 |           |
+|     2 | dv1medpg1w2 | 10.13.3.49 | Leader | running |  1 |           |
+|     3 | dv1medpg1w3 | 10.13.3.50 | Leader | running |  1 |           |
+|     4 | dv1medpg1w4 | 10.13.3.51 | Leader | running |  1 |           |
++-------+-------------+------------+--------+---------+----+-----------+
