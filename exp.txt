@@ -46,3 +46,21 @@ SELECT avg(age) FROM shard.users_table;
 INSERT INTO shard.users_table (age)
        SELECT 20 + (random() * 70)::int
        FROM generate_series(0, 499999); -- Insert 500,000 records
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+postgres=# CREATE TABLE shard.t_shard (
+id          serial, 
+shard_key   int, 
+n           int, 
+placeholder char(100) DEFAULT 'a');
+
+SELECT create_distributed_table('shard.t_shard', 'shard_key');
+
+INSERT INTO shard.t_shard (shard_key, n) 
+SELECT  id % 16, random()*100000 
+FROM        generate_series(1, 5000000) AS id;
+
+
+
+
