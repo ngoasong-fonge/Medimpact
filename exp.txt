@@ -9,3 +9,22 @@
 |     3 | dv1medpg1w3 | 10.13.3.50 | Leader | running |  1 |           |
 |     4 | dv1medpg1w4 | 10.13.3.51 | Leader | running |  1 |           |
 +-------+-------------+------------+--------+---------+----+-----------+
+-- Create a table with the usual PostgreSQL syntax
+CREATE TABLE users_table (user_id bigserial primary key, age int);
+
+-- Convert the table to a distributed table
+SELECT create_distributed_table('users_table', 'user_id');
+
+-- load data, ingest happens in parallel across shards
+INSERT INTO users_table (age)
+       SELECT 20 + (random() * 70)::int
+       FROM generate_series(0, 100000);
+
+-- this query runs in parallel across all shards
+SELECT avg(age) FROM users_table;
+
+-- index created in parallel across all shards
+CREATE INDEX user_age ON users_table (age);
+
+-- this query hits a single shard as sharding key is on WHERE clause
+SELECT age FROM users_table WHERE user_id = 15;
