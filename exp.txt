@@ -28,3 +28,21 @@ CREATE INDEX user_age ON users_table (age);
 
 -- this query hits a single shard as sharding key is on WHERE clause
 SELECT age FROM users_table WHERE user_id = 15;
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE TABLE shard.users_table (user_id bigserial primary key, age int);
+
+SELECT create_distributed_table('shard.users_table', 'user_id');
+
+INSERT INTO shard.users_table (age)
+       SELECT 20 + (random() * 70)::int
+       FROM generate_series(0, 100000);
+
+SELECT avg(age) FROM shard.users_table;
+
+
+-- Insert 500,000 records into the distributed table
+INSERT INTO shard.users_table (age)
+       SELECT 20 + (random() * 70)::int
+       FROM generate_series(0, 499999); -- Insert 500,000 records
