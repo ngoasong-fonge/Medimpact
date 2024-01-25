@@ -81,4 +81,6 @@ CREATE TABLE employee (
     department_id INT
 );
 
-
+INSERT INTO users_table (age)
+       SELECT 20 + (random() * 70)::int
+       FROM generate_series(0, 100000);
