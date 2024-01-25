@@ -1,0 +1,36 @@
+When you want to copy data from partition child tables in the source database to the target database using PostgreSQL Foreign Data Wrapper (postgres_fdw), 
+you can set up foreign tables for each partition child table in the source and use INSERT INTO ... SELECT statements to transfer the data. Here's an example of how to do this:
+Assuming you have partitioned tables in the source database and you want to migrate the data to the target database, follow these steps:
+
+1. Install and Configure postgres_fdw:
+Ensure that the postgres_fdw extension is installed and configured on both the source and target PostgreSQL databases.
+2. Create a Foreign Server for the Source Database:
+On the target database, create a foreign server that points to the source database:
+
+CREATE SERVER source_server
+FOREIGN DATA WRAPPER postgres_fdw
+OPTIONS (host 'source_host', port 'source_port', dbname 'source_database');
+
+Replace 'source_host', 'source_port', and 'source_database' with the appropriate connection details of your source database.
+
+3. Create Foreign Tables for Partition Child Tables:
+For each partition child table in the source database, create a corresponding foreign table on the target database. 
+Ensure that the columns and data types match the source tables:
+
+CREATE FOREIGN TABLE target_partition_child1 (
+    id serial,
+    name text,
+    -- Add columns to match the source table
+)
+SERVER source_server
+OPTIONS (schema_name 'public', table_name 'source_partition_child1');
+
+Repeat this step for each partition child table you want to migrate.
+
+4. Copy Data from Foreign Tables:
+Use INSERT INTO ... SELECT statements to copy data from the foreign tables in the source database to the local tables in the target database. For example:
+
+DROP FOREIGN TABLE target_partition_child1;
+
+Repeat these steps for each partition child table you want to migrate. 
+This process allows you to copy data from partition child tables in the source database to the target database using postgres_fdw, ensuring that the data and schema match between the two databases.
