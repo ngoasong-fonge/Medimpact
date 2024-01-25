@@ -35,6 +35,15 @@ CREATE TABLE shard.users_table (user_id bigserial primary key, age int);
 
 SELECT create_distributed_table('shard.users_table', 'user_id');
 
+
+CREATE TABLE employee (
+    employee_id serial PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT
+);
+
+
 INSERT INTO shard.users_table (age)
        SELECT 20 + (random() * 70)::int
        FROM generate_series(0, 100000);
