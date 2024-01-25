@@ -62,5 +62,5 @@ SELECT  id % 16, random()*100000
 FROM        generate_series(1, 5000000) AS id;
 
 
-
+CREATE INDEX user_age ON shard.shard_table (age);
 
