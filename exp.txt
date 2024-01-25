@@ -84,3 +84,21 @@ CREATE TABLE employee (
 INSERT INTO users_table (age)
        SELECT 20 + (random() * 70)::int
        FROM generate_series(0, 100000);
+
+
+CREATE TABLE employee (
+    employee_id serial PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT,
+    created_date DATE
+);
+
+INSERT INTO employee (first_name, last_name, department_id, created_date)
+SELECT 
+    'John', -- Sample first name
+    'Doe',  -- Sample last name
+    1,      -- Sample department_id
+    '2022-01-24'::date -- Sample created_date
+FROM generate_series(1, 100000); -- Insert 100,000 records
+
