@@ -73,3 +73,12 @@ FROM        generate_series(1, 5000000) AS id;
 
 CREATE INDEX user_age ON shard.shard_table (age);
 
+
+CREATE TABLE employee (
+    employee_id serial PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT
+);
+
+
