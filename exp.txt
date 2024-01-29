@@ -108,3 +108,42 @@ This probably means the server terminated abnormally
 before or while processing the request.
 server closed the connection unexpectedly 
 
+
+2024-01-29 18:12:15.885 UTC [10.15.134.81(50860)] [2713852]: [67-1] user=deployadmin,db=citus,host=10.15.134.81LOG:  temporary file: path "base/pgsql_tmp/pgsql_tmp2713852.2.fileset/2.1", size 181747712
+2024-01-29 18:12:15.885 UTC [10.15.134.81(50860)] [2713852]: [68-1] user=deployadmin,db=citus,host=10.15.134.81STATEMENT:
+        SET max_parallel_maintenance_workers TO 4;
+        ALTER TABLE ngmep.encounter SET (parallel_workers = 4);
+
+
+        CREATE INDEX IF NOT EXISTS encounter_n1 ON ngmep.encounter USING btree (state_agency_id, encounter_status, last_encounter_ver_num);
+        CREATE INDEX IF NOT EXISTS encounter_n2 ON ngmep.encounter USING btree (encounter_status);
+        CREATE INDEX IF NOT EXISTS encounter_n3c ON ngmep.encounter USING btree (encounter_id, last_encounter_ver_num);
+        CREATE INDEX IF NOT EXISTS encounter_n4c ON ngmep.encounter USING btree (entered, encounter_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS encounter_pkey ON ngmep.encounter USING btree (encounter_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS encounter_u1 ON ngmep.encounter USING btree (transaction_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS pk_encounter ON ngmep.encounter USING btree (encounter_id);
+        ;
+
+        ALTER TABLE ngmep.encounter SET (parallel_workers = 1);
+
+2024-01-29 18:13:18.805 UTC [] [1848079]: [1635-1] user=,db=,host=LOG:  checkpoint starting: wal
+2024-01-29 18:13:20.481 UTC [] [1848079]: [1636-1] user=,db=,host=LOG:  checkpoint complete: wrote 13 buffers (0.1%); 0 WAL file(s) added, 0 removed, 34 recycled; write=1.310 s, sync=0.001 s, total=1.678 s; sync files=13, longest=0.001 s, average=0.001 s; distance=538992 kB, estimate=543258 kB
+2024-01-29 18:13:45.241 UTC [] [1848079]: [1637-1] user=,db=,host=LOG:  checkpoints are occurring too frequently (27 seconds apart)
+2024-01-29 18:13:45.241 UTC [] [1848079]: [1638-1] user=,db=,host=HINT:  Consider increasing the configuration parameter "max_wal_size".
+2024-01-29 18:13:45.241 UTC [] [1848079]: [1639-1] user=,db=,host=LOG:  checkpoint starting: wal
+2024-01-29 18:13:45.423 UTC [] [1848079]: [1640-1] user=,db=,host=LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 32 recycled; write=0.001 s, sync=0.001 s, total=0.182 s; sync files=0, longest=0.000 s, average=0.000 s; distance=539748 kB, estimate=542907 kB
+2024-01-29 18:14:13.176 UTC [] [1848079]: [1641-1] user=,db=,host=LOG:  checkpoints are occurring too frequently (28 seconds apart)
+2024-01-29 18:14:13.176 UTC [] [1848079]: [1642-1] user=,db=,host=HINT:  Consider increasing the configuration parameter "max_wal_size".
+2024-01-29 18:14:13.177 UTC [] [1848079]: [1643-1] user=,db=,host=LOG:  checkpoint starting: wal
+2024-01-29 18:14:13.354 UTC [] [1848079]: [1644-1] user=,db=,host=LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 33 recycled; write=0.001 s, sync=0.001 s, total=0.178 s; sync files=0, longest=0.000 s, average=0.000 s; distance=539410 kB, estimate=542557 kB
+2024-01-29 18:14:45.516 UTC [] [1848079]: [1645-1] user=,db=,host=LOG:  checkpoint starting: wal
+2024-01-29 18:14:45.675 UTC [] [1848079]: [1646-1] user=,db=,host=LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 33 recycled; write=0.001 s, sync=0.001 s, total=0.162 s; sync files=0, longest=0.000 s, average=0.000 s; distance=540826 kB, estimate=542384 kB
+2024-01-29 18:15:20.505 UTC [] [1848079]: [1647-1] user=,db=,host=LOG:  checkpoint starting: wal
+2024-01-29 18:15:20.677 UTC [] [1848079]: [1648-1] user=,db=,host=LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 33 recycled; write=0.001 s, sync=0.001 s, total=0.174 s; sync files=0, longest=0.000 s, average=0.000 s; distance=542308 kB, estimate=542377 kB
+2024-01-29 18:15:53.409 UTC [10.15.134.81(50860)] [2713852]: [69-1] user=deployadmin,db=citus,host=10.15.134.81LOG:  temporary file: path "base/pgsql_tmp/pgsql_tmp2713852.3.fileset/3.0", size 1073741824
+2024-01-29 18:15:53.409 UTC [10.15.134.81(50860)] [2713852]: [70-1] user=deployadmin,db=citus,host=10.15.134.81STATEMENT:
+        SET max_parallel_maintenance_workers TO 4;
+        ALTER TABLE ngmep.encounter SET (parallel_workers = 4);
+
+
+
