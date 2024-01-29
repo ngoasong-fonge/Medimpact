@@ -102,3 +102,9 @@ SELECT
     '2022-01-24'::date -- Sample created_date
 FROM generate_series(1, 100000); -- Insert 100,000 records
 
+
+ERROR: server closed the connection unexpectedly 
+This probably means the server terminated abnormally
+before or while processing the request.
+server closed the connection unexpectedly 
+
