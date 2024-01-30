@@ -107,3 +107,5 @@ FROM generate_series(1, 100000); -- Insert 100,000 records
 [svcpostgres@uv2medpg2c1 ~]$ uptime
  17:59:15 up 73 days, 23:17,  4 users,  load average: 4.51, 4.75, 3.83
 
+uptime > uptime_output.tsv
+
