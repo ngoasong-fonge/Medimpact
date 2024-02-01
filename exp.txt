@@ -111,4 +111,4 @@ uptime > uptime_output.tsv
 
 
 
-INSERT INTO shard.employee (first_name, last_name, department_id, created_date) SELECT 'John', 'Doe', 1, '2022-01-24'::date FROM generate_series(1, 100000);
+SELECT create_distributed_table('shard.employee', 'department_id, employee_id');
