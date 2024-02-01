@@ -112,3 +112,4 @@ uptime > uptime_output.tsv
 
 
 SELECT create_distributed_table('shard.employee', 'department_id, employee_id');
+ERROR:  column "department_id, employee_id" of relation "employee" does not exist
