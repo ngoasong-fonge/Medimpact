@@ -111,5 +111,4 @@ uptime > uptime_output.tsv
 
 
 
-09:31:08  There were no rules files found.09:31:08  Defaulting contexts to mepuat2 from mepuat209:31:08  Unable to connect to database instance 'mepuat2'09:31:08  Connection could not be created to jdbc:postgresql://uv2medpg2.medimpact.com:5432/citus with driver 'org.postgresql.Driver'. Last message was 'Connection could not be created to [jdbc:postgresql://uv2medpg2.medimpact.com:5432/citus] due to Something unusual has occurred to cause the driver to fail. Please report this exception.'
-
+INSERT INTO shard.employee (first_name, last_name, department_id, created_date) SELECT 'John', 'Doe', 1, '2022-01-24'::date FROM generate_series(1, 100000);
