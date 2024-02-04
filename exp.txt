@@ -1,116 +1,15 @@
+Determine the Desired Size: First, you need to decide how much memory you want to allocate to the shared_buffers parameter. In this example, you want to allocate 1GB of memory.
 
+Convert to Kilobytes (KB): Amazon RDS for PostgreSQL uses kilobytes as the unit for the shared_buffers parameter. To convert 1GB to kilobytes, you perform the following conversions:
 
-+ Citus cluster: pgdev2 -----------+--------+---------+----+-----------+
-| Group | Member      | Host       | Role   | State   | TL | Lag in MB |
-+-------+-------------+------------+--------+---------+----+-----------+
-|     0 | dv1medpg1c1 | 10.13.3.47 | Leader | running |  1 |           |
-|     1 | dv1medpg1w1 | 10.13.3.48 | Leader | running |  1 |           |
-|     2 | dv1medpg1w2 | 10.13.3.49 | Leader | running |  1 |           |
-|     3 | dv1medpg1w3 | 10.13.3.50 | Leader | running |  1 |           |
-|     4 | dv1medpg1w4 | 10.13.3.51 | Leader | running |  1 |           |
-+-------+-------------+------------+--------+---------+----+-----------+
--- Create a table with the usual PostgreSQL syntax
-CREATE TABLE users_table (user_id bigserial primary key, age int);
+1 GB = 1024 MB (since 1 GB = 1024 megabytes)
+1024 MB = 1024 * 1024 KB (since 1 megabyte = 1024 kilobytes)
+1024 * 1024 KB = 1048576 KB
+So, 1 GB is equal to 1048576 KB.
 
--- Convert the table to a distributed table
-SELECT create_distributed_table('users_table', 'user_id');
+Divide by the Unit Size: The shared_buffers parameter is specified in 8KB units. To calculate the value you should set, you divide the total number of kilobytes (calculated in step 2) by the size of each unit, which is 8KB:
 
--- load data, ingest happens in parallel across shards
-INSERT INTO users_table (age)
-       SELECT 20 + (random() * 70)::int
-       FROM generate_series(0, 100000);
+1048576 KB / 8 KB = 131072
+So, you should set the shared_buffers parameter to 131072 in your Amazon RDS parameter group.
 
--- this query runs in parallel across all shards
-SELECT avg(age) FROM users_table;
-
--- index created in parallel across all shards
-CREATE INDEX user_age ON users_table (age);
-
--- this query hits a single shard as sharding key is on WHERE clause
-SELECT age FROM users_table WHERE user_id = 15;
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-CREATE TABLE shard.users_table (user_id bigserial primary key, age int);
-
-SELECT create_distributed_table('shard.users_table', 'user_id');
-
-
-CREATE TABLE employee (
-    employee_id serial PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department_id INT
-);
-
-
-INSERT INTO shard.users_table (age)
-       SELECT 20 + (random() * 70)::int
-       FROM generate_series(0, 100000);
-
-SELECT avg(age) FROM shard.users_table;
-
-
--- Insert 500,000 records into the distributed table
-INSERT INTO shard.users_table (age)
-       SELECT 20 + (random() * 70)::int
-       FROM generate_series(0, 499999); -- Insert 500,000 records
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
-
-CREATE TABLE shard.t_shard (
-id          serial, 
-shard_key   int, 
-n           int, 
-placeholder char(100) DEFAULT 'a');
-
-SELECT create_distributed_table('shard.t_shard', 'shard_key');
-
-INSERT INTO shard.t_shard (shard_key, n) 
-SELECT  id % 16, random()*100000 
-FROM        generate_series(1, 5000000) AS id;
-
-
-CREATE INDEX user_age ON shard.shard_table (age);
-
-
-CREATE TABLE employee (
-    employee_id serial PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department_id INT
-);
-
-INSERT INTO users_table (age)
-       SELECT 20 + (random() * 70)::int
-       FROM generate_series(0, 100000);
-
-
-CREATE TABLE employee (
-    employee_id serial PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department_id INT,
-    created_date DATE
-);
-
-INSERT INTO employee (first_name, last_name, department_id, created_date)
-SELECT 
-    'John', -- Sample first name
-    'Doe',  -- Sample last name
-    1,      -- Sample department_id
-    '2022-01-24'::date -- Sample created_date
-FROM generate_series(1, 100000); -- Insert 100,000 records
-
-
-
-[svcpostgres@uv2medpg2c1 ~]$ uptime
- 17:59:15 up 73 days, 23:17,  4 users,  load average: 4.51, 4.75, 3.83
-
-uptime > uptime_output.tsv
-
-
-
-citus=# set citus.enable_schema_based_sharding to on;
-ERROR:  invalid configuration parameter name "citus.enable_schema_based_sharding"
-DETAIL:  "citus" is a reserved prefix.
+https://dba.stackexchange.com/questions/137297/how-to-set-up-amazon-rds-parameter-group-for-postgres
