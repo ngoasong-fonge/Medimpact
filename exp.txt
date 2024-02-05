@@ -13,3 +13,21 @@ Divide by the Unit Size: The shared_buffers parameter is specified in 8KB units.
 So, you should set the shared_buffers parameter to 131072 in your Amazon RDS parameter group.
 
 https://dba.stackexchange.com/questions/137297/how-to-set-up-amazon-rds-parameter-group-for-postgres
+
+-------------------------------------------------------------------------------------------------------------
+
+To calculate the value for the wal_buffer parameter in PostgreSQL on Amazon RDS when you want to allocate 16 MB of memory, you can use the following steps:
+
+You want to allocate 16 MB of memory.
+The unit of wal_buffer in PostgreSQL is 8 KB.
+Here's how you calculate it:
+
+16 MB = 16 * 1024 KB (1 MB = 1024 KB).
+
+So, to allocate 16 MB of memory for the wal_buffer, you need:
+
+(16 * 1024 KB) / 8 KB = 2048
+
+So, you should set the wal_buffer parameter to 2048 in your RDS parameter group to allocate 16 MB of memory for the Write-Ahead Logging (WAL) buffer. 
+
+
