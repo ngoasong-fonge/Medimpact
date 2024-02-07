@@ -31,3 +31,10 @@ So, to allocate 16 MB of memory for the wal_buffer, you need:
 So, you should set the wal_buffer parameter to 2048 in your RDS parameter group to allocate 16 MB of memory for the Write-Ahead Logging (WAL) buffer. 
 
 
+CREATE TABLE shard.employee (
+    employee_id serial ,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT,
+    created_date DATE
+);
