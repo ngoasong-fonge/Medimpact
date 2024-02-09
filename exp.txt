@@ -38,3 +38,6 @@ CREATE TABLE shard.employee (
     department_id INT,
     created_date DATE
 );
+
+
+2024-02-09 17:53:54,606 - ERROR - Failed to get list of machines from https://10.13.4.178:2379/v2: MaxRetryError("HTTPSConnectionPool(host='10.13.4.178', port=2379): Max retries exceeded with url: /version (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f3cec998710>: Failed to establish a new connection: [Errno 111] Connection refused'))")
