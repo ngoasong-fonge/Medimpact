@@ -39,9 +39,41 @@ CREATE TABLE shard.employee (
     created_date DATE
 );
 
+------------------------------------------------without-primary--key---------
+SELECT count(*) AS num_tables_no_pk
+FROM information_schema.tables
+WHERE table_schema = 'your_schema_name'
+  AND table_name NOT IN (
+    SELECT tc.table_name
+    FROM information_schema.table_constraints AS tc
+    WHERE tc.table_schema = 'your_schema_name'
+      AND tc.constraint_type = 'PRIMARY KEY'
+  );
 
-SELECT schema_name
-FROM information_schema.schemata;
+---------------number--of --views
+SELECT count(*) AS num_views
+FROM information_schema.views
+WHERE table_schema = 'your_schema_name';
 
 
+-------------number 0f stored proce--(functions)
+SELECT count(*) AS num_stored_procedures
+FROM information_schema.routines
+WHERE routine_schema = 'your_schema_name'
+AND routine_type = 'FUNCTION';
+
+
+-----------functions--To get the number of functions (including stored procedures, which are a type of function) in a specific schema
+
+SELECT count(*) AS num_functions
+FROM information_schema.routines
+WHERE routine_schema = 'your_schema_name';
+
+---------packages----
+
+In PostgreSQL, there's no direct concept of "packages" as there is in some other database systems like Oracle. However, you can achieve similar functionality using schemas to organize related database objects
+
+SELECT COUNT(*) AS num_packages
+FROM information_schema.schemata
+WHERE schema_name = 'your_schema_name';
 
