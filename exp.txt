@@ -40,5 +40,4 @@ CREATE TABLE shard.employee (
 );
 
 
-citus=# SELECT create_distributed_table('shard.employees', 'shard_key');
-ERROR:  the partition column of table shard.employees cannot be NULL
+0 2 * * 6,0,1,2,3 /opt/app/patroni/scripts/pgdump_schemabackup.sh
