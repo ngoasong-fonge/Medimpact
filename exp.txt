@@ -40,6 +40,5 @@ CREATE TABLE shard.employee (
 );
 
 
--rw-rw-r--
--rwxr-xr-x
+What is the current average number of write transactions per second (TPS) for this application (approx)?
 
