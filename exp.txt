@@ -39,6 +39,13 @@ CREATE TABLE shard.employee (
     created_date DATE
 );
 
+
+----------------total--number--of---tables
+SELECT count(*) AS num_tables
+FROM information_schema.tables
+WHERE table_schema = 'your_schema_name'
+AND table_type = 'BASE TABLE';
+
 ------------------------------------------------without-primary--key---------
 SELECT count(*) AS num_tables_no_pk
 FROM information_schema.tables
