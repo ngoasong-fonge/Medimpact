@@ -40,11 +40,8 @@ CREATE TABLE shard.employee (
 );
 
 
-What is the current average number of write transactions per second (TPS) for this application (approx)?
+SELECT schema_name
+FROM information_schema.schemata;
 
-SELECT
-    sum(xact_commit + xact_rollback) / extract(epoch from current_timestamp - stats_reset)::int AS tps
-FROM
-    pg_stat_database;
 
 
