@@ -89,3 +89,15 @@ FROM pg_stat_user_tables
 WHERE schemaname = 'xray';
 
 SELECT relname, n_tup_ins as "inserts",n_tup_upd as "updates",n_tup_del as "deletes", n_live_tup as "live_tuples",n_dead_tup as "dead_tuples" FROM pg_stat_user_tables WHERE schemaname = 'xray' and n_dead_tup > 0 ;
+
+
+
+
+
+SELECT 
+    table_name,
+    pg_size_pretty(pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS table_size
+FROM information_schema.tables
+WHERE table_schema = 'your_schema_name'
+AND table_type = 'BASE TABLE'
+ORDER BY table_name;
