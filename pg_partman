@@ -228,7 +228,7 @@ SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_10r_01new'
  p_premake => 5);
 
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------bellow will drop table from backup schema-------------------------------------------------------------------------------------------------------------------------------
 
 
 #!/bin/bash
@@ -265,3 +265,26 @@ else
   echo "Error: Failed to drop partitions."
 fi
 
+-----------------------------------------------------------------------bellow is checking how long copy data will take from table to table----------------------------------
+Create a shell script (e.g., run_query.sh) with bellow
+
+
+#!/bin/bash
+
+# Start time
+start_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Run the query using psql
+psql -h your_host -U your_username -d your_database -c "INSERT INTO new_table SELECT * FROM old_table;"
+
+# End time
+end_time=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Print start and end time
+echo "Start Time: $start_time"
+echo "End Time: $end_time"
+
+chmod +x run_query.sh
+
+
+./run_query.sh > query_output.txt
