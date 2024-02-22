@@ -288,3 +288,4 @@ chmod +x run_query.sh
 
 
 ./run_query.sh > query_output.txt
+nohup /opt/app/patroni/scripts/run_query.sh > run_schema_1118.log 2>&1 &
