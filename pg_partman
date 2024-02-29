@@ -290,7 +290,7 @@ END
 \$\$;"
 
 # Execute the SQL query using psql with the specified database
-psql -h $PG_HOST -p $PG_PORT -d citus -U $PG_USER -c "$SQL_QUERY"
+psql -h localhost -d citus -U deployadmin -c "$SQL_QUERY"
 
 # Check for errors
 if [ $? -eq 0 ]; then
