@@ -333,4 +333,49 @@ drop_old_tables() {
 
 # Main execution
 drop_old_tables
+-----------------------------
+#!/bin/bash
 
+# PostgreSQL connection details
+HOST="localhost"
+PORT="5432"
+USERNAME="your_username"
+PASSWORD="your_password"
+DATABASE="your_database"
+
+# Schema from which to drop tables
+SCHEMA="your_schema"
+
+# Function to drop tables older than 4 weeks
+drop_old_tables() {
+    echo "Dropping tables older than 4 weeks from schema: $SCHEMA"
+
+    # Get the current date and calculate the date 4 weeks ago
+    CURRENT_DATE=$(date +"%Y-%m-%d")
+    FOUR_WEEKS_AGO=$(date -d "-4 weeks" +"%Y-%m-%d")
+
+    # Query to drop tables older than 4 weeks
+    QUERY="
+    DO \$\$
+    DECLARE
+        table_name RECORD;
+    BEGIN
+        FOR table_name IN
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = '$SCHEMA' AND table_type = 'BASE TABLE'
+        LOOP
+            EXECUTE 'DELETE FROM ' || table_name.table_name || ' WHERE created < ''' || '$FOUR_WEEKS_AGO' || ''' OR entered < ''' || '$FOUR_WEEKS_AGO' || '''';
+            RAISE NOTICE 'Deleted rows from table: %', table_name.table_name;
+        END LOOP;
+    END
+    \$\$;"
+
+    # Execute the query
+    psql -h $HOST -p $PORT -U $USERNAME -d $DATABASE -c "$QUERY"
+
+    echo "Rows deleted successfully."
+}
+
+# Main execution
+drop_old_tables
