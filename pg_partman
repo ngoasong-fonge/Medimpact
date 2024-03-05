@@ -231,8 +231,7 @@ BEGIN
       SELECT 'DROP TABLE IF EXISTS archive_schema.' || table_name || ' CASCADE'
       FROM information_schema.tables
       WHERE table_schema = 'archive_schema'
-      AND table_name LIKE 'your_prefix_%' -- Replace 'your_prefix_' with the prefix of your child tables
-      AND (created < '$THRESHOLD_DATE' OR entered < '$THRESHOLD_DATE')
+      AND (created_at < '$THRESHOLD_DATE' OR entered_at < '$THRESHOLD_DATE') -- Adjust column names as per your schema
    );
 END
 \$\$;"
@@ -247,17 +246,3 @@ else
   echo "Error: Failed to drop tables."
 fi
 
-
-
-ERROR:  column "created" does not exist
-LINE 6:       AND (created < '2024-02-06 16:47:13' OR entered < '202...
-                   ^
-QUERY:  (
-      SELECT 'DROP TABLE IF EXISTS archive_schema.' || table_name || ' CASCADE'
-      FROM information_schema.tables
-      WHERE table_schema = 'archive_schema'
-      AND table_name LIKE 'your_prefix_%' -- Replace 'your_prefix_' with the prefix of your child tables
-      AND (created < '2024-02-06 16:47:13' OR entered < '2024-02-06 16:47:13')
-   )
-CONTEXT:  PL/pgSQL function inline_code_block line 3 at EXECUTE
-Error: Failed to drop tables.
