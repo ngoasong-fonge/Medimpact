@@ -208,3 +208,11 @@ nohup /opt/app/patroni/scripts/run_query.sh > run_schema_1118.log 2>&1 &
 It seems you want to drop child tables older than a certain retention period and move them to an archive_schema. However, PostgreSQL doesn't natively track the creation date of tables, and the information_schema.tables doesn't contain a create_date column. Therefore, you need to handle the creation date tracking yourself, possibly by adding a column to the tables or maintaining a separate tracking mechanism.
 
 Assuming you have a column named created_at that records the creation timestamp of each table, here's how you can adjust the SQL query:
+
+
+demo_db=# UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='1 day',
+retention_keep_table=false, 
+retention_keep_index=false 
+WHERE parent_table='public.table01' ;
