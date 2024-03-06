@@ -386,21 +386,4 @@ drop_old_tables() {
 # Main execution
 drop_old_tables
 
-DO $$
-DECLARE
-    table_name TEXT;
-BEGIN
-    FOR table_name IN
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'your_schema'
-        AND table_type = 'BASE TABLE'
-    LOOP
-        EXECUTE 'SELECT 1 FROM ' || table_name || ' WHERE created < CURRENT_DATE - INTERVAL ''3 weeks''' ||
-            ' OR entered < CURRENT_DATE - INTERVAL ''3 weeks'' LIMIT 1' INTO table_name;
-        IF FOUND THEN
-            EXECUTE 'DROP TABLE IF EXISTS ' || table_name || ' CASCADE';
-            RAISE NOTICE 'Dropped table: %', table_name;
-        END IF;
-    END LOOP;
-END $$;
+show tables like 'archive_schema.rep_edw_log_%';
