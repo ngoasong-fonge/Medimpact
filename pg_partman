@@ -386,12 +386,21 @@ drop_old_tables() {
 # Main execution
 drop_old_tables
 
-Dropping tables older than 4 weeks from schema: archive_schema
-ERROR:  column reference "table_name" is ambiguous
-LINE 1: SELECT table_name
-               ^
-DETAIL:  It could refer to either a PL/pgSQL variable or a table column.
-QUERY:  SELECT table_name
-            FROM information_schema.tables
-            WHERE table_schema = 'archive_schema' AND table_type = 'BASE TABLE'
-CONTEXT:  PL/pgSQL function inline_code_block line 7 at FOR over SELECT rows
+DO $$
+DECLARE
+    table_name TEXT;
+BEGIN
+    FOR table_name IN
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'your_schema'
+        AND table_type = 'BASE TABLE'
+    LOOP
+        EXECUTE 'SELECT 1 FROM ' || table_name || ' WHERE created < CURRENT_DATE - INTERVAL ''3 weeks''' ||
+            ' OR entered < CURRENT_DATE - INTERVAL ''3 weeks'' LIMIT 1' INTO table_name;
+        IF FOUND THEN
+            EXECUTE 'DROP TABLE IF EXISTS ' || table_name || ' CASCADE';
+            RAISE NOTICE 'Dropped table: %', table_name;
+        END IF;
+    END LOOP;
+END $$;
