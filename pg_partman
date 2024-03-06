@@ -336,54 +336,16 @@ drop_old_tables
 
 
 -----------------------------------------
-#!/bin/bash
+DO $$
+DECLARE
+    table_name TEXT;
+BEGIN
+    FOR table_name IN
+        SELECT tablename
+        FROM pg_catalog.pg_tables
+        WHERE schemaname = 'archive_schema' AND tablename LIKE 'rep_edw_log_%'
+    LOOP
+        RAISE NOTICE 'Table name: %', table_name;
+    END LOOP;
+END $$;
 
-# PostgreSQL connection details
-HOST="localhost"
-PORT="5432"
-USERNAME="your_username"
-PASSWORD="your_password"
-DATABASE="your_database"
-
-# Schema from which to drop tables
-SCHEMA="your_schema"
-
-# Function to drop tables older than 4 weeks
-drop_old_tables() {
-    echo "Dropping tables older than 4 weeks from schema: $SCHEMA"
-
-    # Get the current date and calculate the date 4 weeks ago
-    FOUR_WEEKS_AGO=$(date -d "-4 weeks" +"%Y-%m-%d")
-
-    # Query to drop tables older than 4 weeks
-    QUERY="
-    DO \$\$
-    DECLARE
-        table_name TEXT;
-        table_created DATE;
-        table_entered DATE;
-    BEGIN
-        FOR table_name IN
-            SELECT table_name
-            FROM information_schema.tables
-            WHERE table_schema = '$SCHEMA' AND table_type = 'BASE TABLE'
-        LOOP
-            EXECUTE 'SELECT created, entered FROM ' || table_name || ' LIMIT 1' INTO table_created, table_entered;
-            IF table_created < '$FOUR_WEEKS_AGO' OR table_entered < '$FOUR_WEEKS_AGO' THEN
-                EXECUTE 'DROP TABLE ' || table_name || ' CASCADE';
-                RAISE NOTICE 'Dropped table: %', table_name;
-            END IF;
-        END LOOP;
-    END
-    \$\$;"
-
-    # Execute the query
-    psql -h $HOST -p $PORT -U $USERNAME -d $DATABASE -c "$QUERY"
-
-    echo "Tables dropped successfully."
-}
-
-# Main execution
-drop_old_tables
-
-show tables like 'archive_schema.rep_edw_log_%';
