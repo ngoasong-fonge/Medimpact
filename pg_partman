@@ -399,3 +399,39 @@ BEGIN
         END IF;
     END LOOP;
 END $$;
+
+
+
+
+
+citus=# DO $$
+citus$# DECLARE
+citus$#     table_name TEXT;
+        RAISE NOTICE 'Table name: %', table_name;
+        EXECUTE 'SELECT 1 FROM ' || quote_ident(table_name) || ' WHERE
+            (created < CURRENT_DATE - INTERVAL ''45 days'' AND tablename LIKE ''stg_mep_claim_%'') OR
+citus$# BEGIN
+citus$#     FOR table_name IN
+citus$#         SELECT tablename
+citus$#         FROM pg_catalog.pg_tables
+citus$#         WHERE schemaname = 'archive_schema' AND (tablename LIKE 'stg_mep_claim_%' OR tablename LIKE 'rep_edw_log_%')
+citus$#     LOOP
+citus$#         RAISE NOTICE 'Table name: %', table_name;
+citus$#         EXECUTE 'SELECT 1 FROM ' || quote_ident(table_name) || ' WHERE
+citus$#             (created < CURRENT_DATE - INTERVAL ''45 days'' AND tablename LIKE ''stg_mep_claim_%'') OR
+citus$#             (entered < CURRENT_DATE - INTERVAL ''45 days'' AND tablename LIKE ''rep_edw_log_%'') LIMIT 1' INTO table_name;
+citus$#         IF FOUND THEN
+citus$#             EXECUTE 'DROP TABLE IF EXISTS archive_schema.' || quote_ident(table_name) || ' CASCADE';
+citus$#             RAISE NOTICE 'Dropped table: %', table_name;
+citus$#         END IF;
+citus$#     END LOOP;
+citus$# END $$;
+NOTICE:  Table name: stg_mep_claim_20r_p20230806
+ERROR:  relation "stg_mep_claim_20r_p20230806" does not exist
+LINE 1: SELECT 1 FROM stg_mep_claim_20r_p20230806 WHERE
+                      ^
+QUERY:  SELECT 1 FROM stg_mep_claim_20r_p20230806 WHERE
+            (created < CURRENT_DATE - INTERVAL '45 days' AND tablename LIKE 'stg_mep_claim_%') OR
+            (entered < CURRENT_DATE - INTERVAL '45 days' AND tablename LIKE 'rep_edw_log_%') LIMIT 1
+CONTEXT:  PL/pgSQL function inline_code_block line 11 at EXECUTE
+
