@@ -44,58 +44,6 @@ CREATE TABLE shard.employee (
 
 
 
-query            | --select count(*) from ngmep.encounter_ver_raw               +
-                 | --where encounter_ver_raw_id > 3200000000                    +
-                 | --and encounter_ver_raw_id < 5000000000;                     +
-                 |                                                              +
-                 |                                                              +
-                 | insert into NGMEP.ENCOUNTER_VER_RAW                          +
-                 | (                                                            +
-                 |                 ENCOUNTER_VER_RAW_ID                         +
-                 | ,       CREATED                                              +
-                 | ,       CREATED_BY                                           +
-                 | ,       ENTERED                                              +
-                 | ,       ENTERED_BY                                           +
-                 | ,       ENCOUNTER_VERSION_ID                                 +
-                 | ,       CLAIM_FILE_TRANSMISSION_ID                           +
-                 | ,       ORIG_CLAIM_ID                                        +
-                 | ,       CLAIM_STATUS_CODE                                    +
-                 | ,       CLAIM_TYPE                                           +
-                 | ,       SENDER_ID                                            +
-                 | ,       RECEIVER_ID                                          +
-                 | ,       BIN_NO                                               +
-                 | ,       ADMINISTRATIVE_DENIAL                                +
-                 | ,       SUBMITTER_ID                                         +
-                 | ,       MI_CLAIM_ID                                          +
-                 | ,       PHARMACY_NAME                                        +
-                 | ,       PHARMACY_NPI                                         +
-                 | ,       PLAN_TYPE                                            +
-                 | ,       USER_BENEFIT_ID                                      +
-                 | ,       PATIENT_RELATIONSHIP_CODE                            +
-                 | ,       CARDHOLDER_LAST_NAME                                 +
-                 | ,       CARDHOLDER_FIRST_NAME                                +
-                 | ,       CARDHOLDER_MIDDLE_NAME                               +
-                 | ,       CARDHOLDER_SUFFIX                                    +
-                 | ,       CARDHOLDER_ID                                        +
-                 | ,       CARDHOLDER_DATE_OF_BIRTH                             +
-                 | ,       CARDHOLDER_GENDER                                    +
-                 | ,       HICN                                                 +
-                 | ,       ELIGIBILITY_CLAR_CODE                                +
-                 | ,       ELIGIBILITY_GROUP_ID                                 +
-                 | ,       LINE_OF_BUSINESS_CODE                                +
-                 | ,       PATIENT_ID                                           +
-                 | ,       PATIENT_BIRTH_DATE                                   +
-                 | ,       PATIENT_GENDER_CODE                                  +
-                 | ,       PATIENT_FIRST_NAME                                   +
-                 | ,       PATIENT_MIDDLE_NAME                                  +
-                 | ,       PATIENT_LAST_NAME                                    +
-                 | ,       PATIENT_SUFFIX                                       +
-                 | ,       PREGNANCY_IND                                        +
-                 | ,       INJURY_DATE                                          +
-                 | ,       PATIENT_RESIDENCE_CODE                               +
-                 | ,       OTHER_COVERAGE_CODE                                  +
-                 | ,       BENEFICIARY_COUNTY                                   +
-                 | ,       RECORD_STATUS_CODE                                   +
-                 | ,       PAYMENT_CLAR_COD
-backend_type     | client backend
-
+SELECT *
+FROM pg_stat_activity
+WHERE state = 'active' AND waiting = 'true';
