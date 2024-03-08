@@ -44,6 +44,19 @@ CREATE TABLE shard.employee (
 
 
 
-SELECT *
-FROM pg_stat_activity
-WHERE state = 'active' AND waiting = 'true';
+citus=# select * from pg_locks;
+   locktype    | database | relation | page | tuple | virtualxid | transactionid | classid | objid | objsubid | virtualtransaction |   pid   |       mode       | granted | fastpath | waitstart
+---------------+----------+----------+------+-------+------------+---------------+---------+-------+----------+--------------------+---------+------------------+---------+----------+-----------
+ relation      |    16387 |    12073 |      |       |            |               |         |       |          | 50/625503          | 4127731 | AccessShareLock  | t       | t        |
+ virtualxid    |          |          |      |       | 50/625503  |               |         |       |          | 50/625503          | 4127731 | ExclusiveLock    | t       | t        |
+ relation      |    16387 |   149231 |      |       |            |               |         |       |          | 47/278674          | 4100010 | RowExclusiveLock | t       | t        |
+ relation      |    16387 |   149358 |      |       |            |               |         |       |          | 47/278674          | 4100010 | AccessShareLock  | t       | t        |
+ relation      |    16387 |   149235 |      |       |            |               |         |       |          | 47/278674          | 4100010 | AccessShareLock  | t       | t        |
+ relation      |    16387 |    16455 |      |       |            |               |         |       |          | 47/278674          | 4100010 | AccessShareLock  | t       | t        |
+ relation      |    16387 |    79972 |      |       |            |               |         |       |          | 47/278674          | 4100010 | AccessShareLock  | t       | t        |
+ relation      |    16387 |    80053 |      |       |            |               |         |       |          | 47/278674          | 4100010 | RowExclusiveLock | t       | t        |
+ virtualxid    |          |          |      |       | 47/278674  |               |         |       |          | 47/278674          | 4100010 | ExclusiveLock    | t       | t        |
+ transactionid |          |          |      |       |            |       7450504 |         |       |          | 47/278674          | 4100010 | ExclusiveLock    | t       | f        |
+(10 rows)
+
+
