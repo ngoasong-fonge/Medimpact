@@ -1,0 +1,12 @@
+** ---To check when postgresql tables statistics were last updated for all tables in database-------
+
+  SELECT schemaname AS schema_name,
+       relname AS table_name,
+       last_analyze AS last_manual_analyze,
+       last_autoanalyze AS last_auto_analyze
+FROM pg_stat_user_tables;
+
+
+-------To check for specific tables--------------
+
+  
