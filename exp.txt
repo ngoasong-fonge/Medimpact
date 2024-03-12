@@ -49,3 +49,11 @@ SELECT schemaname AS schema_name,
        last_autoanalyze AS last_auto_analyze
 FROM pg_stat_user_tables;
 
+SELECT relname AS table_name,
+       last_analyze AS last_manual_analyze,
+       last_autoanalyze AS last_auto_analyze
+FROM pg_stat_user_tables
+WHERE schemaname = 'public' -- Replace 'public' with the schema name if the table is in a different schema
+  AND relname = 'your_table_name'; -- Replace 'your_table_name' with the name of the table you want to check
+
+
