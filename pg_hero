@@ -1,0 +1,39 @@
+The instructions above are based on the official installation procedure.
+You don't mention which operating system you want to install PgHero. In this recipe, we are using CentOS 8 (we strongly recommend that you don't use CentOS 6 because it was deprecated last month) for the PgHero server and as you mentioned CentOS 6 for Postgres 9.6.
+Let's install the repository and then install PgHero:
+wget -O /etc/yum.repos.d/pghero.repo https://dl.packager.io/srv/pghero/pghero/master/installer/el/8.repo
+yum -y install pghero
+Let's setup a basic configuration. Adjust the DATABASE_URL accordingly.
+pghero config:set DATABASE_URL=postgres://username:secretpassword@10.20.30.40:5432/bench
+pghero config:set PORT=3001
+pghero config:set RAILS_LOG_TO_STDOUT=disabled
+Starting the PgHero service:
+pghero scale web=1
+Check if the service is running:
+curl -v http://localhost:3001/
+In order to access PgHero from another machine, use a webserver that proxy the PgHero service. We are using Nginx.
+Installing Nginx:
+yum -y install nginx
+Edit /etc/nginx/nginx.conf and change location to:
+    location / {
+    proxy_pass   http://localhost:3001;
+    }
+Start the service:
+systemctl start nginx
+Check PgHero from your browser (such as http://10.2.3.4/ where 10.2.3.4 is the IP address of your PgHero server). If you want to restrict access, add a basic authentication with the following configuration:
+pghero config:set PGHERO_USERNAME=tangoe
+pghero config:set PGHERO_PASSWORD=secret
+Restart the service:
+systemctl restart pghero
+If you have some issue, you can check the PgHero logs:
+pghero logs
+PgHero requires pg_stat_statements to monitor the queries. In order to use this Postgres extension, you have to install postgresql96-contrib, add the following configuration in your postgresql.conf and execute CREATE EXTENSION pg_stat_statements in the database you are monitoring.
+shared_preload_libraries = 'pg_stat_statements'
+pg_stat_statements.track = all
+This change requires a Postgres restart:
+service postgresql-96 restart
+and create the extension:
+bench=# CREATE EXTENSION pg_stat_statements;
+CREATE EXTENSION
+Let us know how it goes.
+Regards, Euler
