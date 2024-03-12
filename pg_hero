@@ -40,6 +40,7 @@ Regards, Euler
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------
+https://github.com/ankane/pghero/blob/master/guides/Linux.md#centos--rhel
 
 You don't mention which operating system you want to install PgHero. In this recipe, we are using CentOS 8 (we strongly recommend that you don't use CentOS 6 because it was deprecated last month) for the PgHero server and as you mentioned CentOS 6 for Postgres 9.6.
 
