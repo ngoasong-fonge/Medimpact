@@ -21,4 +21,5 @@ SELECT relname AS table_name,
        last_autoanalyze AS last_auto_analyze
 FROM pg_stat_user_tables
 WHERE schemaname = 'ngmep' 
-  AND relname = 'encounter_version' 'encounter_ver_raw' 'encounter';
+  AND relname IN ('encounter_version', 'encounter_ver_raw', 'encounter');
+
