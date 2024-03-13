@@ -15,3 +15,10 @@ FROM pg_stat_user_tables;
 FROM pg_stat_user_tables
 WHERE schemaname = 'public' 
   AND relname = 'your_table_name'; 
+
+SELECT relname AS table_name,
+       last_analyze AS last_manual_analyze,
+       last_autoanalyze AS last_auto_analyze
+FROM pg_stat_user_tables
+WHERE schemaname = 'ngmep' 
+  AND relname = 'encounter_version' 'encounter_ver_raw' 'encounter';
