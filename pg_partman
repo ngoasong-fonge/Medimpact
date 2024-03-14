@@ -167,6 +167,9 @@ Make sure to adjust the database (testdb) and schema name (archive_schema) as pe
 
 #!/bin/bash
 
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
+
 # Remove tables in the archive_schema that are older than 4 weeks
 
 schema="archive_schema"
