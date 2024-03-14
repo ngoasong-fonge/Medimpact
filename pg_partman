@@ -138,6 +138,8 @@ for table_name in $tbList; do
     fi
 done
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
+The script gets the table name on schema "archive_schema", and then use the "sed" command to get the pattern date on the table. 
+After that, compare it with a date on the server and drop it if it is older than 4 weeks.
 
 Your script above aims to remove tables in the archive_schema that are older than 4 weeks. Below is a breakdown of each part of the script:
 
