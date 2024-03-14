@@ -139,17 +139,20 @@ for table_name in $tbList; do
 done
   
 
+mepstg.stg_mep_claim_15r
+mepstg.stg_mep_claim_20r
+mepstg.stg_mep_claim_33r
+mepstg.stg_mep_claim_file
+mepstg.stg_mep_claim_32r
+mepstg.stg_mep_claim_40c
+mepstg.stg_mep_claim_10r
+mepstg.stg_mep_claim_31r
+dmeapps.rep_edw_log 
 
 
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_15r
+
+
+
 
       
 
