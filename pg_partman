@@ -137,17 +137,28 @@ for table_name in $tbList; do
         echo "Invalid date format for table: $schema.$table_name"
     fi
 done
-  
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
 
-mepstg.stg_mep_claim_15r
-mepstg.stg_mep_claim_20r
-mepstg.stg_mep_claim_33r
-mepstg.stg_mep_claim_file
-mepstg.stg_mep_claim_32r
-mepstg.stg_mep_claim_40c
-mepstg.stg_mep_claim_10r
-mepstg.stg_mep_claim_31r
-dmeapps.rep_edw_log 
+Your script above aims to remove tables in the archive_schema that are older than 4 weeks. Below is a breakdown of each part of the script:
+
+Setting Variables:
+
+schema: Specifies the schema name (archive_schema) where the tables reside.
+older_than: Specifies the cutoff date (4 weeks ago) in the format YYYYMMDD.
+Fetching Table Names:
+
+The script queries the database (testdb) to fetch table names in the archive_schema schema that match the specified pattern (stg_mep_claim_10r_p followed by 8 digits representing a date in the format YYYYMMDD).
+Processing Table Names:
+
+If no tables are found, it prints a message and exits.
+Otherwise, it iterates over the list of table names.
+For each table name, it extracts the date part and checks if it's older than the specified cutoff date.
+If the table's date is older than the cutoff date, it drops the table using psql.
+Error Handling:
+
+It handles cases where the table name doesn't have a valid date format.
+Overall, the script effectively drops tables in the archive_schema schema that match the specified pattern and are older than 4 weeks.
+Make sure to adjust the database (testdb) and schema name (archive_schema) as per your environment.
 
 
 
