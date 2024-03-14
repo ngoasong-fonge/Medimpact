@@ -210,7 +210,7 @@ for table_name in $tbList; do
 done
 
 
----------------------
+---------------------With this script I directly specify the patterns for all tables in the regular expression used by sed to extract the date-----------------------------------------
 
 #!/bin/bash
 
@@ -252,6 +252,50 @@ for table_name in $tbList; do
         echo "Invalid date format for table: $schema.$table_name"
     fi
 done
+
+
+--------------------------------------
+#!/bin/bash
+
+# Remove tables in the archive_schema that are older than 4 weeks
+
+schema="archive_schema"
+older_than=$(date -d '4 weeks ago' +%Y%m%d)
+
+# Define table patterns to include
+patterns=(
+    'stg_mep_claim_10r_p'
+    'stg_mep_claim_15r_p'
+    'stg_mep_claim_20r_p'
+    'stg_mep_claim_33r_p'
+    'stg_mep_claim_file_p'
+    'stg_mep_claim_32r_p'
+    'stg_mep_claim_40c_p'
+    'stg_mep_claim_31r_p'
+    'rep_edw_log_p'
+)
+
+# Fetch table names in the "archive_schema" matching the defined patterns
+tbList=$(psql -d testdb -tc "SELECT table_name FROM information_schema.tables WHERE table_schema = '$schema' AND table_name ~ '^( $(IFS="|"; echo "${patterns[*]}") )[0-9]{8}$';" | sed 's/^\s*//')
+
+if [ -z "$tbList" ]; then
+    echo "No tables found in the $schema schema matching the patterns."
+    exit 0
+fi
+
+for table_name in $tbList; do
+    table_date=$(echo "$table_name" | sed 's/^('"$(IFS="|"; echo "${patterns[*]}")"')//' | sed 's/[^0-9]//g')
+    if [ -n "$table_date" ]; then
+        table_date=$(date -d "$table_date" +%Y%m%d)                                                # Reformat the date as YYYYMMDD
+        if [ "$table_date" -lt "$older_than" ]; then
+            echo "Dropping table $schema.$table_name"
+            psql -d testdb -c "DROP TABLE IF EXISTS $schema.$table_name;"
+        fi
+    else
+        echo "Invalid date format for table: $schema.$table_name"
+    fi
+done
+
 
 
 
