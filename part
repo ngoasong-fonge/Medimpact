@@ -46,3 +46,52 @@ execute_sql "UPDATE partman.part_config SET infinite_time_partitions=true, reten
 
 # Optional: Display a message indicating the script has finished
 echo "Script execution completed."
+
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
+
+# Function to execute SQL commands
+execute_sql() {
+    psql -h <hostname> -U <username> -d <database> -c "$1"
+}
+
+# Execute SQL commands for stg_mep_claim_15r table
+execute_sql "ALTER TABLE mepstg.stg_mep_claim_15r RENAME TO stg_mep_claim_15r_old;"
+execute_sql "ALTER INDEX mepstg.pk_stg_mep_claim_15r RENAME TO pk_stg_mep_claim_15r_old;"
+execute_sql "ALTER INDEX mepstg.stg_mep_claim_15r_n1 RENAME TO stg_mep_claim_15r_n1_old;"
+execute_sql "ALTER TABLE mepstg.stg_mep_claim_15r_old RENAME CONSTRAINT stg_mep_claim_15r_pkey TO stg_mep_claim_15r_old_pkey;"
+
+# Create the new stg_mep_claim_15r table
+execute_sql "CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_15r (
+    stg_mep_claim_15r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_15r_stg_mep_claim_15r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog.'default' NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog.'default' NOT NULL,
+    -- Add other column definitions here
+) PARTITION BY RANGE (created);"
+
+# Add other CREATE TABLE and ALTER TABLE commands as needed
+
+# Grant permissions, revoke permissions, create indexes, etc.
+execute_sql "ALTER TABLE IF EXISTS mepstg.stg_mep_claim_15r OWNER TO deployadmin;"
+execute_sql "REVOKE ALL ON TABLE mepstg.stg_mep_claim_15r FROM mepinfauser_role;"
+# Add other REVOKE commands as needed
+
+# Add other GRANT commands as needed
+
+execute_sql "CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_15r ON mepstg.stg_mep_claim_15r USING btree (stg_mep_claim_15r_id ASC NULLS LAST, created ASC NULLS LAST);"
+execute_sql "CREATE INDEX IF NOT EXISTS stg_mep_claim_15r_n1 ON mepstg.stg_mep_claim_15r USING btree (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);"
+
+execute_sql "SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_15r', p_control => 'created', p_type => 'range', p_interval=> '1 week', p_start_partition=> '2023-08-06', p_premake => 4);"
+
+execute_sql "INSERT INTO mepstg.stg_mep_claim_15r SELECT * FROM mepstg.stg_mep_claim_15r_old;"
+
+execute_sql "UPDATE partman.part_config SET infinite_time_partitions=true, retention='4 week', retention_schema='archive_schema', retention_keep_table=true, retention_keep_index=true WHERE parent_table='mepstg.stg_mep_claim_15r';"
+
+# Optional: Display a message indicating the script has finished
+echo "Script execution completed."
+
+
