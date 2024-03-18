@@ -1,0 +1,1390 @@
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/postgres/pg_env.sh
+
+# tables to partition
+
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_10r RENAME to mepstg.stg_mep_claim_10r_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_10r RENAME TO pk_stg_mep_claim_10r_old;
+ALTER INDEX mepstg.stg_mep_claim_10r_n1 RENAME TO stg_mep_claim_10r_n1_old;
+alter table mepstg.stg_mep_claim_10r_old rename constraint stg_mep_claim_10r_pkey to stg_mep_claim_10r_old_pkey; 
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_10r
+(
+    stg_mep_claim_10r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_10r_stg_mep_claim_10r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    stg_mep_claim_file_id bigint,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint,
+    claimstatus character varying(2) COLLATE pg_catalog."default",
+    claimtype character varying(20) COLLATE pg_catalog."default",
+    sender_id character varying(100) COLLATE pg_catalog."default",
+    receiverid character varying(100) COLLATE pg_catalog."default",
+    processorcontrolnumber character varying(100) COLLATE pg_catalog."default",
+    binnumber character varying(100) COLLATE pg_catalog."default",
+    historicalindicator character varying(5) COLLATE pg_catalog."default",
+    historicaldispositionstatus character varying(20) COLLATE pg_catalog."default",
+    historicalencountericn character varying(50) COLLATE pg_catalog."default",
+    historicalencounterid character varying(50) COLLATE pg_catalog."default",
+    administrativedenial character varying(10) COLLATE pg_catalog."default",
+    source character varying(100) COLLATE pg_catalog."default",
+    claim_encounter_cleanup character varying(100) COLLATE pg_catalog."default",
+    filler character varying(100) COLLATE pg_catalog."default",
+    submitterlastname character varying(100) COLLATE pg_catalog."default",
+    submitterid character varying(100) COLLATE pg_catalog."default",
+    submittercontactname character varying(10) COLLATE pg_catalog."default",
+    submittercontactnumberqual character varying(2) COLLATE pg_catalog."default",
+    submittercontactnumber character varying(20) COLLATE pg_catalog."default",
+    submittercontactemailqual character varying(2) COLLATE pg_catalog."default",
+    submittercontactemail character varying(100) COLLATE pg_catalog."default",
+    receivername character varying(100) COLLATE pg_catalog."default",
+    receiverreceiveridentifierqual character varying(2) COLLATE pg_catalog."default",
+    receiverreceiveridentifier character varying(100) COLLATE pg_catalog."default",
+    billingorg_lastname character varying(100) COLLATE pg_catalog."default",
+    billingfirstname character varying(100) COLLATE pg_catalog."default",
+    serviceprovideridqual character varying(2) COLLATE pg_catalog."default",
+    serviceproviderid character varying(15) COLLATE pg_catalog."default",
+    placeofservice character varying(2) COLLATE pg_catalog."default",
+    pharmacydispensertypequal character varying(1) COLLATE pg_catalog."default",
+    pharmacydispensertype character varying(2) COLLATE pg_catalog."default",
+    pharmacyclasscodequal character varying(1) COLLATE pg_catalog."default",
+    pharmacyclasscode character varying(1) COLLATE pg_catalog."default",
+    innetworkindicator character varying(1) COLLATE pg_catalog."default",
+    networkreimbursementid character varying(10) COLLATE pg_catalog."default",
+    billingaddressline1 character varying(100) COLLATE pg_catalog."default",
+    billingaddressline2 character varying(100) COLLATE pg_catalog."default",
+    billingcity character varying(100) COLLATE pg_catalog."default",
+    billingstate character varying(100) COLLATE pg_catalog."default",
+    billingpostalcode character varying(10) COLLATE pg_catalog."default",
+    billingcountry character varying(100) COLLATE pg_catalog."default",
+    billingprovideridqual_1 character varying(2) COLLATE pg_catalog."default",
+    billingproviderid_1 character varying(100) COLLATE pg_catalog."default",
+    billingprovideridqual_2 character varying(2) COLLATE pg_catalog."default",
+    billingproviderid_2 character varying(100) COLLATE pg_catalog."default",
+    billingproviderspeciality character varying(100) COLLATE pg_catalog."default",
+    billingprovidertype character varying(100) COLLATE pg_catalog."default",
+    billingprovidercommnoqual_1 character varying(3) COLLATE pg_catalog."default",
+    billingprovidercommno_1 character varying(20) COLLATE pg_catalog."default",
+    billingprovidercommnoqual_2 character varying(3) COLLATE pg_catalog."default",
+    billingprovidercommno_2 character varying(20) COLLATE pg_catalog."default",
+    facilityid character varying(20) COLLATE pg_catalog."default",
+    serviceproviderchaincode character varying(10) COLLATE pg_catalog."default",
+    cmspartddefinedqualfacility character varying(1) COLLATE pg_catalog."default",
+    billingcountycode character varying(50) COLLATE pg_catalog."default",
+    issuerid character varying(50) COLLATE pg_catalog."default",
+    filler_2 character varying(50) COLLATE pg_catalog."default",
+    filler_3 character varying(50) COLLATE pg_catalog."default",
+    filler_4 character varying(50) COLLATE pg_catalog."default",
+    filler_5 character varying(100) COLLATE pg_catalog."default",
+    monetaryamountchangeflag character varying(2) COLLATE pg_catalog."default",
+    claimsequencenumber character varying(20) COLLATE pg_catalog."default",
+    CONSTRAINT stg_mep_claim_10r_pkey PRIMARY KEY (stg_mep_claim_10r_id, created)
+) PARTITION BY RANGE (created);
+
+
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_10r FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_10r FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_10r FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_10r TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_10r TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_10r TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_10r TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_10r TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_10r TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_10r TO mepstg_update_role;
+
+COMMENT ON COLUMN mepstg.stg_mep_claim_10r.created_by
+    IS 'The person or process that created the row on the database.';
+
+COMMENT ON COLUMN mepstg.stg_mep_claim_10r.entered_by
+    IS 'The person or process that created or last updated this row on the database.';
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_10r
+    ON mepstg.stg_mep_claim_10r USING btree
+    (stg_mep_claim_10r_id ASC NULLS LAST, created ASC NULLS LAST);
+
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_10r_n1
+    ON mepstg.stg_mep_claim_10r USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_10r',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+INSERT INTO mepstg.stg_mep_claim_10r SELECT * FROM mepstg.stg_mep_claim_10r_old;
+
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_10r' ;
+
+# next table
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_15r RENAME to stg_mep_claim_15r_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_15r RENAME TO pk_stg_mep_claim_15r_old;
+ALTER INDEX mepstg.stg_mep_claim_15r_n1 RENAME TO stg_mep_claim_15r_n1_old;
+alter table mepstg.stg_mep_claim_15r_old rename constraint stg_mep_claim_15r_pkey to stg_mep_claim_15r_old_pkey;
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_15r
+(
+    stg_mep_claim_15r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_15r_stg_mep_claim_15r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    stg_mep_claim_file_id bigint,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint,
+    planbenefitcode character varying(5) COLLATE pg_catalog."default",
+    plantype character varying(5) COLLATE pg_catalog."default",
+    planmemberid character varying(50) COLLATE pg_catalog."default",
+    insuredgroupname character varying(50) COLLATE pg_catalog."default",
+    patientrelationshipcode character varying(4) COLLATE pg_catalog."default",
+    cardholderlastname character varying(100) COLLATE pg_catalog."default",
+    cardholderfirstname character varying(50) COLLATE pg_catalog."default",
+    cardholdermiddlename character varying(20) COLLATE pg_catalog."default",
+    cardholdersuffix character varying(10) COLLATE pg_catalog."default",
+    cardholderidentificationno character varying(50) COLLATE pg_catalog."default",
+    cardholderaddressline1 character varying(100) COLLATE pg_catalog."default",
+    cardholderaddressline2 character varying(100) COLLATE pg_catalog."default",
+    cardholdercity character varying(100) COLLATE pg_catalog."default",
+    cardholderstate character varying(100) COLLATE pg_catalog."default",
+    cardholderpostalcode character varying(10) COLLATE pg_catalog."default",
+    cardholderdateofbirth character varying(20) COLLATE pg_catalog."default",
+    cardholdergender character varying(1) COLLATE pg_catalog."default",
+    hicn character varying(50) COLLATE pg_catalog."default",
+    eligibilityclarificationcode character varying(5) COLLATE pg_catalog."default",
+    eligibilitygroupid character varying(15) COLLATE pg_catalog."default",
+    clientassignedlocationcode character varying(50) COLLATE pg_catalog."default",
+    clientpassthrough character varying(200) COLLATE pg_catalog."default",
+    lineofbusinesscode character varying(10) COLLATE pg_catalog."default",
+    payrollclass character varying(1) COLLATE pg_catalog."default",
+    patientrole character varying(5) COLLATE pg_catalog."default",
+    patientidqual character varying(2) COLLATE pg_catalog."default",
+    patientid character varying(50) COLLATE pg_catalog."default",
+    patientdateofbirth character varying(20) COLLATE pg_catalog."default",
+    patientgendercode character varying(1) COLLATE pg_catalog."default",
+    patientfirstname character varying(50) COLLATE pg_catalog."default",
+    patientmiddlename character varying(20) COLLATE pg_catalog."default",
+    patientlastname character varying(100) COLLATE pg_catalog."default",
+    patientsuffix character varying(10) COLLATE pg_catalog."default",
+    patientstreetaddress character varying(100) COLLATE pg_catalog."default",
+    patientstreetaddress2 character varying(100) COLLATE pg_catalog."default",
+    patientcityaddress character varying(100) COLLATE pg_catalog."default",
+    patientstateaddress character varying(100) COLLATE pg_catalog."default",
+    patientzipcode character varying(10) COLLATE pg_catalog."default",
+    patientphonenoqual character varying(2) COLLATE pg_catalog."default",
+    patientphoneno character varying(20) COLLATE pg_catalog."default",
+    patientemailaddressqual character varying(2) COLLATE pg_catalog."default",
+    patientemailaddress character varying(100) COLLATE pg_catalog."default",
+    pregnancyindicator character varying(1) COLLATE pg_catalog."default",
+    dateofinjury character varying(20) COLLATE pg_catalog."default",
+    patientresidence character varying(2) COLLATE pg_catalog."default",
+    othercoveragecode character varying(1) COLLATE pg_catalog."default",
+    beneficiarycounty character varying(50) COLLATE pg_catalog."default",
+    beneaidcode character varying(50) COLLATE pg_catalog."default",
+    subscriberssn character varying(50) COLLATE pg_catalog."default",
+    patientssn character varying(50) COLLATE pg_catalog."default",
+    medicareplancode character varying(50) COLLATE pg_catalog."default",
+    filler_2 character varying(100) COLLATE pg_catalog."default",
+    filler_3 character varying(100) COLLATE pg_catalog."default",
+    filler_4 character varying(100) COLLATE pg_catalog."default",
+    filler_5 character varying(100) COLLATE pg_catalog."default",
+    eligibilitycoveragecode character varying(50) COLLATE pg_catalog."default",
+    processorspecificdata character varying(50) COLLATE pg_catalog."default",
+    stg_mep_claim_10r_id bigint,
+    CONSTRAINT stg_mep_claim_15r_pkey PRIMARY KEY (stg_mep_claim_15r_id, created)
+) PARTITION BY RANGE (created);
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_15r
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_15r FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_15r FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_15r FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_15r TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_15r TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_15r TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_15r TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_15r TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_15r TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_15r TO mepstg_update_role;
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_15r
+    ON mepstg.stg_mep_claim_15r USING btree
+    (stg_mep_claim_15r_id ASC NULLS LAST, created ASC NULLS LAST);
+    
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_15r_n1
+    ON mepstg.stg_mep_claim_15r USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+ 
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_15r',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+
+INSERT INTO mepstg.stg_mep_claim_15r SELECT * FROM mepstg.stg_mep_claim_15r_old;
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_15r' ;  
+
+ 
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_20r RENAME to stg_mep_claim_20r_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_20r RENAME TO pk_stg_mep_claim_20r_old;
+ALTER INDEX mepstg.stg_mep_claim_20r_n1 RENAME TO stg_mep_claim_20r_n1_old;
+ALTER INDEX mepstg.stg_mep_claim_20r_n2 RENAME TO stg_mep_claim_20r_n2_old;
+alter table mepstg.stg_mep_claim_20r_old rename constraint stg_mep_claim_20r_pkey to stg_mep_claim_20r_old_pkey;
+
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_20r
+(
+    stg_mep_claim_20r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_20r_stg_mep_claim_20r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    stg_mep_claim_file_id bigint NOT NULL,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint NOT NULL,
+    transactionreferenceno character varying(50) COLLATE pg_catalog."default",
+    transactioncode character varying(2) COLLATE pg_catalog."default",
+    orginalclaimid character varying(50) COLLATE pg_catalog."default",
+    claimmediatype character varying(1) COLLATE pg_catalog."default",
+    paymentclarificationcode character varying(5) COLLATE pg_catalog."default",
+    priorauthorizationno character varying(50) COLLATE pg_catalog."default",
+    priorauthorizationnoassigned character varying(50) COLLATE pg_catalog."default",
+    procdefinedpriorauthreasoncd character varying(2) COLLATE pg_catalog."default",
+    preferredalternativefileid character varying(10) COLLATE pg_catalog."default",
+    levelofservice character varying(2) COLLATE pg_catalog."default",
+    diagnosiscodequal_1 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_1 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_2 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_2 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_3 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_3 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_4 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_4 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_5 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_5 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_6 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_6 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_7 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_7 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_8 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_8 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_9 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_9 character varying(15) COLLATE pg_catalog."default",
+    diagnosiscodequal_10 character varying(4) COLLATE pg_catalog."default",
+    diagnosiscode_10 character varying(15) COLLATE pg_catalog."default",
+    measurementdate character varying(20) COLLATE pg_catalog."default",
+    measurementtime character varying(20) COLLATE pg_catalog."default",
+    measurementdiminsion character varying(2) COLLATE pg_catalog."default",
+    measurementunit character varying(2) COLLATE pg_catalog."default",
+    measurementvalue character varying(50) COLLATE pg_catalog."default",
+    prescriberlastname character varying(100) COLLATE pg_catalog."default",
+    prescriberfirstname character varying(50) COLLATE pg_catalog."default",
+    prescriberphoneno character varying(20) COLLATE pg_catalog."default",
+    prescriberstreetaddress character varying(100) COLLATE pg_catalog."default",
+    prescribercityaddress character varying(100) COLLATE pg_catalog."default",
+    prescriberstateaddress character varying(100) COLLATE pg_catalog."default",
+    prescriberzipcode character varying(10) COLLATE pg_catalog."default",
+    prescribingprovidercommnoqual character varying(3) COLLATE pg_catalog."default",
+    prescribingprovidercommno character varying(20) COLLATE pg_catalog."default",
+    prescriberidqual character varying(2) COLLATE pg_catalog."default",
+    prescriberid character varying(20) COLLATE pg_catalog."default",
+    prescriber_provideridqual_1 character varying(2) COLLATE pg_catalog."default",
+    prescriber_providerid_1 character varying(10) COLLATE pg_catalog."default",
+    prescriber_provideridqual_2 character varying(10) COLLATE pg_catalog."default",
+    prescriber_providerid_2 character varying(20) COLLATE pg_catalog."default",
+    prescribercertificationstatus character varying(10) COLLATE pg_catalog."default",
+    prescriberdeano character varying(15) COLLATE pg_catalog."default",
+    prescribertaxonomycode character varying(10) COLLATE pg_catalog."default",
+    primarycareprovideridqual character varying(2) COLLATE pg_catalog."default",
+    primarycareproviderid character varying(15) COLLATE pg_catalog."default",
+    primarycareproviderlastname character varying(100) COLLATE pg_catalog."default",
+    primarycareproviderfirstname character varying(50) COLLATE pg_catalog."default",
+    productidqual character varying(2) COLLATE pg_catalog."default",
+    productid character varying(20) COLLATE pg_catalog."default",
+    drugname character varying(50) COLLATE pg_catalog."default",
+    drugmanufacturer character varying(50) COLLATE pg_catalog."default",
+    specialtyclaimindicator character varying(1) COLLATE pg_catalog."default",
+    genericindicator character varying(1) COLLATE pg_catalog."default",
+    nameequivelantgenericdrug character varying(50) COLLATE pg_catalog."default",
+    avgragegenericunitprice character varying(30) COLLATE pg_catalog."default",
+    noofgenericmanufacturers character varying(5) COLLATE pg_catalog."default",
+    databaseindicator character varying(5) COLLATE pg_catalog."default",
+    durppslevelofeffort character varying(5) COLLATE pg_catalog."default",
+    durcoagentidqual_1 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_1 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_2 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_2 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_3 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_3 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_4 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_4 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_5 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_5 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_6 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_6 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_7 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_7 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_8 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_8 character varying(20) COLLATE pg_catalog."default",
+    durcoagentidqual_9 character varying(2) COLLATE pg_catalog."default",
+    durcoagentid_9 character varying(20) COLLATE pg_catalog."default",
+    drugtype character varying(1) COLLATE pg_catalog."default",
+    maintainancedrugindicator character varying(1) COLLATE pg_catalog."default",
+    drugcategorycode character varying(1) COLLATE pg_catalog."default",
+    federaldeaschedule character varying(1) COLLATE pg_catalog."default",
+    fdadrugefficacycode character varying(1) COLLATE pg_catalog."default",
+    federalupperlimitind character varying(1) COLLATE pg_catalog."default",
+    federalupperlimitprice character varying(30) COLLATE pg_catalog."default",
+    prescriptionovercounterind character varying(1) COLLATE pg_catalog."default",
+    macreducedindicator character varying(1) COLLATE pg_catalog."default",
+    macprice character varying(30) COLLATE pg_catalog."default",
+    avgcostperquantityunitprice character varying(30) COLLATE pg_catalog."default",
+    avgwholesaleunitprice character varying(30) COLLATE pg_catalog."default",
+    quantitydispensed character varying(10) COLLATE pg_catalog."default",
+    quantityintendedtobedispensed character varying(10) COLLATE pg_catalog."default",
+    quantityprescribed character varying(10) COLLATE pg_catalog."default",
+    unitofmeasure character varying(2) COLLATE pg_catalog."default",
+    productstrength character varying(15) COLLATE pg_catalog."default",
+    servicedate character varying(20) COLLATE pg_catalog."default",
+    prescriptionreferenceno character varying(20) COLLATE pg_catalog."default",
+    intmailorderprescservicerefno character varying(20) COLLATE pg_catalog."default",
+    dateprescriptionwritten character varying(20) COLLATE pg_catalog."default",
+    noofrefillsauthorized character varying(10) COLLATE pg_catalog."default",
+    fillno character varying(2) COLLATE pg_catalog."default",
+    dayssupply character varying(4) COLLATE pg_catalog."default",
+    prescribeddayssupply character varying(4) COLLATE pg_catalog."default",
+    dispenseaswritten character varying(1) COLLATE pg_catalog."default",
+    associatedprescriptionno character varying(20) COLLATE pg_catalog."default",
+    associatedprescriptiondate character varying(20) COLLATE pg_catalog."default",
+    prescriptionorigincode character varying(1) COLLATE pg_catalog."default",
+    specialpackagingindicator character varying(1) COLLATE pg_catalog."default",
+    dispensingstatus character varying(1) COLLATE pg_catalog."default",
+    submissionclarificationcode_1 character varying(5) COLLATE pg_catalog."default",
+    submissionclarificationcode_2 character varying(5) COLLATE pg_catalog."default",
+    submissionclarificationcode_3 character varying(5) COLLATE pg_catalog."default",
+    submissionclarificationcode_4 character varying(5) COLLATE pg_catalog."default",
+    submissionclarificationcode_5 character varying(5) COLLATE pg_catalog."default",
+    submissionclarificationcode_6 character varying(5) COLLATE pg_catalog."default",
+    therapeuticclasscodequal_1 character varying(1) COLLATE pg_catalog."default",
+    therapeuticclasscode_1 character varying(17) COLLATE pg_catalog."default",
+    therapeuticclasscodequal_2 character varying(1) COLLATE pg_catalog."default",
+    therapeuticclasscode_2 character varying(17) COLLATE pg_catalog."default",
+    therapeuticclasscodequal_3 character varying(1) COLLATE pg_catalog."default",
+    therapeuticclasscode_3 character varying(17) COLLATE pg_catalog."default",
+    therapeuticclasscodequal_4 character varying(1) COLLATE pg_catalog."default",
+    therapeuticclasscode_4 character varying(17) COLLATE pg_catalog."default",
+    therapeuticchapter character varying(10) COLLATE pg_catalog."default",
+    formularystatus character varying(1) COLLATE pg_catalog."default",
+    clientformularyflag character varying(1) COLLATE pg_catalog."default",
+    formularyfileid character varying(15) COLLATE pg_catalog."default",
+    formularycodetype character varying(1) COLLATE pg_catalog."default",
+    reasonforservicecode_1 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_2 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_3 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_4 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_5 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_6 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_7 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_8 character varying(2) COLLATE pg_catalog."default",
+    reasonforservicecode_9 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_1 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_2 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_3 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_4 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_5 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_6 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_7 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_8 character varying(2) COLLATE pg_catalog."default",
+    professionalservicecode_9 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_1 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_2 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_3 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_4 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_5 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_6 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_7 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_8 character varying(2) COLLATE pg_catalog."default",
+    resultofservicecode_9 character varying(2) COLLATE pg_catalog."default",
+    compoundcode character varying(1) COLLATE pg_catalog."default",
+    routeofadministration character varying(11) COLLATE pg_catalog."default",
+    categoryofservice character varying(10) COLLATE pg_catalog."default",
+    workerscompreferenceid character varying(50) COLLATE pg_catalog."default",
+    authorizationno character varying(50) COLLATE pg_catalog."default",
+    productcodequal_1 character varying(1) COLLATE pg_catalog."default",
+    productcode_1 character varying(17) COLLATE pg_catalog."default",
+    productcodequal_2 character varying(1) COLLATE pg_catalog."default",
+    productcode_2 character varying(17) COLLATE pg_catalog."default",
+    productcodequal_3 character varying(1) COLLATE pg_catalog."default",
+    productcode_3 character varying(17) COLLATE pg_catalog."default",
+    filler_1 character varying(5) COLLATE pg_catalog."default",
+    filler_2 character varying(50) COLLATE pg_catalog."default",
+    filler_3 character varying(50) COLLATE pg_catalog."default",
+    filler_4 character varying(50) COLLATE pg_catalog."default",
+    filler_5 character varying(50) COLLATE pg_catalog."default",
+    durppslevelofeffort_2 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_3 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_4 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_5 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_6 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_7 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_8 character varying(2) COLLATE pg_catalog."default",
+    durppslevelofeffort_9 character varying(2) COLLATE pg_catalog."default",
+    fillnocalculated character varying(2) COLLATE pg_catalog."default",
+    dosageformcode character varying(4) COLLATE pg_catalog."default",
+    compoundtypecode character varying(2) COLLATE pg_catalog."default",
+    prescriptionreferencenoqual character varying(1) COLLATE pg_catalog."default",
+    pharmacystoreno character varying(15) COLLATE pg_catalog."default",
+    prescriberspecialitycode character varying(6) COLLATE pg_catalog."default",
+    avgwholesaleacquisitionunitcost character varying(6) COLLATE pg_catalog."default",
+    ffpindrebatemanufacturerstatus character varying(1) COLLATE pg_catalog."default",
+    ffpindpermittedexclusionstatus character varying(1) COLLATE pg_catalog."default",
+    ffpindmedicalsupplystatus character varying(1) COLLATE pg_catalog."default",
+    prescribermiddlename character varying(100) COLLATE pg_catalog."default",
+    primaryprescriberspecialtycode character varying(50) COLLATE pg_catalog."default",
+    productmultisourceindicator character varying(50) COLLATE pg_catalog."default",
+    stg_mep_claim_10r_id bigint,
+    CONSTRAINT stg_mep_claim_20r_pkey PRIMARY KEY (stg_mep_claim_20r_id, created)
+) PARTITION BY RANGE (created);
+
+
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_20r
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_20r FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_20r FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_20r FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_20r TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_20r TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_20r TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_20r TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_20r TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_20r TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_20r TO mepstg_update_role;
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_20r
+    ON mepstg.stg_mep_claim_20r USING btree
+    (stg_mep_claim_20r_id ASC NULLS LAST, created ASC NULLS LAST);
+    
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_20r_n1
+    ON mepstg.stg_mep_claim_20r USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+    
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_20r_n2
+    ON mepstg.stg_mep_claim_20r USING btree
+    (stg_mep_claim_10r_id ASC NULLS LAST, transactioncode COLLATE pg_catalog."default" ASC NULLS LAST);
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_20r',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+INSERT INTO mepstg.stg_mep_claim_20r SELECT * FROM mepstg.stg_mep_claim_20r_old;
+ 
+create schema archive_schema;
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_20r' ; 
+   
+
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_31r RENAME to stg_mep_claim_31r_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_31r RENAME TO pk_stg_mep_claim_31r_old;
+ALTER INDEX mepstg.stg_mep_claim_31r_n1 RENAME TO stg_mep_claim_31r_n1_old;
+
+alter table mepstg.stg_mep_claim_31r_old rename constraint stg_mep_claim_31r_pkey to stg_mep_claim_31r_old_pkey;
+
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_31r
+(
+    stg_mep_claim_31r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_31r_stg_mep_claim_31r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    stg_mep_claim_file_id bigint NOT NULL,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint NOT NULL,
+    payercoveragetype character varying(2) COLLATE pg_catalog."default",
+    payeridqual character varying(2) COLLATE pg_catalog."default",
+    payerid character varying(50) COLLATE pg_catalog."default",
+    rejectoverridecd character varying(5) COLLATE pg_catalog."default",
+    payerrejectcd_1 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_2 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_3 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_4 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_5 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_6 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_7 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_8 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_9 character varying(10) COLLATE pg_catalog."default",
+    payerrejectcd_10 character varying(10) COLLATE pg_catalog."default",
+    membersubclaimrejectcd_1 character varying(3) COLLATE pg_catalog."default",
+    membersubclaimrejectcd_2 character varying(3) COLLATE pg_catalog."default",
+    membersubclaimrejectcd_3 character varying(3) COLLATE pg_catalog."default",
+    membersubclaimrejectcd_4 character varying(3) COLLATE pg_catalog."default",
+    membersubclaimrejectcd_5 character varying(3) COLLATE pg_catalog."default",
+    allowedamt character varying(30) COLLATE pg_catalog."default",
+    copaymodifierid character varying(10) COLLATE pg_catalog."default",
+    amtofcopay character varying(30) COLLATE pg_catalog."default",
+    copaywaiveramt character varying(30) COLLATE pg_catalog."default",
+    amtofcoinsurance character varying(30) COLLATE pg_catalog."default",
+    accumulateddeductibleamt character varying(30) COLLATE pg_catalog."default",
+    remainingdeductibleamt character varying(30) COLLATE pg_catalog."default",
+    remainingbenefitamt character varying(30) COLLATE pg_catalog."default",
+    excesscopayamt character varying(30) COLLATE pg_catalog."default",
+    membersubmitamt character varying(30) COLLATE pg_catalog."default",
+    holdharmlessamt character varying(30) COLLATE pg_catalog."default",
+    amtexceedingperiodicbenefitmax character varying(30) COLLATE pg_catalog."default",
+    amtattritoproductselection character varying(30) COLLATE pg_catalog."default",
+    amtappliedtoperiodicdeductible character varying(30) COLLATE pg_catalog."default",
+    amtattritoprocessorfee character varying(30) COLLATE pg_catalog."default",
+    amtattritoprovidernetworkselection character varying(30) COLLATE pg_catalog."default",
+    amtattritoproductselectionbranddrug character varying(30) COLLATE pg_catalog."default",
+    amtattritoprodselnonprefformsel character varying(30) COLLATE pg_catalog."default",
+    amtattritoprodselbrandnonprefformsel character varying(30) COLLATE pg_catalog."default",
+    amtattritocoveragegap character varying(30) COLLATE pg_catalog."default",
+    outofpocketapplyamt character varying(30) COLLATE pg_catalog."default",
+    outofpocketremainingamt character varying(30) COLLATE pg_catalog."default",
+    patspenddownamt character varying(30) COLLATE pg_catalog."default",
+    healthcarereimbacctamtapplied character varying(30) COLLATE pg_catalog."default",
+    healthcarereimbacctamtremaining character varying(30) COLLATE pg_catalog."default",
+    spendingacctamtremaining character varying(30) COLLATE pg_catalog."default",
+    healthplanfundedassistanceamt character varying(30) COLLATE pg_catalog."default",
+    administrativefeeeffectind character varying(1) COLLATE pg_catalog."default",
+    adminstrativefeeamt character varying(30) COLLATE pg_catalog."default",
+    invoiceddate character varying(8) COLLATE pg_catalog."default",
+    invoicedamt character varying(30) COLLATE pg_catalog."default",
+    ingredientcostsub character varying(30) COLLATE pg_catalog."default",
+    ingredientcostpaid character varying(30) COLLATE pg_catalog."default",
+    dispensingfeesub character varying(30) COLLATE pg_catalog."default",
+    grossamtdue character varying(30) COLLATE pg_catalog."default",
+    basisofcostdetermination character varying(20) COLLATE pg_catalog."default",
+    basisofreimbdetermination character varying(2) COLLATE pg_catalog."default",
+    basisofcalcdispensingfee character varying(2) COLLATE pg_catalog."default",
+    basisofcalccopay character varying(2) COLLATE pg_catalog."default",
+    basisofcalcflatsalestax character varying(2) COLLATE pg_catalog."default",
+    basisofcalcpercentagesalestax character varying(2) COLLATE pg_catalog."default",
+    basisofcalccoinsurance character varying(2) COLLATE pg_catalog."default",
+    benefitstagequal_1 character varying(2) COLLATE pg_catalog."default",
+    benefitstageamt_1 character varying(30) COLLATE pg_catalog."default",
+    benefitstagequal_2 character varying(2) COLLATE pg_catalog."default",
+    benefitstageamt_2 character varying(30) COLLATE pg_catalog."default",
+    benefitstagequal_3 character varying(2) COLLATE pg_catalog."default",
+    benefitstageamt_3 character varying(30) COLLATE pg_catalog."default",
+    benefitstagequal_4 character varying(2) COLLATE pg_catalog."default",
+    benefitstageamt_4 character varying(30) COLLATE pg_catalog."default",
+    usualandcustomarycharge character varying(30) COLLATE pg_catalog."default",
+    taxexemptind character varying(30) COLLATE pg_catalog."default",
+    amtattritosalestax character varying(30) COLLATE pg_catalog."default",
+    salestax character varying(30) COLLATE pg_catalog."default",
+    flatsalestaxamtpaid character varying(30) COLLATE pg_catalog."default",
+    percentagesalestaxamtpaid character varying(8) COLLATE pg_catalog."default",
+    percentagesalestaxratepaid character varying(8) COLLATE pg_catalog."default",
+    patpaidamtsub character varying(30) COLLATE pg_catalog."default",
+    clientpricingbasisofcost character varying(2) COLLATE pg_catalog."default",
+    incentiveamtpaid character varying(30) COLLATE pg_catalog."default",
+    professionalservicesfeepaid character varying(30) COLLATE pg_catalog."default",
+    coupontype character varying(2) COLLATE pg_catalog."default",
+    couponnumber character varying(50) COLLATE pg_catalog."default",
+    couponvalueamt character varying(30) COLLATE pg_catalog."default",
+    patformularyrebateamt character varying(30) COLLATE pg_catalog."default",
+    medicarerecoveryind character varying(1) COLLATE pg_catalog."default",
+    medicarerecoverydispensingind character varying(1) COLLATE pg_catalog."default",
+    nonposclaimoverridecd_1 character varying(5) COLLATE pg_catalog."default",
+    nonposclaimoverridecd_2 character varying(5) COLLATE pg_catalog."default",
+    nonposclaimoverridecd_3 character varying(5) COLLATE pg_catalog."default",
+    plancutbackreasoncd character varying(1) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_1 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_1 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_2 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_2 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_3 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_3 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_4 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_4 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_5 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_5 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_6 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_6 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_7 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_7 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_8 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_8 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_9 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_9 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_10 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_10 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_11 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_11 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_12 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_12 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_13 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_13 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_14 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_14 character varying(30) COLLATE pg_catalog."default",
+    payerpatrespobltyamtqual_15 character varying(5) COLLATE pg_catalog."default",
+    payerpatrespobltyamt_15 character varying(30) COLLATE pg_catalog."default",
+    payerdate character varying(30) COLLATE pg_catalog."default",
+    adjudicationdatetime character varying(16) COLLATE pg_catalog."default",
+    originalclaimreceiveddate character varying(8) COLLATE pg_catalog."default",
+    billingcycleenddate character varying(8) COLLATE pg_catalog."default",
+    dateclaimreceivedinmail character varying(30) COLLATE pg_catalog."default",
+    planpaidamt character varying(30) COLLATE pg_catalog."default",
+    checkpaymentdate character varying(8) COLLATE pg_catalog."default",
+    checkpaymentreferenceid character varying(50) COLLATE pg_catalog."default",
+    claimpaymentreleasedate character varying(8) COLLATE pg_catalog."default",
+    internalcontrolnumber character varying(50) COLLATE pg_catalog."default",
+    groupid character varying(15) COLLATE pg_catalog."default",
+    carriernumber character varying(9) COLLATE pg_catalog."default",
+    benefitid character varying(15) COLLATE pg_catalog."default",
+    benefittype character varying(1) COLLATE pg_catalog."default",
+    membersubclaimprogramcd character varying(1) COLLATE pg_catalog."default",
+    cmspartdcontractid character varying(10) COLLATE pg_catalog."default",
+    medicarepartdcontractid character varying(5) COLLATE pg_catalog."default",
+    medicaredrugcoveragecd character varying(5) COLLATE pg_catalog."default",
+    reportbegindate character varying(30) COLLATE pg_catalog."default",
+    reportenddate character varying(8) COLLATE pg_catalog."default",
+    adjustmentreasoncd character varying(50) COLLATE pg_catalog."default",
+    adjustmenttype character varying(50) COLLATE pg_catalog."default",
+    filler_1 character varying(50) COLLATE pg_catalog."default",
+    filler_2 character varying(50) COLLATE pg_catalog."default",
+    filler_3 character varying(50) COLLATE pg_catalog."default",
+    filler_4 character varying(50) COLLATE pg_catalog."default",
+    filler_5 character varying(50) COLLATE pg_catalog."default",
+    pharmacypercentagecopayamt character varying(30) COLLATE pg_catalog."default",
+    remittanceadvicenumber character varying(50) COLLATE pg_catalog."default",
+    payerlastname character varying(100) COLLATE pg_catalog."default",
+    payertaxid character varying(10) COLLATE pg_catalog."default",
+    payeraddressline1 character varying(100) COLLATE pg_catalog."default",
+    payeraddressline2 character varying(100) COLLATE pg_catalog."default",
+    payercity character varying(100) COLLATE pg_catalog."default",
+    payerstate character varying(100) COLLATE pg_catalog."default",
+    payerpostalcd character varying(10) COLLATE pg_catalog."default",
+    negativebalancepayerdate character varying(8) COLLATE pg_catalog."default",
+    recipientaidcategory character varying(4) COLLATE pg_catalog."default",
+    checkpaymentreferenceidtype character varying(50) COLLATE pg_catalog."default",
+    dispensingfeeapproved character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_1 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_1 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_2 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_2 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_3 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_3 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_4 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_4 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_5 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_5 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_6 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_6 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_7 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_7 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_8 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_8 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_9 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_9 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_10 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_10 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_11 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_11 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_12 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_12 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_13 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_13 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_14 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_14 character varying(30) COLLATE pg_catalog."default",
+    otherclaimedsubamtqual_15 character varying(5) COLLATE pg_catalog."default",
+    otherclaimedsubamt_15 character varying(30) COLLATE pg_catalog."default",
+    bundleindicator character varying(100) COLLATE pg_catalog."default",
+    bundleclaimnumber character varying(100) COLLATE pg_catalog."default",
+    bundleclaimsuffix character varying(100) COLLATE pg_catalog."default",
+    sub_incentive_fee character varying(30) COLLATE pg_catalog."default",
+    stg_mep_claim_10r_id bigint,
+    CONSTRAINT stg_mep_claim_31r_pkey PRIMARY KEY (stg_mep_claim_31r_id, created)
+) PARTITION BY RANGE (created);
+
+
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_31r FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_31r FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_31r FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_31r TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_31r TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_31r TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_31r TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_31r TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_31r TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_31r TO mepstg_update_role;
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_31r
+    ON mepstg.stg_mep_claim_31r USING btree
+    (stg_mep_claim_31r_id ASC NULLS LAST, created ASC NULLS LAST);
+   
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_31r_n1
+    ON mepstg.stg_mep_claim_31r USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_31r',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+INSERT INTO mepstg.stg_mep_claim_31r SELECT * FROM mepstg.stg_mep_claim_31r_old;
+
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_31r' ; 
+
+    
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_32r RENAME to stg_mep_claim_32r_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_32r RENAME TO pk_stg_mep_claim_32r_old;
+ALTER INDEX mepstg.stg_mep_claim_32r_n1 RENAME TO stg_mep_claim_32r_n1_old;
+
+alter table mepstg.stg_mep_claim_32r_old rename constraint stg_mep_claim_32r_pkey to stg_mep_claim_32r_old_pkey;
+
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_32r
+(
+    stg_mep_claim_32r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_32r_stg_mep_claim_32r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    stg_mep_claim_file_id bigint NOT NULL,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint NOT NULL,
+    medicaresubpolicyno character varying(50) COLLATE pg_catalog."default",
+    medicaresubinsuredgrpname character varying(100) COLLATE pg_catalog."default",
+    othpayerrejectcode_1 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_2 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_3 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_4 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_5 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_6 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_7 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_8 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_9 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_10 character varying(10) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_1 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_1 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_2 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_2 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_3 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_3 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_4 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_4 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_5 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_5 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_6 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_6 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_7 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_7 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_8 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_8 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_9 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_9 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_10 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_10 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_11 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_11 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_12 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_12 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_13 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_13 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_14 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_14 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_15 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_15 character varying(30) COLLATE pg_catalog."default",
+    othpayeramtpaid character varying(30) COLLATE pg_catalog."default",
+    medicaresubscriberlastname character varying(20) COLLATE pg_catalog."default",
+    medicarefirstname character varying(50) COLLATE pg_catalog."default",
+    othpayercoveragetype character varying(2) COLLATE pg_catalog."default",
+    othpayeridqual character varying(2) COLLATE pg_catalog."default",
+    othpayerid character varying(20) COLLATE pg_catalog."default",
+    medicaresubscriberaddressline1 character varying(100) COLLATE pg_catalog."default",
+    medicaresubscriberaddressline2 character varying(100) COLLATE pg_catalog."default",
+    medicaresubscribercity character varying(100) COLLATE pg_catalog."default",
+    medicaresubscriberstate character varying(100) COLLATE pg_catalog."default",
+    medicaresubscriberpostalcode character varying(10) COLLATE pg_catalog."default",
+    medicareorganizationname character varying(100) COLLATE pg_catalog."default",
+    medicareplancode character varying(10) COLLATE pg_catalog."default",
+    othpayerpaiddate character varying(20) COLLATE pg_catalog."default",
+    internalcontrolnumber character varying(50) COLLATE pg_catalog."default",
+    othpayeramtpaidqualier_1 character varying(2) COLLATE pg_catalog."default",
+    othpayeramtpaid_1 character varying(30) COLLATE pg_catalog."default",
+    othpayeramtpaidqualier_2 character varying(2) COLLATE pg_catalog."default",
+    othpayeramtpaid_2 character varying(30) COLLATE pg_catalog."default",
+    othpayeramtpaidqualier_3 character varying(2) COLLATE pg_catalog."default",
+    othpayeramtpaid_3 character varying(30) COLLATE pg_catalog."default",
+    cobcarriersubmitamt character varying(30) COLLATE pg_catalog."default",
+    eligibilitycobindicator character varying(11) COLLATE pg_catalog."default",
+    cobprimaryclaimtype character varying(1) COLLATE pg_catalog."default",
+    adjustmentreasoncode character varying(3) COLLATE pg_catalog."default",
+    adjustmenttype character varying(1) COLLATE pg_catalog."default",
+    filler_1 character varying(50) COLLATE pg_catalog."default",
+    filler_2 character varying(50) COLLATE pg_catalog."default",
+    filler_3 character varying(50) COLLATE pg_catalog."default",
+    filler_4 character varying(50) COLLATE pg_catalog."default",
+    filler_5 character varying(50) COLLATE pg_catalog."default",
+    othpayeramtrecognized character varying(30) COLLATE pg_catalog."default",
+    stg_mep_claim_10r_id bigint,
+    CONSTRAINT stg_mep_claim_32r_pkey PRIMARY KEY (stg_mep_claim_32r_id, created)
+) PARTITION BY RANGE (created);
+
+
+
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_32r
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_32r FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_32r FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_32r FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_32r TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_32r TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_32r TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_32r TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_32r TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_32r TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_32r TO mepstg_update_role;
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_32r
+    ON mepstg.stg_mep_claim_32r USING btree
+    (stg_mep_claim_32r_id ASC NULLS LAST, created ASC NULLS LAST);
+    
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_32r_n1
+    ON mepstg.stg_mep_claim_32r USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_32r',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+
+INSERT INTO mepstg.stg_mep_claim_32r SELECT * FROM mepstg.stg_mep_claim_32r_old;
+
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_32r' ;
+    
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_33r RENAME to stg_mep_claim_33r_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_33r RENAME TO pk_stg_mep_claim_33r_old;
+ALTER INDEX mepstg.stg_mep_claim_33r_n1 RENAME TO stg_mep_claim_33r_n1_old;
+
+alter table mepstg.stg_mep_claim_33r_old rename constraint stg_mep_claim_33r_pkey to stg_mep_claim_33r_old_pkey;
+
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_33r
+(
+    stg_mep_claim_33r_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_33r_stg_mep_claim_33r_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    stg_mep_claim_file_id bigint NOT NULL,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint NOT NULL,
+    othpayerpolicynumber character varying(50) COLLATE pg_catalog."default",
+    othpayerinsuredgroupname character varying(100) COLLATE pg_catalog."default",
+    othpayerrejectcode_1 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_2 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_3 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_4 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_5 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_6 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_7 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_8 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_9 character varying(10) COLLATE pg_catalog."default",
+    othpayerrejectcode_10 character varying(10) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_1 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_1 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_2 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_2 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_3 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_3 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_4 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_4 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_5 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_5 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_6 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_6 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_7 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_7 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_8 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_8 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_9 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_9 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_10 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_10 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_11 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_11 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_12 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_12 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_13 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_13 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_14 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_14 character varying(30) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamtqual_15 character varying(5) COLLATE pg_catalog."default",
+    othpayerpatrespobltyamt_15 character varying(30) COLLATE pg_catalog."default",
+    othpayeramtpaid character varying(30) COLLATE pg_catalog."default",
+    othinsuredlastname character varying(50) COLLATE pg_catalog."default",
+    othinsuredfirstname character varying(20) COLLATE pg_catalog."default",
+    othpayercoveragetype character varying(2) COLLATE pg_catalog."default",
+    othpayeridqual character varying(2) COLLATE pg_catalog."default",
+    othpayerid character varying(20) COLLATE pg_catalog."default",
+    othinsuredaddressline1 character varying(100) COLLATE pg_catalog."default",
+    othinsuredaddressline2 character varying(100) COLLATE pg_catalog."default",
+    othinsuredcity character varying(100) COLLATE pg_catalog."default",
+    othinsuredstate character varying(100) COLLATE pg_catalog."default",
+    othinsuredpostalcode character varying(10) COLLATE pg_catalog."default",
+    othpayerorgname character varying(100) COLLATE pg_catalog."default",
+    commercialplancode character varying(100) COLLATE pg_catalog."default",
+    othpayerdate character varying(20) COLLATE pg_catalog."default",
+    internalcontrolnumber character varying(50) COLLATE pg_catalog."default",
+    othpayeramtpaidqualier_1 character varying(2) COLLATE pg_catalog."default",
+    othpayeramtpaid_1 character varying(30) COLLATE pg_catalog."default",
+    othpayeramtpaidqualier_2 character varying(2) COLLATE pg_catalog."default",
+    othpayeramtpaid_2 character varying(30) COLLATE pg_catalog."default",
+    othpayeramtpaidqualier_3 character varying(2) COLLATE pg_catalog."default",
+    othpayeramtpaid_3 character varying(30) COLLATE pg_catalog."default",
+    cobcarriersubmitamt character varying(30) COLLATE pg_catalog."default",
+    eligibilitycobindicator character varying(1) COLLATE pg_catalog."default",
+    cobprimaryclaimtype character varying(1) COLLATE pg_catalog."default",
+    adjustmentreasoncode character varying(3) COLLATE pg_catalog."default",
+    adjustmenttype character varying(1) COLLATE pg_catalog."default",
+    filler_1 character varying(50) COLLATE pg_catalog."default",
+    filler_2 character varying(50) COLLATE pg_catalog."default",
+    filler_3 character varying(50) COLLATE pg_catalog."default",
+    filler_4 character varying(50) COLLATE pg_catalog."default",
+    filler_5 character varying(50) COLLATE pg_catalog."default",
+    othpayeramtrecognized character varying(30) COLLATE pg_catalog."default",
+    stg_mep_claim_10r_id bigint,
+    CONSTRAINT stg_mep_claim_33r_pkey PRIMARY KEY (stg_mep_claim_33r_id, created)
+) PARTITION BY RANGE (created);
+
+
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_33r
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_33r FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_33r FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_33r FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_33r TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_33r TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_33r TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_33r TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_33r TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_33r TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_33r TO mepstg_update_role;
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_33r
+    ON mepstg.stg_mep_claim_33r USING btree
+    (stg_mep_claim_33r_id ASC NULLS LAST, created ASC NULLS LAST);
+    
+
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_33r_n1
+    ON mepstg.stg_mep_claim_33r USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_33r',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+INSERT INTO mepstg.stg_mep_claim_33r SELECT * FROM mepstg.stg_mep_claim_33r_old;
+
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_33r' ;
+    
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_40c RENAME to stg_mep_claim_40c_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_40c RENAME TO pk_stg_mep_claim_40c_old;
+ALTER INDEX mepstg.stg_mep_claim_40c_n1 RENAME TO stg_mep_claim_40c_n1_old;
+
+alter table mepstg.stg_mep_claim_40c_old rename constraint stg_mep_claim_40c_pkey to stg_mep_claim_40c_old_pkey;
+
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_40c
+(
+    stg_mep_claim_40c_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_40c_stg_mep_claim_40c_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    stg_mep_claim_file_id bigint NOT NULL,
+    stg_load_date date NOT NULL,
+    stg_rec_status character varying(20) COLLATE pg_catalog."default",
+    stg_error_message character varying(500) COLLATE pg_catalog."default",
+    claim_id bigint NOT NULL,
+    compproductidqual_1 character varying(2) COLLATE pg_catalog."default",
+    compproductid_1 character varying(20) COLLATE pg_catalog."default",
+    compproductidqual_2 character varying(2) COLLATE pg_catalog."default",
+    compproductid_2 character varying(20) COLLATE pg_catalog."default",
+    compproductidqual_3 character varying(2) COLLATE pg_catalog."default",
+    compproductid_3 character varying(20) COLLATE pg_catalog."default",
+    compdosageformdescriptioncode character varying(10) COLLATE pg_catalog."default",
+    compdispensingunitformind character varying(10) COLLATE pg_catalog."default",
+    compingredientquantity character varying(20) COLLATE pg_catalog."default",
+    compingredientdrugcost character varying(30) COLLATE pg_catalog."default",
+    compingredientbasisofcostdeter character varying(10) COLLATE pg_catalog."default",
+    compclientformularyflag character varying(1) COLLATE pg_catalog."default",
+    compproductservicename character varying(30) COLLATE pg_catalog."default",
+    compgenericname character varying(30) COLLATE pg_catalog."default",
+    compproductstrength character varying(10) COLLATE pg_catalog."default",
+    compdatabaseindicator character varying(1) COLLATE pg_catalog."default",
+    compdrugtype character varying(1) COLLATE pg_catalog."default",
+    coumpoundformularystatus character varying(1) COLLATE pg_catalog."default",
+    compdrugcategorycode character varying(1) COLLATE pg_catalog."default",
+    compfederaldeaschedule character varying(1) COLLATE pg_catalog."default",
+    compfdaefficacycode character varying(1) COLLATE pg_catalog."default",
+    compfederalupperlimitind character varying(1) COLLATE pg_catalog."default",
+    comptherapeuticcodequal_1 character varying(1) COLLATE pg_catalog."default",
+    comptherapeuticclasscode_1 character varying(17) COLLATE pg_catalog."default",
+    comptherapeuticcodequal_2 character varying(1) COLLATE pg_catalog."default",
+    comptherapeuticclasscode_2 character varying(17) COLLATE pg_catalog."default",
+    comptherapeuticcodequal_3 character varying(1) COLLATE pg_catalog."default",
+    comptherapeuticclasscode_3 character varying(17) COLLATE pg_catalog."default",
+    comptherapeuticcodequal_4 character varying(1) COLLATE pg_catalog."default",
+    comptherapeuticclasscode_4 character varying(17) COLLATE pg_catalog."default",
+    compspecialpackagingind character varying(1) COLLATE pg_catalog."default",
+    compunitofmeasure character varying(2) COLLATE pg_catalog."default",
+    compprocessorpriorauthreasoncd character varying(2) COLLATE pg_catalog."default",
+    compmacreducedindicator character varying(1) COLLATE pg_catalog."default",
+    compclientpricingbasisofcost character varying(2) COLLATE pg_catalog."default",
+    compdurcoagentidqual character varying(2) COLLATE pg_catalog."default",
+    compdurcoagentid character varying(19) COLLATE pg_catalog."default",
+    compgenericindicator character varying(20) COLLATE pg_catalog."default",
+    compplancutbackreasoncode character varying(1) COLLATE pg_catalog."default",
+    comptherapeuticchapter character varying(20) COLLATE pg_catalog."default",
+    compavgcostperqtyunitprice character varying(30) COLLATE pg_catalog."default",
+    compavggenericunitprice character varying(30) COLLATE pg_catalog."default",
+    compavgwholesaleunitprice character varying(30) COLLATE pg_catalog."default",
+    compfederalupperlimitunitprice character varying(30) COLLATE pg_catalog."default",
+    compmacprice character varying(30) COLLATE pg_catalog."default",
+    compbasisreimbursementdeter character varying(2) COLLATE pg_catalog."default",
+    comppatientformularyrebateamt character varying(30) COLLATE pg_catalog."default",
+    filler_1 character varying(50) COLLATE pg_catalog."default",
+    filler_2 character varying(50) COLLATE pg_catalog."default",
+    filler_3 character varying(50) COLLATE pg_catalog."default",
+    filler_4 character varying(50) COLLATE pg_catalog."default",
+    filler_5 character varying(50) COLLATE pg_catalog."default",
+    compproductidqual_4 character varying(2) COLLATE pg_catalog."default",
+    compproductid_4 character varying(20) COLLATE pg_catalog."default",
+    compclientcostsource character varying(100) COLLATE pg_catalog."default",
+    compapprovedcostsource character varying(100) COLLATE pg_catalog."default",
+    productreimbursementindicator character varying(10) COLLATE pg_catalog."default",
+    thirdpartyexceptioncode_20r character varying(20) COLLATE pg_catalog."default",
+    compcalculatedingredientcost character varying(30) COLLATE pg_catalog."default",
+    compapprovedingredientcost character varying(30) COLLATE pg_catalog."default",
+    compclientingredientcost character varying(30) COLLATE pg_catalog."default",
+    routeofadministration character varying(100) COLLATE pg_catalog."default",
+    maintainancedrugindicator character varying(10) COLLATE pg_catalog."default",
+    stg_mep_claim_10r_id bigint,
+    CONSTRAINT stg_mep_claim_40c_pkey PRIMARY KEY (stg_mep_claim_40c_id, created)
+) PARTITION BY RANGE (created);
+
+
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_40c
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_40c FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_40c FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_40c FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_40c TO deployadmin;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_40c TO dwdba;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_40c TO dwdba_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_40c TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_40c TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_40c TO mepstg_query_role;
+
+GRANT INSERT, SELECT, UPDATE ON TABLE mepstg.stg_mep_claim_40c TO mepstg_update_role;
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_40c
+    ON mepstg.stg_mep_claim_40c USING btree
+    (stg_mep_claim_40c_id ASC NULLS LAST, created ASC NULLS LAST);
+    
+
+
+CREATE INDEX IF NOT EXISTS stg_mep_claim_40c_n1
+    ON mepstg.stg_mep_claim_40c USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, claim_id ASC NULLS LAST);
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_40c',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+INSERT INTO mepstg.stg_mep_claim_40c SELECT * FROM mepstg.stg_mep_claim_40c_old;
+
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_40c' ;
+    
+#First rename the original table name and index
+ALTER TABLE mepstg.stg_mep_claim_file RENAME to stg_mep_claim_file_old;
+ALTER INDEX mepstg.pk_stg_mep_claim_file RENAME TO pk_stg_mep_claim_file_old;
+
+alter table mepstg.stg_mep_claim_file_old rename constraint stg_mep_claim_file_pkey to stg_mep_claim_file_old_pkey;
+
+
+CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_file
+(
+    stg_mep_claim_file_id bigint NOT NULL DEFAULT nextval('mepstg.stg_mep_claim_file_stg_mep_claim_file_id_seq'::regclass),
+    created timestamp without time zone NOT NULL,
+    created_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    entered timestamp without time zone NOT NULL,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    load_date date NOT NULL,
+    event_id bigint,
+    profile_name character varying(150) COLLATE pg_catalog."default",
+    received_filename character varying(150) COLLATE pg_catalog."default" NOT NULL,
+    received_file_path character varying(400) COLLATE pg_catalog."default" NOT NULL,
+    file_status character varying(30) COLLATE pg_catalog."default",
+    file_staged_start_date date,
+    file_staged_end_date date,
+    file_size bigint,
+    records_received bigint,
+    records_errored bigint,
+    error_message character varying(2000) COLLATE pg_catalog."default",
+    claim_file_transmission_id bigint,
+    CONSTRAINT stg_mep_claim_file_pkey PRIMARY KEY (stg_mep_claim_file_id, created)
+) PARTITION BY RANGE (created);
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_file
+    OWNER to deployadmin;
+
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_file FROM dwdba_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_file FROM mepdevuser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_file FROM mepinfauser_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_file FROM mepstg_query_role;
+REVOKE ALL ON TABLE mepstg.stg_mep_claim_file FROM mepstg_update_role;
+
+GRANT ALL ON TABLE mepstg.stg_mep_claim_file TO deployadmin;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_file TO dwdba_role;
+
+GRANT DELETE ON TABLE mepstg.stg_mep_claim_file TO mepdevuser_role;
+
+GRANT UPDATE, DELETE, INSERT, SELECT ON TABLE mepstg.stg_mep_claim_file TO mepinfauser_role;
+
+GRANT SELECT ON TABLE mepstg.stg_mep_claim_file TO mepstg_query_role;
+
+GRANT DELETE, SELECT, UPDATE, INSERT ON TABLE mepstg.stg_mep_claim_file TO mepstg_update_role;
+
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS pk_stg_mep_claim_file
+    ON mepstg.stg_mep_claim_file USING btree
+    (stg_mep_claim_file_id ASC NULLS LAST, created ASC NULLS LAST);
+
+SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_file',
+ p_control => 'created',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+
+INSERT INTO mepstg.stg_mep_claim_file SELECT * FROM mepstg.stg_mep_claim_file_old;
+
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='mepstg.stg_mep_claim_file' ;
+    
+#First rename the original table name and index
+ALTER TABLE dmeapps.rep_edw_log RENAME to rep_edw_log_old;
+
+CREATE TABLE IF NOT EXISTS dmeapps.rep_edw_log
+(
+    rep_edw_log_id bigint DEFAULT nextval('dmeapps.seq_rep_edw_tab_id'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    owner character varying(30) COLLATE pg_catalog."default",
+    table_name character varying(30) COLLATE pg_catalog."default",
+    key_value bigint,
+    action character varying(1) COLLATE pg_catalog."default"
+) PARTITION BY RANGE (entered);
+
+ALTER TABLE IF EXISTS dmeapps.rep_edw_log
+    OWNER to postgres;
+
+REVOKE ALL ON TABLE dmeapps.rep_edw_log FROM mepinfauser_role;
+REVOKE ALL ON TABLE dmeapps.rep_edw_log FROM mepuser_role;
+REVOKE ALL ON TABLE dmeapps.rep_edw_log FROM ssretl_role;
+
+GRANT INSERT ON TABLE dmeapps.rep_edw_log TO mepinfauser_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE dmeapps.rep_edw_log TO mepuser_role;
+
+GRANT ALL ON TABLE dmeapps.rep_edw_log TO postgres;
+
+GRANT SELECT ON TABLE dmeapps.rep_edw_log TO ssretl_role;
+
+
+SELECT partman.create_parent( p_parent_table => 'dmeapps.rep_edw_log',
+ p_control => 'entered',
+ p_type => 'range',
+ p_interval=> '1 week',
+ p_start_partition=> '2023-08-06',
+ p_premake => 4);
+
+
+INSERT INTO dmeapps.rep_edw_log SELECT * FROM dmeapps.rep_edw_log_old;
+
+create schema archive_schema;
+
+UPDATE partman.part_config 
+SET infinite_time_partitions=true,
+retention='4 week',
+retention_schema='archive_schema',
+retention_keep_table=true, 
+retention_keep_index=true 
+WHERE parent_table='dmeapps.rep_edw_log' ;
