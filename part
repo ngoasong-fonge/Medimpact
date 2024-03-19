@@ -1,5 +1,10 @@
 sed -i 's/execute_sql \(.*\)/execute_sql \1 || true/g' your_script.sh
 
+if [[ $? -ne 0 ]]; then
+        log_message "Error executing SQL command: $result"
+        return 1
+    fi
+
 
 #!/bin/bash
 
