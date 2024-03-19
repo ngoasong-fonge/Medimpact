@@ -1,3 +1,6 @@
+sed -i 's/execute_sql \(.*\)/execute_sql \1 || true/g' your_script.sh
+
+
 #!/bin/bash
 
 # Log file path
