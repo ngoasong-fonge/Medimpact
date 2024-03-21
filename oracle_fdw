@@ -64,9 +64,18 @@ INSERT INTO table3 (product, price) VALUES
     ('Smartphone', 800.00),
     ('Tablet', 400.00);
 
-citus=# IMPORT FOREIGN SCHEMA postgres_fdw FROM SERVER foreigndb_fdw INTO postgres_fdw;
-ERROR:  could not connect to server "foreigndb_fdw"
-DETAIL:  connection to server at "dv1medpg1c1" (10.13.3.47), port 5432 failed: FATAL:  role " fdwuser" does not exist
+citus=# drop user fdwuser;
+ERROR:  role "fdwuser" cannot be dropped because some objects depend on it
+DETAIL:  privileges for schema public
+privileges for schema postgres_fdw
+privileges for table postgres_fdw.employees
+privileges for table postgres_fdw.customer
+privileges for table postgres_fdw.location
+privileges for table postgres_fdw.product
+citus=# drop user fdwuser cascade;
+ERROR:  syntax error at or near "cascade"
+LINE 1: drop user fdwuser cascade;
+
 
 
 
