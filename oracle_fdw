@@ -64,5 +64,10 @@ INSERT INTO table3 (product, price) VALUES
     ('Smartphone', 800.00),
     ('Tablet', 400.00);
 
+citus=# IMPORT FOREIGN SCHEMA postgres_fdw FROM SERVER foreigndb_fdw INTO postgres_fdw;
+ERROR:  could not connect to server "foreigndb_fdw"
+DETAIL:  connection to server at "dv1medpg1c1" (10.13.3.47), port 5432 failed: FATAL:  role " fdwuser" does not exist
+
+
 
 
