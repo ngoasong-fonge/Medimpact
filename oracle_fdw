@@ -64,17 +64,11 @@ INSERT INTO table3 (product, price) VALUES
     ('Smartphone', 800.00),
     ('Tablet', 400.00);
 
-citus=# drop user fdwuser;
-ERROR:  role "fdwuser" cannot be dropped because some objects depend on it
-DETAIL:  privileges for schema public
-privileges for schema postgres_fdw
-privileges for table postgres_fdw.employees
-privileges for table postgres_fdw.customer
-privileges for table postgres_fdw.location
-privileges for table postgres_fdw.product
-citus=# drop user fdwuser cascade;
-ERROR:  syntax error at or near "cascade"
-LINE 1: drop user fdwuser cascade;
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM fdwuser;
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA postgres_fdw FROM fdwuser;
+REVOKE ALL PRIVILEGES ON SCHEMA public FROM fdwuser;
+REVOKE ALL PRIVILEGES ON SCHEMA postgres_fdw FROM fdwuser;
+
 
 
 
