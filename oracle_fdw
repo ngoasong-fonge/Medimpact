@@ -23,3 +23,46 @@ CREATE FOREIGN TABLE dmeapps.departments_tst
 ) SERVER ora_sv OPTIONS (SCHEMA 'PSAMY' , TABLE 'DEPARTMENTS_TST');
 
 
+----------------------------------------------------------------------------------
+
+-- Create Table 1
+CREATE TABLE table1 (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50),
+    age INT
+);
+
+-- Insert Sample Data into Table 1
+INSERT INTO table1 (name, age) VALUES
+    ('Alice', 30),
+    ('Bob', 25),
+    ('Charlie', 35);
+
+-- Create Table 2
+CREATE TABLE table2 (
+    id SERIAL PRIMARY KEY,
+    city VARCHAR(50),
+    population INT
+);
+
+-- Insert Sample Data into Table 2
+INSERT INTO table2 (city, population) VALUES
+    ('New York', 8500000),
+    ('Los Angeles', 4000000),
+    ('Chicago', 2700000);
+
+-- Create Table 3
+CREATE TABLE table3 (
+    id SERIAL PRIMARY KEY,
+    product VARCHAR(50),
+    price NUMERIC(10, 2)
+);
+
+-- Insert Sample Data into Table 3
+INSERT INTO table3 (product, price) VALUES
+    ('Laptop', 1200.00),
+    ('Smartphone', 800.00),
+    ('Tablet', 400.00);
+
+
+
