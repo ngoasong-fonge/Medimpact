@@ -103,24 +103,7 @@ GRANT USAGE ON FOREIGN SERVER my_oracle_server TO my_user;
 -- Granting INSERT, UPDATE, DELETE privileges on the foreign table
 GRANT INSERT, UPDATE, DELETE ON my_foreign_table TO my_user;
 
-update  wsdme.dbusr
-set ref_task='DME-1959'
-WHERE DBUSR_ID=2803
-ERROR:  no primary key column specified for foreign Oracle table DETAIL:  For UPDATE or DELETE, at least one foreign table column must be marked as primary key column. HINT:  Set the option "key" on the columns that belong to the primary key. SQL state: HV00L
-
-The error message indicates that you need to specify which column(s) in your foreign table correspond to the primary key, as PostgreSQL Foreign Data Wrapper (FDW) needs this information to perform updates or deletes.
-
-In your case, it seems like you're trying to update the ref_task column in the wsdme.dbusr foreign table. However, the FDW doesn't know which column(s) uniquely identify each row in the remote Oracle table DBUSR. You'll need to specify the primary key column(s) of the Oracle table in your foreign table definition.
-
-Assuming DBUSR_ID is the primary key column in your DBUSR Oracle table, you need to mark it as the primary key column in your foreign table definition. Here's how you can alter your foreign table definition to include the primary key column:
-
-ALTER FOREIGN TABLE wsdme.dbusr
-ADD PRIMARY KEY (dbusr_id);
-
-This command specifies that dbusr_id column is the primary key column in your foreign table wsdme.dbusr.
-
-After marking the primary key column, you should be able to perform updates or deletes using that primary key column as a reference.
-
-Remember to replace dbusr_id with the actual primary key column(s) in your Oracle table DBUSR if it's different. Additionally, make sure that the specified primary key column(s) uniquely identify each row in the remote table.
+ERROR:  primary key constraints are not supported on foreign tables
+LINE 2: ADD PRIMARY KEY (dbusr_id);
 
 
