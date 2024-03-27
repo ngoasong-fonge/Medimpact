@@ -43,17 +43,57 @@ CREATE TABLE shard.employee (
 0 2 * * 6,0,1,2,3 /opt/app/patroni/scripts/pgdump_schemabackup.sh
 
 
-SELECT schemaname AS schema_name,
-       relname AS table_name,
-       last_analyze AS last_manual_analyze,
-       last_autoanalyze AS last_auto_analyze
-FROM pg_stat_user_tables;
+CREATE FOREIGN TABLE dmeapps.departments_tst
+(
+  DEPARTMENT_ID    NUMERIC(10,0)                   NOT NULL,
+  DEPARTMENT_NAME  CHARACTER VARYING(30)         NOT NULL,
+  MANAGER_ID       NUMERIC(6,0),
+  LOCATION_ID      NUMERIC(4,0)
+) SERVER ora_sv OPTIONS (SCHEMA 'PSAMY' , TABLE 'DEPARTMENTS_TST');
 
-SELECT relname AS table_name,
-       last_analyze AS last_manual_analyze,
-       last_autoanalyze AS last_auto_analyze
-FROM pg_stat_user_tables
-WHERE schemaname = 'public' -- Replace 'public' with the schema name if the table is in a different schema
-  AND relname = 'your_table_name'; -- Replace 'your_table_name' with the name of the table you want to check
+
+
+CREATE TABLE WSDME.PG_SVC_ACC_DETAIL
+(
+  SERVICE_ACCOUNT_NAME  VARCHAR2(200 BYTE),
+  DB                    VARCHAR2(200 BYTE),
+  EXPIRY_DATE           DATE,
+  DAYSTOGO              VARCHAR2(10 BYTE),
+  SESSION_CNT           NUMBER,
+  LAST_LOGIN            DATE,
+  USENAME               VARCHAR2(200 BYTE)
+);
+ 
+CREATE TABLE WSDME.DBUSR
+(
+  DBUSR_ID           NUMBER                     NOT NULL,
+  USERNAME           VARCHAR2(50 BYTE)          NOT NULL,
+  USR_TYPE           VARCHAR2(30 BYTE)          NOT NULL,
+  STATUS             VARCHAR2(30 BYTE)          DEFAULT 'ACTIVE'              NOT NULL,
+  REF_TASK           VARCHAR2(50 BYTE)          NOT NULL,
+  PASSWORD           RAW(50),
+  ENTERED            DATE                       DEFAULT SYSDATE               NOT NULL,
+  ENTERED_BY         VARCHAR2(30 BYTE)          DEFAULT USER                  NOT NULL,
+  REQUESTED_BY       VARCHAR2(50 BYTE),
+  USER_COMMENT       VARCHAR2(4000 BYTE),
+  DATICAL            VARCHAR2(1 BYTE),
+  PRIMARY_DB         VARCHAR2(30 BYTE)          NOT NULL,
+  DB_LINK            VARCHAR2(1 BYTE),
+  VAULT_PREFIX_NAME  VARCHAR2(60 BYTE),
+  ORCHARD_EXC_YN     VARCHAR2(5 BYTE),
+  APP_TEAM           VARCHAR2(30 BYTE),
+  APP_MGR            VARCHAR2(60 BYTE),
+  APP_CONTACT        VARCHAR2(60 BYTE),
+  APP_CONTACT_ALT    VARCHAR2(60 BYTE),
+  INTL_FLAG          VARCHAR2(10 BYTE),
+  DESCRIPTION        VARCHAR2(200 BYTE)         NOT NULL,
+  APP_NAME           VARCHAR2(100 BYTE)         NOT NULL,
+  LEVEL1             VARCHAR2(100 BYTE)         NOT NULL,
+  LEVEL2             VARCHAR2(100 BYTE)         NOT NULL,
+  LEVEL3             VARCHAR2(100 BYTE)         NOT NULL,
+  ADHOC_NEEDED_YN    VARCHAR2(2 BYTE),
+  APPLICATION        VARCHAR2(100 BYTE)
+);
+
 
 
