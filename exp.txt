@@ -103,7 +103,10 @@ GRANT USAGE ON FOREIGN SERVER my_oracle_server TO my_user;
 -- Granting INSERT, UPDATE, DELETE privileges on the foreign table
 GRANT INSERT, UPDATE, DELETE ON my_foreign_table TO my_user;
 
-ERROR:  primary key constraints are not supported on foreign tables
-LINE 2: ADD PRIMARY KEY (dbusr_id);
+Here is an example for a table definition that sets the key option:
 
+CREATE FOREIGN TABLE atable (
+   id    bigint OPTIONS (key 'true') NOT NULL,
+   value text
+) SERVER oraserver OPTIONS (table 'ATABLE');
 
