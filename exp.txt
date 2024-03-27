@@ -110,3 +110,34 @@ CREATE FOREIGN TABLE atable (
    value text
 ) SERVER oraserver OPTIONS (table 'ATABLE');
 
+
+CREATE FOREIGN TABLE wsdme.dbusr (
+  dbusr_id            NUMERIC NOT NULL OPTIONS (key 'true'),
+  username            CHARACTER VARYING(50) NOT NULL,
+  usr_type            CHARACTER VARYING(30) NOT NULL,
+  status              CHARACTER VARYING(30) DEFAULT 'ACTIVE' NOT NULL,
+  ref_task            CHARACTER VARYING(50) NOT NULL,
+  password            BYTEA,
+  entered             DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  entered_by          CHARACTER VARYING(30) DEFAULT CURRENT_USER NOT NULL,
+  requested_by        CHARACTER VARYING(50),
+  user_comment        CHARACTER VARYING(4000),
+  datical             CHARACTER(1),
+  primary_db          CHARACTER VARYING(30) NOT NULL,
+  db_link             CHARACTER(1),
+  vault_prefix_name   CHARACTER VARYING(60),
+  orchard_exc_yn      CHARACTER(5),
+  app_team            CHARACTER VARYING(30),
+  app_mgr             CHARACTER VARYING(60),
+  app_contact         CHARACTER VARYING(60),
+  app_contact_alt     CHARACTER VARYING(60),
+  intl_flag           CHARACTER VARYING(10),
+  description         CHARACTER VARYING(200) NOT NULL,
+  app_name            CHARACTER VARYING(100) NOT NULL,
+  level1              CHARACTER VARYING(100) NOT NULL,
+  level2              CHARACTER VARYING(100) NOT NULL,
+  level3              CHARACTER VARYING(100) NOT NULL,
+  adhoc_needed_yn     CHARACTER(2),
+  application         CHARACTER VARYING(100)
+) SERVER ora_sv OPTIONS (SCHEMA 'WSDME', TABLE 'DBUSR');
+
