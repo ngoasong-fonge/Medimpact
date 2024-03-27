@@ -111,38 +111,9 @@ CREATE FOREIGN TABLE atable (
 ) SERVER oraserver OPTIONS (table 'ATABLE');
 
 
-citus=# \d wsdme.dbusr
-Did not find any relation named "wsdme.dbusr".
-citus=# CREATE FOREIGN TABLE wsdme.dbusr (
-citus(#   dbusr_id            NUMERIC NOT NULL OPTIONS (key 'true'),
-citus(#   username            CHARACTER VARYING(50) NOT NULL,
-citus(#   usr_type            CHARACTER VARYING(30) NOT NULL,
-citus(#   status              CHARACTER VARYING(30) DEFAULT 'ACTIVE' NOT NULL,
-citus(#   ref_task            CHARACTER VARYING(50) NOT NULL,
-citus(#   password            BYTEA,
-citus(#   entered             DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-citus(#   entered_by          CHARACTER VARYING(30) DEFAULT CURRENT_USER NOT NULL,
-citus(#   requested_by        CHARACTER VARYING(50),
-citus(#   user_comment        CHARACTER VARYING(4000),
-citus(#   datical             CHARACTER(1),
-citus(#   primary_db          CHARACTER VARYING(30) NOT NULL,
-citus(#   db_link             CHARACTER(1),
-citus(#   vault_prefix_name   CHARACTER VARYING(60),
-citus(#   orchard_exc_yn      CHARACTER(5),
-citus(#   app_team            CHARACTER VARYING(30),
-citus(#   app_mgr             CHARACTER VARYING(60),
-citus(#   app_contact         CHARACTER VARYING(60),
-citus(#   app_contact_alt     CHARACTER VARYING(60),
-citus(#   intl_flag           CHARACTER VARYING(10),
-citus(#   description         CHARACTER VARYING(200) NOT NULL,
-citus(#   app_name            CHARACTER VARYING(100) NOT NULL,
-citus(#   level1              CHARACTER VARYING(100) NOT NULL,
-citus(#   level2              CHARACTER VARYING(100) NOT NULL,
-citus(#   level3              CHARACTER VARYING(100) NOT NULL,
-citus(#   adhoc_needed_yn     CHARACTER(2),
-citus(#   application         CHARACTER VARYING(100)
-citus(# ) SERVER ora_sv OPTIONS (SCHEMA 'WSDME', TABLE 'DBUSR');
-ERROR:  syntax error at or near "OPTIONS"
-LINE 2:   dbusr_id            NUMERIC NOT NULL OPTIONS (key 'true'),
-
+Create single shard tables in schema tenant1 (automatically co-located)
+set search_path to tenant1;
+create table note_categories (
+   category_id bigserial primary key,
+   category_name text not null);
 
