@@ -104,7 +104,7 @@ GRANT USAGE ON FOREIGN SERVER my_oracle_server TO my_user;
 GRANT INSERT, UPDATE, DELETE ON my_foreign_table TO my_user;
 
 
-
+ERROR:  no primary key column specified for foreign Oracle table DETAIL:  For UPDATE or DELETE, at least one foreign table column must be marked as primary key column. HINT:  Set the option "key" on the columns that belong to the primary key. SQL state: HV00L
 
 
 
