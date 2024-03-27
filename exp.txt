@@ -97,6 +97,13 @@ CREATE FOREIGN TABLE wsdme.dbusr
   application          CHARACTER VARYING(100)
 ) SERVER ora_sv OPTIONS (SCHEMA 'WSDME', TABLE 'DBUSR');
 
+-- Granting USAGE privilege on the foreign server
+GRANT USAGE ON FOREIGN SERVER my_oracle_server TO my_user;
+
+-- Granting INSERT, UPDATE, DELETE privileges on the foreign table
+GRANT INSERT, UPDATE, DELETE ON my_foreign_table TO my_user;
+
+
 
 
 
