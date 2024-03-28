@@ -1,4 +1,8 @@
+
 psql:/opt/backup/ngmep_backup_2024-03-28-020001.sql:167750: error: invalid command \N
+psql:/opt/backup/ngmep_backup_2024-03-28-020001.sql:167758: ERROR:  syntax error at or near "5000000001"
+LINE 1: 5000000001 2023-12-02 06:48:35.947341 populate_encounter 500...
+
 Determine the Desired Size: First, you need to decide how much memory you want to allocate to the shared_buffers parameter. In this example, you want to allocate 1GB of memory.
 
 Convert to Kilobytes (KB): Amazon RDS for PostgreSQL uses kilobytes as the unit for the shared_buffers parameter. To convert 1GB to kilobytes, you perform the following conversions:
