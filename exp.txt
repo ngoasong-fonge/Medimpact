@@ -123,12 +123,28 @@ create table note_categories (
    category_name text not null);
 
 
+----------------------------------------------------------------------
 
 
+It seems like you're generating SQL statements to set the autovacuum_enabled property to true for each partition of a partitioned table in PostgreSQL. Your SQL query dynamically generates these statements based on the child tables of the partitioned table.
 
-postgres=# SELECT relnamespace::regnamespace AS schema_name,
-postgres-#        relname as table_name,
-postgres-#        reloptions as options
-postgres-# FROM pg_class
-postgres-# WHERE 'autovacuum_enabled=false' = any(reloptions);
+Here's a breakdown of what the SQL query does:
+
+It selects the child tables of the partitioned table (partitioned_table) along with their object identifiers (oid) from the PostgreSQL system catalog tables (pg_class and pg_inherits).
+It constructs SQL statements using string concatenation to set the autovacuum_enabled property to true for each child table.
+The pg_get_expr function is used to check if the table's partition bounds match the DEFAULT expression. This helps in ordering the results.
+The gexec meta-command in the PostgreSQL client (psql) is used to execute each generated SQL statement.
+This approach allows you to automate the process of enabling autovacuum for each partition of the partitioned table, which can be useful for managing vacuuming and maintenance tasks efficiently.
+
+If you have any specific questions or need further assistance with this SQL query or related tasks, feel free to ask!
+
+
+SELECT relnamespace::regnamespace AS schema_name,
+       relname as table_name,
+       reloptions as options
+FROM pg_class
+WHERE relnamespace = 'ngmep'::regnamespace 
+  AND 'autovacuum_enabled=false' = ANY(
+          string_to_array(array_to_string(reloptions, ','), ',')
+      );
 
