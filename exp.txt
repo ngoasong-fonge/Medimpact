@@ -122,3 +122,19 @@ create table note_categories (
    category_id bigserial primary key,
    category_name text not null);
 
+
+
+
+
+postgres=# SELECT 'SET statement_timeout to ''5s''; ALTER TABLE ' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = true);'
+postgres-#   FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+postgres-#   WHERE c.oid = i.inhrelid AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'partitioned_table')
+postgres-#   ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;\gexec
+                                              ?column?
+-----------------------------------------------------------------------------------------------------
+ SET statement_timeout to '5s'; ALTER TABLE partitioned_table_y2021 SET (autovacuum_enabled = true);
+ SET statement_timeout to '5s'; ALTER TABLE partitioned_table_y2022 SET (autovacuum_enabled = true);
+ SET statement_timeout to '5s'; ALTER TABLE partitioned_table_y2023 SET (autovacuum_enabled = true);
+ SET statement_timeout to '5s'; ALTER TABLE partitioned_table_y2024 SET (autovacuum_enabled = true);
+
+
