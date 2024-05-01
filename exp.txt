@@ -126,11 +126,9 @@ create table note_categories (
 
 
 
-SELECT 'SET statement_timeout to ''5s''; ALTER TABLE ngmep.' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = true);'
-FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
-WHERE c.oid = i.inhrelid 
-  AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'partitioned_table')
-ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
-
-
+postgres=# SELECT relnamespace::regnamespace AS schema_name,
+postgres-#        relname as table_name,
+postgres-#        reloptions as options
+postgres-# FROM pg_class
+postgres-# WHERE 'autovacuum_enabled=false' = any(reloptions);
 
