@@ -148,3 +148,8 @@ WHERE relnamespace = 'ngmep'::regnamespace
           string_to_array(array_to_string(reloptions, ','), ',')
       );
 
+
+
+[svcpostgres@dv1medpgsc2 ~]$ /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+2024-05-02 23:25:20,628 - ERROR - Failed to get list of machines from https://10.13.3.45:2379/v2: MaxRetryError('HTTPSConnectionPool(host=\'10.13.3.45\', port=2379): Max retries exceeded with url: /version (Caused by ReadTimeoutError("HTTPSConnectionPool(host=\'10.13.3.45\', port=2379): Read timed out. (read timeout=1.6666666666666667)"))')
+2024-05-02 23:25:22,299 - ERROR - Failed to get list of machines from https://10.13.3.46:2379/v2: MaxRetryError('HTTPSConnectionPool(host=\'10.13.3.46\', port=2379): Max retries exceeded with url: /version (Caused by ReadTimeoutError("HTTPSConnectionPool(host=\'10.13.3.46\', port=2379): Read timed out. (read timeout=1.6666666666666667)"))')
