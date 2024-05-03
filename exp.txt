@@ -148,11 +148,15 @@ WHERE relnamespace = 'ngmep'::regnamespace
           string_to_array(array_to_string(reloptions, ','), ',')
       );
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+If you have environment variables set in a shell script (pg_env.sh in this case), you can ensure that these variables are available to your crontab jobs by sourcing this script before running your command. Here's how you can modify your crontab entry to include sourcing the pg_env.sh script:
 
-export PATH=/opt/app/postgresql/bin:/opt/app/localhome/postgres/.local/bin:/opt/app/localhome/postgres/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/app/python/bin
-export PGDATA=/opt/app/postgres-data/data
-export PGDATABASE=postgres
-export PGUSER=postgres
-export PGPORT=5432
+0 2 * * 0 . /path/to/pg_env.sh && psql -h localhost -U deployadmin -d citus -c "CALL partman.run_maintenance_proc();" >> /path/to/logfile 2>&1
 
+In this modified crontab entry:
+
+. /path/to/pg_env.sh sources the pg_env.sh script, which sets the necessary environment variables for the psql command to run successfully.
+&& ensures that the psql command is only executed if the sourcing of pg_env.sh is successful.
+The rest of the command remains the same, executing the psql command and redirecting both standard output and standard error to a log file.
+By sourcing the pg_env.sh script before executing the psql command, you ensure that the environment variables required for the PostgreSQL connection are properly set within the crontab context.
