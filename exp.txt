@@ -151,9 +151,27 @@ WHERE relnamespace = 'ngmep'::regnamespace
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-citus=# INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
-citus-# SELECT 'John', 'Doe', 1, '2024-05-07'::date FROM generate_series(1, 100000);
-ERROR:  duplicate key value violates unique constraint "employees_p20240507_pkey"
-DETAIL:  Key (created_date)=(2024-05-07) already exists.
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
+SELECT
+  CASE 
+    WHEN i % 7 = 0 THEN 'John'
+    WHEN i % 7 = 1 THEN 'Jane'
+    WHEN i % 7 = 2 THEN 'Alice'
+    WHEN i % 7 = 3 THEN 'Samuel'
+    WHEN i % 7 = 4 THEN 'James'
+    WHEN i % 7 = 5 THEN 'Aline'
+    WHEN i % 7 = 6 THEN 'Morice'
+  END as first_name,
+  CASE 
+    WHEN i % 7 = 0 THEN 'Doe'
+    WHEN i % 7 = 1 THEN 'Smith'
+    WHEN i % 7 = 2 THEN 'Johnson'
+    WHEN i % 7 = 3 THEN 'Pickford'
+    WHEN i % 7 = 4 THEN 'Kadem'
+    WHEN i % 7 = 5 THEN 'Bale'
+    WHEN i % 7 = 6 THEN 'William'
+  END as last_name,
+  (i % 10) + 1 as department_id,
+  ('2024-05-07'::date + (i || ' days')::interval)::date as created_date -- each row has a unique date
+FROM generate_series(1, 365) as t(i);  -- Generating entries for a year
 
