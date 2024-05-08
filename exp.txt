@@ -152,24 +152,8 @@ WHERE relnamespace = 'ngmep'::regnamespace
 
 
 
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'John', 'Doe', 1, '2024-05-07'::date FROM generate_series(1, 100000); 
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'Jane', 'Smith', 2, '2024-05-07'::date FROM generate_series(1, 100000);
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'Alice', 'Johnson', 3, '2024-05-07'::date FROM generate_series(1, 100000);
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'Samuel', 'Pickford', 4, '2024-05-07'::date FROM generate_series(1, 100000);
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'James', 'Kadem', 5, '2024-05-07'::date FROM generate_series(1, 100000);
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'Aline', 'Bale', 6, '2024-05-07'::date FROM generate_series(1, 100000);
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) 
-SELECT 'Morice', 'William', 7, '2024-05-07'::date FROM generate_series(1, 100000);
+citus=# INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
+citus-# SELECT 'John', 'Doe', 1, '2024-05-07'::date FROM generate_series(1, 100000);
+ERROR:  duplicate key value violates unique constraint "employees_p20240507_pkey"
+DETAIL:  Key (created_date)=(2024-05-07) already exists.
 
