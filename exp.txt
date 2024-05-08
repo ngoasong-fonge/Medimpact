@@ -151,19 +151,29 @@ WHERE relnamespace = 'ngmep'::regnamespace
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-citus=# \d+ mepstg.tablepart
-                                     Partitioned table "mepstg.tablepart"
-   Column    |  Type   | Collation | Nullable | Default | Storage  | Compression | Stats target | Description
--------------+---------+-----------+----------+---------+----------+-------------+--------------+-------------
- id          | integer |           | not null |         | plain    |             |              |
- name        | text    |           | not null |         | extended |             |              |
- report_date | date    |           | not null |         | plain    |             |              |
-Partition key: RANGE (report_date)
-Indexes:
-    "table01_pkey" PRIMARY KEY, btree (id, report_date)
-Partitions: mepstg.tablepart_p20240507 FOR VALUES FROM ('2024-05-07') TO ('2024-05-08'),
-            mepstg.tablepart_p20240508 FOR VALUES FROM ('2024-05-08') TO ('2024-05-09'),
-            mepstg.tablepart_p20240509 FOR VALUES FROM ('2024-05-09') TO ('2024-05-10'),
-            mepstg.tablepart_default DEFAULT
+-- Populate data for May 7, 2024 partition
+INSERT INTO mepstg.tablepart (id, name, report_date)
+SELECT 
+    i, 
+    'Name_' || i, 
+    '2024-05-07'::date
+FROM generate_series(1, 100) AS s(i);
+
+-- Populate data for May 8, 2024 partition
+INSERT INTO mepstg.tablepart (id, name, report_date)
+SELECT 
+    i + 100,  -- Ensure unique ID across partitions
+    'Name_' || (i + 100),
+    '2024-05-08'::date
+FROM generate_series(1, 100) AS s(i);
+
+-- Populate data for May 9, 2024 partition
+INSERT INTO mepstg.tablepart (id, name, report_date)
+SELECT 
+    i + 200,  -- Ensure unique ID across partitions
+    'Name_' || (i + 200),
+    '2024-05-09'::date
+FROM generate_series(1, 100) AS s(i);
+
 
 
