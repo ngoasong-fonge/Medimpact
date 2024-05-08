@@ -150,13 +150,12 @@ WHERE relnamespace = 'ngmep'::regnamespace
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-If you have environment variables set in a shell script (pg_env.sh in this case), you can ensure that these variables are available to your crontab jobs by sourcing this script before running your command. Here's how you can modify your crontab entry to include sourcing the pg_env.sh script:
-
-0 2 * * 0 . /path/to/pg_env.sh && psql -h localhost -U deployadmin -d citus -c "CALL partman.run_maintenance_proc();" >> /path/to/logfile 2>&1
-
-In this modified crontab entry:
-
-. /path/to/pg_env.sh sources the pg_env.sh script, which sets the necessary environment variables for the psql command to run successfully.
-&& ensures that the psql command is only executed if the sourcing of pg_env.sh is successful.
-The rest of the command remains the same, executing the psql command and redirecting both standard output and standard error to a log file.
-By sourcing the pg_env.sh script before executing the psql command, you ensure that the environment variables required for the PostgreSQL connection are properly set within the crontab context.
+CREATE TABLE mepstg.employees (
+    employee_id serial ,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT,
+    created_date DATE,
+    CONSTRAINT table01_pkey PRIMARY KEY (created_date)
+   ) partition by range(created_date);
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
