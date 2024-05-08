@@ -150,12 +150,29 @@ WHERE relnamespace = 'ngmep'::regnamespace
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE mepstg.employees (
-    employee_id serial ,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department_id INT,
-    created_date DATE,
-    CONSTRAINT table01_pkey PRIMARY KEY (created_date)
-   ) partition by range(created_date);
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
+citus=# \d+ mepstg.employees
+                                                                    Partitioned table "mepstg.employees"
+    Column     |         Type          | Collation | Nullable |                        Default                        | Storage  | Compression | Stats target | Description
+---------------+-----------------------+-----------+----------+-------------------------------------------------------+----------+-------------+--------------+-------------
+ employee_id   | integer               |           | not null | nextval('mepstg.employees_employee_id_seq'::regclass) | plain    |             |              |
+ first_name    | character varying(50) |           |          |                                                       | extended |             |              |
+ last_name     | character varying(50) |           |          |                                                       | extended |             |              |
+ department_id | integer               |           |          |                                                       | plain    |             |              |
+ created_date  | date                  |           | not null |                                                       | plain    |             |              |
+Partition key: RANGE (created_date)
+Indexes:
+    "table01_pkey" PRIMARY KEY, btree (created_date)
+Partitions: mepstg.employees_p20240507 FOR VALUES FROM ('2024-05-07') TO ('2024-05-08'),
+            mepstg.employees_p20240508 FOR VALUES FROM ('2024-05-08') TO ('2024-05-09'),
+            mepstg.employees_p20240509 FOR VALUES FROM ('2024-05-09') TO ('2024-05-10'),
+            mepstg.employees_default DEFAULT
+
+
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'John', 'Doe', 1, '2022-01-24'::date FROM generate_series(1, 100000); 
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'Jane', 'Smith', 2, '2022-01-24'::date FROM generate_series(1, 100000);
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'Alice', 'Johnson', 3, '2022-01-24'::date FROM generate_series(1, 100000);
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'Samuel', 'Pickford', 4, '2022-01-24'::date FROM generate_series(1, 100000);
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'James', 'Kadem', 5, '2022-01-24'::date FROM generate_series(1, 100000);
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'Aline', 'Bale', 6, '2022-01-24'::date FROM generate_series(1, 100000);
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date) SELECT 'Morice', 'William', 7, '2022-01-24'::date FROM generate_series(1, 100000);
+
