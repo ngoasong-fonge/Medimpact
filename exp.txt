@@ -151,37 +151,19 @@ WHERE relnamespace = 'ngmep'::regnamespace
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
-SELECT
-  CASE 
-    WHEN i % 7 = 0 THEN 'John'
-    WHEN i % 7 = 1 THEN 'Jane'
-    WHEN i % 7 = 2 THEN 'Alice'
-    WHEN i % 7 = 3 THEN 'Samuel'
-    WHEN i % 7 = 4 THEN 'James'
-    WHEN i % 7 = 5 THEN 'Aline'
-    WHEN i % 7 = 6 THEN 'Morice'
-  END as first_name,
-  CASE 
-    WHEN i % 7 = 0 THEN 'Doe'
-    WHEN i % 7 = 1 THEN 'Smith'
-    WHEN i % 7 = 2 THEN 'Johnson'
-    WHEN i % 7 = 3 THEN 'Pickford'
-    WHEN i % 7 = 4 THEN 'Kadem'
-    WHEN i % 7 = 5 THEN 'Bale'
-    WHEN i % 7 = 6 THEN 'William'
-  END as last_name,
-  (i % 10) + 1 as department_id,
-  ('2024-05-07'::date + (i || ' days')::interval)::date as created_date -- each row has a unique date
-FROM generate_series(1, 365) as t(i);  -- Generating entries for a year
-
-
-INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
-SELECT 
-    'John', 
-    'Doe', 
-    1, 
-    ('2024-05-07'::date + (generate_series - 1) || ' days')::date as created_date
-FROM generate_series(1, 100000);
+citus=# \d+ mepstg.tablepart
+                                     Partitioned table "mepstg.tablepart"
+   Column    |  Type   | Collation | Nullable | Default | Storage  | Compression | Stats target | Description
+-------------+---------+-----------+----------+---------+----------+-------------+--------------+-------------
+ id          | integer |           | not null |         | plain    |             |              |
+ name        | text    |           | not null |         | extended |             |              |
+ report_date | date    |           | not null |         | plain    |             |              |
+Partition key: RANGE (report_date)
+Indexes:
+    "table01_pkey" PRIMARY KEY, btree (id, report_date)
+Partitions: mepstg.tablepart_p20240507 FOR VALUES FROM ('2024-05-07') TO ('2024-05-08'),
+            mepstg.tablepart_p20240508 FOR VALUES FROM ('2024-05-08') TO ('2024-05-09'),
+            mepstg.tablepart_p20240509 FOR VALUES FROM ('2024-05-09') TO ('2024-05-10'),
+            mepstg.tablepart_default DEFAULT
 
 
