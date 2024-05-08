@@ -175,3 +175,13 @@ SELECT
   ('2024-05-07'::date + (i || ' days')::interval)::date as created_date -- each row has a unique date
 FROM generate_series(1, 365) as t(i);  -- Generating entries for a year
 
+
+INSERT INTO mepstg.employees (first_name, last_name, department_id, created_date)
+SELECT 
+    'John', 
+    'Doe', 
+    1, 
+    ('2024-05-07'::date + (generate_series - 1) || ' days')::date as created_date
+FROM generate_series(1, 100000);
+
+
