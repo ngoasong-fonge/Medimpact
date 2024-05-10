@@ -181,4 +181,7 @@ FROM generate_series(1, 100) AS s(i);
 
 
 
-https://www.mydbops.com/blog/postgresql-table-partitioning-with-pgpartman-extension/
+citus=# drop role dme_role;
+ERROR:  role "dme_role" does not exist
+CONTEXT:  while executing command on 10.13.3.73:5432
+
