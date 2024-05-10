@@ -185,3 +185,6 @@ citus=# drop role dme_role;
 ERROR:  role "dme_role" does not exist
 CONTEXT:  while executing command on 10.13.3.73:5432
 
+dme_role                                            | Superuser, Create role, Create DB                          | {}
+
+
