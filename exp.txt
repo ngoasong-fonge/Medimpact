@@ -267,13 +267,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-Scheduling Partition Creation
--- Schedule the function to run on the first day of every month at midnight
-SELECT cron.schedule('create_partitions_job', '0 0 1 * *', 'CALL create_monthly_partitions_for_year(extract(year from current_date)::int + 1);');
-
-Partitions: mepstg.stops_2022 FOR VALUES FROM ('2022-01-01') TO ('2023-01-01'),
-            mepstg.stops_2023 FOR VALUES FROM ('2023-01-01') TO ('2024-01-01'),
-            mepstg.stops_2024 FOR VALUES FROM ('2024-01-01') TO ('2025-01-01'),
-            mepstg.stops_2025 FOR VALUES FROM ('2025-01-01') TO ('2026-01-01'), PARTITIONED
+SELECT partman.create_parent( p_parent_table => 'mepstg.time_static_table', p_control => 'col3', p_type => 'range', p_interval=> '1 year', p_premake => 2);
 
 
