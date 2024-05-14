@@ -181,10 +181,6 @@ FROM generate_series(1, 100) AS s(i);
 
 
 
-citus=# drop role dme_role;
-ERROR:  role "dme_role" does not exist
-CONTEXT:  while executing command on 10.13.3.73:5432
-
-dme_role                                            | Superuser, Create role, Create DB                          | {}
+ERROR:  function partman.create_sub_parent(p_parent_table => unknown, p_control => unknown, p_type => unknown, p_interval => unknown, p_premake => integer) does not exist
 
 
