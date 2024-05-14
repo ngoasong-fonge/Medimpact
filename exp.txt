@@ -181,6 +181,49 @@ FROM generate_series(1, 100) AS s(i);
 
 
 
-ERROR:  function partman.create_sub_parent(p_parent_table => unknown, p_control => unknown, p_type => unknown, p_interval => unknown, p_premake => integer) does not exist
-
-
+postgres=# d+ traffic_violations_p
+                                      Partitioned table "public.traffic_violations_p"
+         Column          |          Type          | Collation | Nullable | Default | Storage  | Stats target | Description 
+-------------------------+------------------------+-----------+----------+---------+----------+--------------+-------------
+ seqid                   | text                   |           |          |         | extended |              | 
+ date_of_stop            | date                   |           |          |         | plain    |              | 
+ time_of_stop            | time without time zone |           |          |         | plain    |              | 
+ agency                  | text                   |           |          |         | extended |              | 
+ subagency               | text                   |           |          |         | extended |              | 
+ description             | text                   |           |          |         | extended |              | 
+ location                | text                   |           |          |         | extended |              | 
+ latitude                | numeric                |           |          |         | main     |              | 
+ longitude               | numeric                |           |          |         | main     |              | 
+ accident                | text                   |           |          |         | extended |              | 
+ belts                   | boolean                |           |          |         | plain    |              | 
+ personal_injury         | boolean                |           |          |         | plain    |              | 
+ property_damage         | boolean                |           |          |         | plain    |              | 
+ fatal                   | boolean                |           |          |         | plain    |              | 
+ commercial_license      | boolean                |           |          |         | plain    |              | 
+ hazmat                  | boolean                |           |          |         | plain    |              | 
+ commercial_vehicle      | boolean                |           |          |         | plain    |              | 
+ alcohol                 | boolean                |           |          |         | plain    |              | 
+ workzone                | boolean                |           |          |         | plain    |              | 
+ state                   | text                   |           |          |         | extended |              | 
+ vehicletype             | text                   |           |          |         | extended |              | 
+ year                    | smallint               |           |          |         | plain    |              | 
+ make                    | text                   |           |          |         | extended |              | 
+ model                   | text                   |           |          |         | extended |              | 
+ color                   | text                   |           |          |         | extended |              | 
+ violation_type          | text                   |           |          |         | extended |              | 
+ charge                  | text                   |           |          |         | extended |              | 
+ article                 | text                   |           |          |         | extended |              | 
+ contributed_to_accident | boolean                |           |          |         | plain    |              | 
+ race                    | text                   |           |          |         | extended |              | 
+ gender                  | text                   |           |          |         | extended |              | 
+ driver_city             | text                   |           |          |         | extended |              | 
+ driver_state            | text                   |           |          |         | extended |              | 
+ dl_state                | text                   |           |          |         | extended |              | 
+ arrest_type             | text                   |           |          |         | extended |              | 
+ geolocation             | point                  |           |          |         | plain    |              | 
+ council_districts       | smallint               |           |          |         | plain    |              | 
+ councils                | smallint               |           |          |         | plain    |              | 
+ communities             | smallint               |           |          |         | plain    |              | 
+ zip_codes               | smallint               |           |          |         | plain    |              | 
+ municipalities          | smallint               |           |          |         | plain    |              | 
+Partition key: RANGE (date_of_stop)
