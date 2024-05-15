@@ -151,28 +151,47 @@ WHERE relnamespace = 'ngmep'::regnamespace
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-CREATE TABLE mepstg.time_static_table (
-    col1 serial,
-    col2 text,
-    col3 date,
-    CONSTRAINT static_pkey PRIMARY KEY (col1, col3)
-) PARTITION BY RANGE (col3);
+citus=# SELECT partman.create_parent(
+citus(#     p_parent_table => 'mepstg.time_static_table',
+citus(#     p_control => 'col3',
+citus(#     p_type => 'range',
+citus(#     p_interval => '1 year',
+citus(#     p_premake => 2
+citus(# );
+ERROR:  duplicate key value violates unique constraint "part_config_parent_table_pkey"
+CONTEXT: SQL statement "INSERT INTO partman.part_config (
+        parent_table
+        , partition_type
+        , partition_interval
+        , epoch
+        , control
+        , premake
+        , constraint_cols
+        , datetime_string
+        , automatic_maintenance
+        , jobmon
+        , template_table
+        , inherit_privileges
+        , default_table
+        , date_trunc_interval)
+    VALUES (
+        p_parent_table
+        , p_type
+        , v_time_interval
+        , p_epoch
+        , p_control
+        , p_premake
+        , p_constraint_cols
+        , v_datetime_string
+        , p_automatic_maintenance
+        , p_jobmon
+        , v_template_schema||'.'||v_template_tablename
+        , v_inherit_privileges
+        , p_default_table
+        , p_date_trunc_interval)"
+PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 331 at SQL statement
+DETAIL: Key (parent_table)=(mepstg.time_static_table) already exists.
+HINT:
+CONTEXT:  PL/pgSQL function partman.create_parent(text,text,text,text,text,integer,text,boolean,text,text[],text,boolean,text) line 629 at RAISE
 
-CREATE INDEX ON mepstg.time_static_table (col3);
-
-SELECT partman.create_parent(
-    p_parent_table => 'mepstg.time_static_table',
-    p_control => 'col3',
-    p_type => 'range',
-    p_interval => '1 year',
-    p_premake => 2
-);
-
-SELECT partman.create_sub_parent(
-    p_top_parent => 'mepstg.time_static_table',
-    p_declarative_check => 'yes',
-    p_control => 'col3',
-    p_interval => '1 month',
-    p_type => 'range'
-);
 
