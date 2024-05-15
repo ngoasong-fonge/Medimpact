@@ -194,4 +194,7 @@ create_sub_parent(
 )
 RETURNS boolean
 
+Note that for the first level of subpartitions, the p_parent_table argument you originally gave to create_parent() would be the exact same value you give to create_sub_parent(). If you need further subpartitioning, you would then start giving create_sub_parent() a different value (the child tables of the top level partition set).
+The template table that is already set for the given p_top_parent will automatically be used
+
 
