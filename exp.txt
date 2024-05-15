@@ -151,38 +151,28 @@ WHERE relnamespace = 'ngmep'::regnamespace
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-CREATE TABLE mepstg.time_static_table (col1 serial, col2 text, col3 date, CONSTRAINT static_pkey PRIMARY KEY (col1,col3)) partition by range(col3);
+CREATE TABLE mepstg.time_static_table (
+    col1 serial,
+    col2 text,
+    col3 date,
+    CONSTRAINT static_pkey PRIMARY KEY (col1, col3)
+) PARTITION BY RANGE (col3);
 
 CREATE INDEX ON mepstg.time_static_table (col3);
 
-SELECT partman.create_parent( p_parent_table => 'mepstg.time_static_table', p_control => 'col3', p_type => 'range', p_interval=> '1 year', p_premake => 2);
+SELECT partman.create_parent(
+    p_parent_table => 'mepstg.time_static_table',
+    p_control => 'col3',
+    p_type => 'range',
+    p_interval => '1 year',
+    p_premake => 2
+);
 
+SELECT partman.create_sub_parent(
+    p_top_parent => 'mepstg.time_static_table',
+    p_declarative_check => 'yes',
+    p_control => 'col3',
+    p_interval => '1 month',
+    p_type => 'range'
+);
 
-
-
-
-
-Create a subpartition set of an already existing partitioned set. See important notes about Subpartitioning in About section.
-p_top_parent - This parameter is the parent table of an already existing partition set. It tells pg_partman to turn all child tables of the given partition set into their own parent tables of their own partition sets using the rest of the parameters for this function.
-p_declarative_check - Turning an existing partition set into a subpartitioned set is a destructive process. A table must be declared partitioned at creation time and cannot be altered later. Therefore existing child tables must be dropped and recreated as partitioned parent tables. This flag is here to help ensure this function is not run without prior consent that all data in the partition set will be destroyed as part of the creation process. It must be set to "yes" to proceed with subpartitioning.
-All other parameters to this function have the same exact purpose as those of create_parent(), but instead are used to tell pg_partman how each child table shall itself be partitioned.
-For example if you have an existing partition set done by year and you then want to partition each of the year partitions by day, you would use this function.
-It is advised that you keep table names short for subpartition sets if you plan on relying on the table names for organization. The suffix added on to the end of a table name is always guaranteed to be there for whatever partition type is active for that set. Longer table names may cause the original parent table names to be truncated and possibly cut off the top level partitioning suffix. This cannot be controlled and ensures the lowest level partitioning suffix survives.
-Note that for the first level of subpartitions, the p_parent_table argument you originally gave to create_parent() would be the exact same value you give to create_sub_parent(). If you need further subpartitioning, you would then start giving create_sub_parent() a different value (the child tables of the top level partition set).
-The template table that is already set for the given p_top_parent will automatically be used
-
-create_sub_parent(
-    p_top_parent text
-    , p_declarative_check text DEFAULT NULL
-    , p_control text
-    , p_interval text
-    , p_type text DEFAULT 'range'
-    , p_epoch text DEFAULT 'none'
-    , p_premake int DEFAULT 4
-    , p_start_partition text DEFAULT NULL
-    , p_default_table boolean DEFAULT true
-    , p_constraint_cols text[] DEFAULT NULL
-    , p_jobmon boolean DEFAULT true
-    , p_date_trunc_interval text DEFAULT NULL
-)
-RETURNS boolean
