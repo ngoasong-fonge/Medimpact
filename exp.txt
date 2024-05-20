@@ -152,21 +152,20 @@ WHERE relnamespace = 'ngmep'::regnamespace
 
 
 
-    "time_static_table_p20220101_pkey" PRIMARY KEY, btree (col1, col3)
-Partitions: mepstg.time_static_table_p20220101_p20220101 FOR VALUES FROM ('2022-01-01') TO ('2022-02-01'),
-            mepstg.time_static_table_p20220101_p20220201 FOR VALUES FROM ('2022-02-01') TO ('2022-03-01'),
-            mepstg.time_static_table_p20220101_p20220301 FOR VALUES FROM ('2022-03-01') TO ('2022-04-01'),
-            mepstg.time_static_table_p20220101_p20220401 FOR VALUES FROM ('2022-04-01') TO ('2022-05-01'),
-            mepstg.time_static_table_p20220101_p20220501 FOR VALUES FROM ('2022-05-01') TO ('2022-06-01'),
-            mepstg.time_static_table_p20220101_p20220601 FOR VALUES FROM ('2022-06-01') TO ('2022-07-01'),
-            mepstg.time_static_table_p20220101_p20220701 FOR VALUES FROM ('2022-07-01') TO ('2022-08-01'),
-            mepstg.time_static_table_p20220101_p20220801 FOR VALUES FROM ('2022-08-01') TO ('2022-09-01'),
-            mepstg.time_static_table_p20220101_p20220901 FOR VALUES FROM ('2022-09-01') TO ('2022-10-01'),
-            mepstg.time_static_table_p20220101_p20221001 FOR VALUES FROM ('2022-10-01') TO ('2022-11-01'),
-            mepstg.time_static_table_p20220101_p20221101 FOR VALUES FROM ('2022-11-01') TO ('2022-12-01'),
-            mepstg.time_static_table_p20220101_p20221201 FOR VALUES FROM ('2022-12-01') TO ('2023-01-01'),
-            mepstg.time_static_table_p20220101_default DEFAULT
+    SELECT 'ALTER TABLE mepstg.' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = false);'
+FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+WHERE c.oid = i.inhrelid 
+  AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'stg_mep_claim_10r')
+ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
 
-UPDATE partman.part_config SET infinite_time_partitions=true, retention='13 month', retention_schema='archive_schema', retention_keep_table=true, retention_keep_index=true WHERE parent_table='mepstg.time_static_table_p20220101';
+
+SELECT relnamespace::regnamespace AS schema_name,
+       relname as table_name,
+       reloptions as options
+FROM pg_class
+WHERE relnamespace = 'mepstg'::regnamespace 
+  AND 'autovacuum_enabled=false' = ANY(
+          string_to_array(array_to_string(reloptions, ','), ',')
+      );
 
 
