@@ -170,9 +170,5 @@ WHERE relnamespace = 'mepstg'::regnamespace
 
 
 
-citus=# CREATE UNIQUE INDEX IF NOT EXISTS encounter_version_u1
-citus-#     ON ngmep.encounter_version USING btree
-citus-#     (transaction_id COLLATE pg_catalog.default ASC NULLS LAST, encounter_ver_num ASC NULLS LAST);
-ERROR:  unique constraint on partitioned table must include all partitioning columns
-DETAIL:  UNIQUE constraint on table "encounter_version" lacks column "created" which is part of the partition key.
+0 2 * * 0 /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh
 
