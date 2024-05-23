@@ -179,5 +179,14 @@ source /opt/app/localhome/svcpostgres/pg_env.sh
 
 0 1 * * 0 . /opt/app/localhome/svcpostgres/pg_env.sh && psql -h localhost -U deployadmin -d citus -c "CALL partman.run_maintenance_proc();" >> /opt/app/patroni/scripts/partition/partition.log 2>&1
 
+To ensure your environment is correctly set up, you can add the following to your crontab:
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 2 * * 0 . /opt/app/localhome/svcpostgres/pg_env.sh && /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh >> /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.log 2>&1
 
 
+. /opt/app/localhome/svcpostgres/pg_env.sh && /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh >> /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.log 2>&1
+
+On most Linux systems, you can check the cron logs using:
+grep CRON /var/log/syslog
