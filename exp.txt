@@ -172,3 +172,10 @@ WHERE relnamespace = 'mepstg'::regnamespace
 
 0 2 * * 0 /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh
 
+#!/bin/bash
+
+# Source the environment file
+source /opt/app/localhome/svcpostgres/pg_env.sh
+
+
+
