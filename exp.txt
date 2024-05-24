@@ -190,3 +190,12 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 On most Linux systems, you can check the cron logs using:
 grep CRON /var/log/syslog
+
+
+citus=# SELECT 'ALTER TABLE ngmep.' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = false);'
+citus-# FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+citus-# WHERE c.oid = i.inhrelid
+citus-#   AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'encounter_version')
+citus-# ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
+ERROR:  more than one row returned by a subquery used as an expression
+
