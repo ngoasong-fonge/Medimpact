@@ -192,10 +192,13 @@ On most Linux systems, you can check the cron logs using:
 grep CRON /var/log/syslog
 
 
-citus=# SELECT 'ALTER TABLE ngmep.' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = false);'
-citus-# FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
-citus-# WHERE c.oid = i.inhrelid
-citus-#   AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'encounter_version')
-citus-# ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
-ERROR:  more than one row returned by a subquery used as an expression
+SELECT 'ALTER TABLE ngmep.' || c.relname || ' SET (autovacuum_enabled = false);'
+FROM pg_catalog.pg_class c
+JOIN pg_catalog.pg_inherits i ON c.oid = i.inhrelid
+JOIN pg_catalog.pg_class p ON i.inhparent = p.oid
+JOIN pg_catalog.pg_namespace n ON p.relnamespace = n.oid
+WHERE p.relname = 'encounter_version'
+  AND n.nspname = 'ngmep'
+ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.relname;
+
 
