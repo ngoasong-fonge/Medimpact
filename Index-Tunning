@@ -17,3 +17,8 @@ WHERE
   pg_relation_size(relname::regclass) > 80000
 ORDER BY
   too_much_seq DESC, schemaname, relname;
+
+citus=# drop role "deployadmin";
+ERROR:  role "deployadmin" does not exist
+CONTEXT:  while executing command on 10.13.3.51:5432
+
