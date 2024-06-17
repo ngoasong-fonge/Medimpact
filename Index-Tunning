@@ -23,5 +23,10 @@ ERROR:  role "deployadmin" does not exist
 CONTEXT:  while executing command on 10.13.3.51:5432
 
 
-java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]Caused by: org.postgresql.util.PSQLException: FATAL: too many connections for role "svcmrguser" 
+SELECT 'SET statement_timeout to ''5s''; ALTER TABLE mepstg.' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = false);'
+FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
+WHERE c.oid = i.inhrelid 
+  AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'stg_mep_claim_10r')
+ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
+
 
