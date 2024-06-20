@@ -23,24 +23,6 @@ ERROR:  role "deployadmin" does not exist
 CONTEXT:  while executing command on 10.13.3.51:5432
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-2024-06-20 00:03:36.555 UTC [] [2920922]: [59-1] user=,db=,host=LOG:  recovery restart point at 9EE/BD000978
-2024-06-20 00:03:36.555 UTC [] [2920922]: [60-1] user=,db=,host=DETAIL:  Last completed transaction was at log time 2024-06-19 17:03:34.614418-07.
-2024-06-20 00:04:43.070 UTC [10.15.132.196(37039)] [3180033]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37039
-2024-06-20 00:06:43.278 UTC [10.15.132.196(37119)] [3180253]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37119
-2024-06-20 00:08:12.640 UTC [] [2920922]: [61-1] user=,db=,host=LOG:  restartpoint starting: time
-2024-06-20 00:08:14.272 UTC [] [2920922]: [62-1] user=,db=,host=LOG:  restartpoint complete: wrote 17 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.621 s, sync=0.002 s, total=1.632 s; sync files=10, longest=0.001 s, average=0.001 s; distance=93 kB, estimate=1252480 kB
-2024-06-20 00:08:14.272 UTC [] [2920922]: [63-1] user=,db=,host=LOG:  recovery restart point at 9EE/BD018040
-2024-06-20 00:08:14.272 UTC [] [2920922]: [64-1] user=,db=,host=DETAIL:  Last completed transaction was at log time 2024-06-19 17:08:13.580076-07.
-2024-06-20 00:08:43.477 UTC [10.15.132.196(37177)] [3180464]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37177
-2024-06-20 00:10:43.173 UTC [10.15.132.196(37239)] [3180662]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37239
-2024-06-20 00:12:43.378 UTC [10.15.132.196(37337)] [3180859]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37337
-2024-06-20 00:13:12.366 UTC [] [2920922]: [65-1] user=,db=,host=LOG:  restartpoint starting: time
-2024-06-20 00:13:14.199 UTC [] [2920922]: [66-1] user=,db=,host=LOG:  restartpoint complete: wrote 19 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.823 s, sync=0.002 s, total=1.833 s; sync files=11, longest=0.001 s, average=0.001 s; distance=92 kB, estimate=1127241 kB
-2024-06-20 00:13:14.199 UTC [] [2920922]: [67-1] user=,db=,host=LOG:  recovery restart point at 9EE/BD02F0D8
-2024-06-20 00:13:14.199 UTC [] [2920922]: [68-1] user=,db=,host=DETAIL:  Last completed transaction was at log time 2024-06-19 17:13:13.579731-07.
-2024-06-20 00:14:43.069 UTC [10.15.132.196(37383)] [3181056]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37383
-2024-06-20 00:16:43.273 UTC [10.15.132.196(37460)] [3181283]: [1-1] user=[unknown],db=[unknown],host=10.15.132.196LOG:  connection received: host=10.15.132.196 port=37460
-2024-06-20 00:18:12.201 UTC [] [2920922]: [69-1] user=,db=,host=LOG:  restartpoint starting: time
-
+SELECT pg_last_wal_receive_lsn(), pg_last_wal_replay_lsn(), pg_last_xact_replay_timestamp();
 
 
