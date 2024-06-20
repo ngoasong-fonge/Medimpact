@@ -23,6 +23,17 @@ ERROR:  role "deployadmin" does not exist
 CONTEXT:  while executing command on 10.13.3.51:5432
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-SELECT pg_last_wal_receive_lsn(), pg_last_wal_replay_lsn(), pg_last_xact_replay_timestamp();
+2024-06-20 02:02:23.787 UTC [] [633676]: [1-1] user=,db=,host=LOG:  started streaming WAL from primary at 76A/12000000 on timeline 39
+2024-06-20 02:02:23.787 UTC [] [633676]: [2-1] user=,db=,host=FATAL:  could not receive data from WAL stream: ERROR:  requested WAL segment 000000270000076A00000012 has already been removed
+2024-06-20 02:02:23.787 UTC [] [1891187]: [21428-1] user=,db=,host=LOG:  waiting for WAL to become available at 76A/12FA01F7
+2024-06-20 02:02:28.013 UTC [127.0.0.1(52398)] [1891207]: [3588718-1] user=pmm,db=citus,host=127.0.0.1ERROR:  recovery is in progress
+2024-06-20 02:02:28.013 UTC [127.0.0.1(52398)] [1891207]: [3588719-1] user=pmm,db=citus,host=127.0.0.1HINT:  WAL control functions cannot be executed during recovery.
+2024-06-20 02:02:28.013 UTC [127.0.0.1(52398)] [1891207]: [3588720-1] user=pmm,db=citus,host=127.0.0.1STATEMENT:
+                                SELECT slot_name, database, active, pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)
+                                FROM pg_replication_slots
+
+2024-06-20 02:02:28.794 UTC [] [633686]: [1-1] user=,db=,host=LOG:  started streaming WAL from primary at 76A/12000000 on timeline 39
+2024-06-20 02:02:28.795 UTC [] [633686]: [2-1] user=,db=,host=FATAL:  could not receive data from WAL stream: ERROR:  requested WAL segment 000000270000076A00000012 has already been removed
+2024-06-20 02:02:28.795 UTC [] [1891187]: [21429-1] user=,db=,host=LOG:  waiting for WAL to become available at 76A/12FA01F7
 
 
