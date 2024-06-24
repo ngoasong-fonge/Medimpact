@@ -29,21 +29,4 @@ pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' /opt
 
 
 
-[svcpostgres@pv2medpg1c1 fri_badgerlog]$ pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' /opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log -o /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
-DEBUG: pgBadger version 12.2.
-DEBUG: Output 'html' reports will be written to /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
-DEBUG: BIN/HTML Retention cleanup: Initial cleanup flags - noclean=[0] - retention_bin=[5] - retention_html=[0] - saved_last_line{datetime}=[] - pgb_saved_last_line{datetime}=[] - all_outdir=[/opt/app/patroni/scripts/pgbadgerlogs/]
-DEBUG: pgBadger will use log format stderr to parse /opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log.
-DEBUG: Starting progressbar writer process
-DEBUG: timezone not specified, using 0 seconds
-DEBUG: Processing log file: /opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log
-DEBUG: Starting reading file "/opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log"...
-DEBUG: Start parsing postgresql log at offset 0 of file "/opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log" to 37681522054
-Max. recursion depth with nested structures exceeded at /usr/lib64/perl5/vendor_perl/Storable.pm line 328, at /opt/app/localhome/svcpostgres/pgbadger-12.2/pgbadger line 15887.
-
-can not load incompatible binary data, binary file is from version < 4.0.
-DEBUG: the log statistics gathering took:2353 wallclock secs ( 0.20 usr  0.39 sys + 2145.70 cusr 68.37 csys = 2214.66 CPU)
-DEBUG: Output 'html' reports will be written to /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
-LOG: Ok, generating html report...
-DEBUG: building reports took:  0 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
-DEBUG: the total execution time took: 2353 wallclock secs ( 0.20 usr  0.39 sys + 2145.70 cusr 68.37 csys = 2214.66 CPU)
+pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' /opt/backup/fri_badgerlog/postgresql-2024-06-21* -o /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
