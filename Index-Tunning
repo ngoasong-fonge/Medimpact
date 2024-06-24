@@ -25,12 +25,40 @@ CONTEXT:  while executing command on 10.13.3.51:5432
 cat /opt/backup/fri_badgerlog/postgresql-2024-06-21_* > /opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log
 pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' /opt/backup/fri_badgerlog/postgresql-2024-06-21_combined.log -o /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
 
+#!/bin/bash
+
+# Directory containing the log files
+log_dir="/opt/backup/fri_badgerlog"
+
+# Output directory for the HTML reports
+output_dir="/opt/app/patroni/scripts/pgbadgerlogs"
+
+# Batch size
+batch_size=1000
+
+# Get total number of log files
+total_files=$(ls ${log_dir}/postgresql-2024-06-21_* | wc -l)
+
+# Calculate the number of batches
+num_batches=$(( (total_files + batch_size - 1) / batch_size ))
+
+# Process each batch
+for ((i=0; i<num_batches; i++))
+do
+    # Calculate the starting and ending indices for the current batch
+    start_index=$(( i * batch_size + 1 ))
+    end_index=$(( start_index + batch_size - 1 ))
+
+    # Generate report for the current batch
+    pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' $(ls ${log_dir}/postgresql-2024-06-21_* | head -n ${end_index} | tail -n +${start_index}) -o ${output_dir}/badger_batch_${i}.html
+done
+
+# Merge all batch reports into a single report
+pgbadger -o ${output_dir}/badger_merged.html ${output_dir}/badger_batch_*.html
 
 
 
 
 
 
-
-pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' $(ls /opt/backup/fri_badgerlog/postgresql-2024-06-21_* | head -n 1000) -o /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
 
