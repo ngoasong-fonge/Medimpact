@@ -29,25 +29,8 @@ pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' /opt
 
 
 
-total 76052576
-drwxrwxr-x  2 svcpostgres svcpostgres   565248 Jun 24 18:22 .
-drwxrwxrwx 15 svcpostgres svcpostgres     4096 Jun 24 18:09 ..
--rw-------  1 svcpostgres svcpostgres 10800574 Jun 22 00:00 postgresql-2024-06-22_000000.log
--rw-------  1 svcpostgres svcpostgres 10549917 Jun 22 00:00 postgresql-2024-06-22_000008.log
--rw-------  1 svcpostgres svcpostgres 10637328 Jun 22 00:00 postgresql-2024-06-22_000018.log
--rw-------  1 svcpostgres svcpostgres 10601551 Jun 22 00:00 postgresql-2024-06-22_000027.log
--rw-------  1 svcpostgres svcpostgres 10752494 Jun 22 00:00 postgresql-2024-06-22_000039.log
--rw-------  1 svcpostgres svcpostgres 10523316 Jun 22 00:01 postgresql-2024-06-22_000052.log
--rw-------  1 svcpostgres svcpostgres 10653435 Jun 22 00:01 postgresql-2024-06-22_000104.log
-[svcpostgres@pv2medpg1c1 satur_badgerlog]$ ls -la | tail
--rw-------  1 svcpostgres svcpostgres 10775947 Jun 22 23:58 postgresql-2024-06-22_235824.log
--rw-------  1 svcpostgres svcpostgres 10569208 Jun 22 23:58 postgresql-2024-06-22_235834.log
--rw-------  1 svcpostgres svcpostgres 10619202 Jun 22 23:58 postgresql-2024-06-22_235843.log
--rw-------  1 svcpostgres svcpostgres 10667955 Jun 22 23:59 postgresql-2024-06-22_235852.log
--rw-------  1 svcpostgres svcpostgres 10554586 Jun 22 23:59 postgresql-2024-06-22_235901.log
--rw-------  1 svcpostgres svcpostgres 10738477 Jun 22 23:59 postgresql-2024-06-22_235910.log
--rw-------  1 svcpostgres svcpostgres 10658081 Jun 22 23:59 postgresql-2024-06-22_235920.log
--rw-------  1 svcpostgres svcpostgres 10660978 Jun 22 23:59 postgresql-2024-06-22_235930.log
--rw-------  1 svcpostgres svcpostgres 10519928 Jun 22 23:59 postgresql-2024-06-22_235941.log
--rw-------  1 svcpostgres svcpostgres  8375771 Jun 22 23:59 postgresql-2024-06-22_235951.log
+
+
+
+pgbadger -f stderr -v --prefix='%m [%r] [%p]: [%l-1] user=%u,db=%d,host=%h' $(ls /opt/backup/fri_badgerlog/postgresql-2024-06-21_* | head -n 1000) -o /opt/app/patroni/scripts/pgbadgerlogs/badger.2024.06.21.html
 
