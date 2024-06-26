@@ -22,10 +22,7 @@ citus=# drop role "deployadmin";
 ERROR:  role "deployadmin" does not exist
 CONTEXT:  while executing command on 10.13.3.51:5432
 -----------------------------------------------------------------------------------------------------------------------------------------
-SELECT relname, reloptions, (SELECT setting FROM pg_settings WHERE name = 'autovacuum') AS autovacuum_enabled
-FROM pg_class
-WHERE relname = 'your_table_name';
-
+How to Upload Files to Percona SFTP Service
 
 
 
