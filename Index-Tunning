@@ -22,7 +22,15 @@ citus=# drop role "deployadmin";
 ERROR:  role "deployadmin" does not exist
 CONTEXT:  while executing command on 10.13.3.51:5432
 -----------------------------------------------------------------------------------------------------------------------------------------
-How to Upload Files to Percona SFTP Service
+SELECT relname, 
+       (CASE 
+           WHEN array['autovacuum_enabled=false'] <@ reloptions THEN 'No'
+           WHEN array['autovacuum_enabled=true'] <@ reloptions THEN 'Yes'
+           ELSE 'Default (Check postgresql.conf)'
+        END) as autovacuum_status
+FROM pg_class
+WHERE relname = 'your_table_name';
+
 
 
 
