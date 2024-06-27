@@ -29,7 +29,7 @@ SELECT relname,
            ELSE 'Default (Check postgresql.conf)'
         END) as autovacuum_status
 FROM pg_class
-WHERE relname = 'your_table_name';
+WHERE relname = 'xray.public_components_versions_files';
 
 
 
