@@ -33,8 +33,34 @@ archive_command = 'cp %p /var/lib/pgsql/15/archive/%f'
 sudo vi /opt/pgdata/pg_hba.conf
 Add the following lines:
 
-host    replication     all             <standby_ip>/32          md5
-host    all             all             0.0.0.0/0               md5
+# Allow replication connections from the standby server
+host    replication     replicator     <standby_ip>/32          md5
+
+# Allow local connections
+local   all             all                                     peer
+host    all             all             127.0.0.1/32            md5
+host    all             all             ::1/128                 md5
+
+host replication replicator <standby_ip>/32 md5: 
+This line allows the replicator user from the standby server to connect to the primary server for replication purposes.
+
+local all all peer: This line allows all users to connect to the database using peer authentication for local connections.
+
+host all all 127.0.0.1/32 md5: 
+This line allows all users to connect to the database using MD5 authentication for connections from localhost (IPv4).
+
+host all all ::1/128 md5: 
+This line allows all users to connect to the database using MD5 authentication for connections from localhost (IPv6).
+host: This specifies that the connection type is a TCP/IP connection.
+
+replication: This specifies the database that the rule applies to. 
+The keyword replication is a special database name that matches connections made for streaming replication and the pg_basebackup utility.
+
+replicator: This specifies the database role (user) that the rule applies to. 
+In this case, it is the replicator user, which is a role created specifically for replication purposes.
+
+md5: This specifies the authentication method to be used. 
+md5 means that MD5-encrypted passwords are required for authentication.
 
 -Start and enable PostgreSQL:
 sudo systemctl start postgresql-15
