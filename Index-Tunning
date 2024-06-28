@@ -1,12 +1,87 @@
-postgres@pg-prod-5:~$ df -h
-Filesystem                               Size  Used Avail Use% Mounted on
-udev                                      16G     0   16G   0% /dev
-tmpfs                                    3.1G   18M  3.1G   1% /run
-/dev/nvme6n1p1                            20G  9.7G  9.1G  52% /
-tmpfs                                     16G  5.1M   16G   1% /dev/shm
-tmpfs                                    5.0M     0  5.0M   0% /run/lock
-tmpfs                                     16G     0   16G   0% /sys/fs/cgroup
-/dev/mapper/pglog_vg_ebs-pglog_lv_ebs    935G   33G  862G   4% /usr/pglog
-/dev/mapper/pgdata_vg_ebs-pgdata_lv_ebs  738G  596G  107G  85% /usr/pgdata
-/dev/mapper/vg--home-lv--home             99G   23G   71G  25% /home
-tmpfs                                    3.1G     0  3.1G   0% /run/user/10996
+Step 1: Update the System
+sudo dnf update -y
+
+Step 2: Install PostgreSQL 15
+-Add PostgreSQL repository:
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+-Disable the default PostgreSQL module:
+sudo dnf -qy module disable postgresql
+-Install PostgreSQL 15:
+sudo dnf install -y postgresql15-server
+
+Step 3: Create Mount Points for /pgdata and /pg_wal
+Create directories:
+
+sudo mkdir -p /opt/pgdata
+sudo mkdir -p /opt/pg_wal
+
+Step 4: Initialize PostgreSQL Cluster with Custom Directories
+sudo /usr/pgsql-15/bin/postgresql-15-setup initdb --pgdata=/opt/pgdata --waldir=/opt/pg_wal
+
+Step 5: Configure PostgreSQL for Primary and Standby
+-Edit /pgdata/postgresql.conf on the primary server:
+sudo vi /opt/pgdata/postgresql.conf
+-Set the following parameters:
+
+listen_addresses = '*'
+wal_level = replica
+max_wal_senders = 3
+archive_mode = on
+archive_command = 'cp %p /var/lib/pgsql/15/archive/%f'
+
+-Edit /opt/pgdata/pg_hba.conf to allow replication:
+sudo vi /opt/pgdata/pg_hba.conf
+Add the following lines:
+
+host    replication     all             <standby_ip>/32          md5
+host    all             all             0.0.0.0/0               md5
+
+-Start and enable PostgreSQL:
+sudo systemctl start postgresql-15
+sudo systemctl enable postgresql-15
+
+-Create a replication user:
+sudo -u postgres psql
+CREATE ROLE replicator REPLICATION LOGIN ENCRYPTED PASSWORD 'your_password';
+\q
+
+Step 6: Set Up Standby Server
+Ensure the standby server has the same PostgreSQL 15 installed.
+
+-Stop PostgreSQL on the standby server:
+sudo systemctl stop postgresql-15
+
+-Copy data from the primary to the standby:
+sudo rm -rf /pgdata/*
+sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata -P -U replicator --wal-method=stream
+
+-Create a recovery.conf file in /opt/pgdata:
+sudo nano /pgdata/recovery.conf
+
+-Add the following lines:
+
+standby_mode = 'on'
+primary_conninfo = 'host=<primary_ip> port=5432 user=replicator password=your_password'
+trigger_file = '/tmp/postgresql.trigger'
+
+-Start and enable PostgreSQL on the standby server:
+sudo systemctl start postgresql-15
+sudo systemctl enable postgresql-15
+
+Step 7: Verify Replication
+-On the primary server, check the replication status:
+sudo -u postgres psql -c "SELECT * FROM pg_stat_replication;"
+
+-On the standby server, verify it is in recovery mode:
+sudo -u postgres psql -c "SELECT pg_is_in_recovery();"
+
+If everything is set up correctly, the standby server should be in recovery mode and receiving WAL logs from the primary server.
+
+Notes:
+Replace placeholders (like <primary_ip>, <standby_ip>, and your_password) with your actual values.
+Ensure network connectivity and firewall rules allow replication traffic between the primary and standby servers.
+Consider setting up monitoring and alerting for your PostgreSQL replication setup.
+By following these steps, you should have a working PostgreSQL 15 setup with standby replication for disaster recovery on Oracle Linux Server 8.8.
+
+
+
