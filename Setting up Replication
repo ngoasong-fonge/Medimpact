@@ -46,17 +46,30 @@ CREATE ROLE replicator REPLICATION LOGIN ENCRYPTED PASSWORD 'your_password';
 \q
 
 Step 6: Set Up Standby Server
-Ensure the standby server has the same PostgreSQL 15 installed.
+Ensure the standby server has the same PostgreSQL 15 installed (same step/commad)
 
 -Stop PostgreSQL on the standby server:
 sudo systemctl stop postgresql-15
 
 -Copy data from the primary to the standby:
-sudo rm -rf /pgdata/*
+sudo rm -rf /opt/pgdata/*
+sudo rm -rf /opt/pg_wal/*
 sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata -P -U replicator --wal-method=stream
+sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata --wal-method=stream -P -U replicator
+
+Step 7: Configure PostgreSQL to Use the pg_wal Directory
+-Move the pg_wal directory created by pg_basebackup to the new mount point:
+sudo mv /pgdata/pg_wal/* /pg_wal/
+
+-Update PostgreSQL configuration to use the new pg_wal directory:
+sudo vi /opt/pgdata/postgresql.conf
+
+-Add or modify the following line:
+wal_log_hints = on
+wal_directory = '/opt/pg_wal'
 
 -Create a recovery.conf file in /opt/pgdata:
-sudo nano /pgdata/recovery.conf
+sudo touch /opt/pgdata/recovery.conf
 
 -Add the following lines:
 
@@ -68,7 +81,7 @@ trigger_file = '/tmp/postgresql.trigger'
 sudo systemctl start postgresql-15
 sudo systemctl enable postgresql-15
 
-Step 7: Verify Replication
+Step 8: Verify Replication
 -On the primary server, check the replication status:
 sudo -u postgres psql -c "SELECT * FROM pg_stat_replication;"
 
