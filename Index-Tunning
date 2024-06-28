@@ -1,44 +1,12 @@
-SELECT
-  schemaname,
-  relname,
-  seq_scan - idx_scan AS too_much_seq,
-  CASE
-    WHEN
-      seq_scan - coalesce(idx_scan, 0) > 0
-    THEN
-      'Missing Index?'
-    ELSE
-      'OK'
-  END,
-  pg_relation_size(relname::regclass) AS rel_size, seq_scan, idx_scan
-FROM
-  pg_stat_all_tables
-WHERE
-  pg_relation_size(relname::regclass) > 80000
-ORDER BY
-  too_much_seq DESC, schemaname, relname;
-
-citus=# drop role "deployadmin";
-ERROR:  role "deployadmin" does not exist
-CONTEXT:  while executing command on 10.13.3.51:5432
------------------------------------------------------------------------------------------------------------------------------------------
-SELECT relname, 
-       (CASE 
-           WHEN array['autovacuum_enabled=false'] <@ reloptions THEN 'No'
-           WHEN array['autovacuum_enabled=true'] <@ reloptions THEN 'Yes'
-           ELSE 'Default (Check postgresql.conf)'
-        END) as autovacuum_status
-FROM pg_class
-WHERE relname = 'xray.public_components_versions_files';
-
-
-
-
-
-
-
-
-
-
-
-
+postgres@pg-prod-5:~$ df -h
+Filesystem                               Size  Used Avail Use% Mounted on
+udev                                      16G     0   16G   0% /dev
+tmpfs                                    3.1G   18M  3.1G   1% /run
+/dev/nvme6n1p1                            20G  9.7G  9.1G  52% /
+tmpfs                                     16G  5.1M   16G   1% /dev/shm
+tmpfs                                    5.0M     0  5.0M   0% /run/lock
+tmpfs                                     16G     0   16G   0% /sys/fs/cgroup
+/dev/mapper/pglog_vg_ebs-pglog_lv_ebs    935G   33G  862G   4% /usr/pglog
+/dev/mapper/pgdata_vg_ebs-pgdata_lv_ebs  738G  596G  107G  85% /usr/pgdata
+/dev/mapper/vg--home-lv--home             99G   23G   71G  25% /home
+tmpfs                                    3.1G     0  3.1G   0% /run/user/10996
