@@ -1,21 +1,21 @@
-Step 1: Update the System
+Step 1: Update the System to ensure your system packages are up to date, which helps in avoiding compatibility issues.
 sudo dnf update -y
 
 Step 2: Install PostgreSQL 15
--Add PostgreSQL repository:
+-Add PostgreSQL repository: Add the PGDG repository, which contains the PostgreSQL packages
 sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
--Disable the default PostgreSQL module:
+-Disable the default PostgreSQL module: Disable the default PostgreSQL module to avoid conflicts and ensure that the installation comes from the PGDG repository
 sudo dnf -qy module disable postgresql
--Install PostgreSQL 15:
+-Install PostgreSQL 15: Install the PostgreSQL 15 server package from the PGDG repository.
 sudo dnf install -y postgresql15-server
 
 Step 3: Create Mount Points for /pgdata and /pg_wal
-Create directories:
+Create directories: Prepare directories for PostgreSQL data and WAL logs
 
 sudo mkdir -p /opt/pgdata
 sudo mkdir -p /opt/pg_wal
 
-Step 4: Initialize PostgreSQL Cluster with Custom Directories
+Step 4: Initialize PostgreSQL Cluster with Custom or specified data and WAL Directories
 sudo /usr/pgsql-15/bin/postgresql-15-setup initdb --pgdata=/opt/pgdata --waldir=/opt/pg_wal
 
 Step 5: Configure PostgreSQL for Primary and Standby
@@ -85,7 +85,7 @@ sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata --wal-method=strea
 
 Step 7: Configure PostgreSQL to Use the pg_wal Directory
 -Move the pg_wal directory created by pg_basebackup to the new mount point:
-sudo mv /pgdata/pg_wal/* /opt/pg_wal/
+sudo mv /opt/pgdata/pg_wal/* /opt/pg_wal/
 
 -Update PostgreSQL configuration to use the new pg_wal directory:
 sudo vi /opt/pgdata/postgresql.conf
@@ -99,9 +99,17 @@ sudo touch /opt/pgdata/recovery.conf
 
 -Add the following lines:
 
-standby_mode = 'on'
+standby_mode = 'on'   (This indicate that the PostgreSQL instance should operate as a standby server, when enabled the server continuously applies WAL files to keep the standby database in sync with the primary database.)
 primary_conninfo = 'host=<primary_ip> port=5432 user=replicator password=your_password'
-trigger_file = '/tmp/postgresql.trigger'
+trigger_file = '/tmp/postgresql.trigger'     ( helps to facilitate promoting standby server from readonly to read write in case the primary is not available) 
+restore_command = 'cp /var/lib/pgsql/15/archive/%f %p' (used in a recovery configuration to fetch archived WAL files needed for restoring the database in case of a crash or for setting up replication.)
+
+In PostgreSQL 12 and later, standby_mode is deprecated and replaced by using a standby.signal file. However, the concept remains the same, and the trigger_file parameter is still used to promote the standby server.
+So since we are installing version 15, we can create recovery.conf without standby_mode = 'on' parameter
+
+- Create a standby signal file to initiate recovery mode:
+touch /opt/pgdata/standby.signal
+
 
 Step 8: Configure pg_hba.conf on the Standby Server
 - sudo nano /pgdata/pg_hba.conf
