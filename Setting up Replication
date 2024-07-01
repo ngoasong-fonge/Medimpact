@@ -85,7 +85,7 @@ sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata --wal-method=strea
 
 Step 7: Configure PostgreSQL to Use the pg_wal Directory
 -Move the pg_wal directory created by pg_basebackup to the new mount point:
-sudo mv /pgdata/pg_wal/* /pg_wal/
+sudo mv /pgdata/pg_wal/* /opt/pg_wal/
 
 -Update PostgreSQL configuration to use the new pg_wal directory:
 sudo vi /opt/pgdata/postgresql.conf
