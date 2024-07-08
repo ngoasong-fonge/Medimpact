@@ -20,3 +20,6 @@ ignore_startup_parameters = extra_float_digits
 ERROR:  value too long for type character varying(500)
 CONTEXT:  COPY salesforce_a_g_detail, line 377, column corrective_and_preventative_action__c: "Determine whether we can include tracking on all plan materials moving fwd so we can confirm that ma..."
 
+ALTER TABLE salesforce_a_g_detail ALTER COLUMN corrective_and_preventative_action__c TYPE character varying(1000);
+
+
