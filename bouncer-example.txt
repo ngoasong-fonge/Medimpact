@@ -22,4 +22,9 @@ CONTEXT:  COPY salesforce_a_g_detail, line 377, column corrective_and_preventati
 
 ALTER TABLE salesforce_a_g_detail ALTER COLUMN corrective_and_preventative_action__c TYPE character varying(1000);
 
+Modify the Table Schema:
+Alter the column to increase its length to accommodate the longer values.
+Preprocess the CSV File:
+Truncate the data in the CSV file to fit within the existing column length constraints.
+
 
