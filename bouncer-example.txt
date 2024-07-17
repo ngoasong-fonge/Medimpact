@@ -38,79 +38,90 @@ https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
 
-Script Explanation
-bash
+Prerequisites
+•	Ensure that the standby server is fully synchronized with the primary server.
+•	Ensure that you have proper backup and recovery plans in place before proceeding with the switchover.
+Step-by-Step Procedure for Manual Switchover
+1.	Check Replication Status: Ensure that the standby server is up-to-date with the primary server.
+On the primary server:
+sql
 Copy code
-#!/bin/bash
-•	This line is known as a "shebang" and indicates that the script should be run using the Bash shell.
-bash
-Copy code
-NEW_PRIMARY_IP=$1
-•	This line assigns the first argument passed to the script to the variable NEW_PRIMARY_IP. When you run the script, you can pass the new primary IP address as an argument.
-bash
-Copy code
-DNS_SERVER="your_dns_server_ip"
-ZONE="example.com"
-RECORD="db.example.com"
-TTL=60
-•	These lines define several variables:
-o	DNS_SERVER: The IP address of the DNS server you want to update.
-o	ZONE: The DNS zone you are working with, in this case, example.com.
-o	RECORD: The DNS record you want to update, here db.example.com.
-o	TTL: The Time to Live value for the DNS record, set to 60 seconds. This means the DNS record should be cached for 60 seconds before querying the DNS server again.
-bash
-Copy code
-# Update DNS record using nsupdate
-nsupdate << EOF
-•	This line starts a here document (a multi-line string that will be passed to the nsupdate command).
-•	nsupdate is a utility used to submit Dynamic DNS Update requests.
-bash
-Copy code
-server $DNS_SERVER
-zone $ZONE
-update delete $RECORD CNAME
-update add $RECORD $TTL CNAME primary-db.example.com
-send
-EOF
-•	This block contains the commands for nsupdate:
-o	server $DNS_SERVER: Specifies the DNS server to which the update request should be sent.
-o	zone $ZONE: Specifies the DNS zone being updated.
-o	update delete $RECORD CNAME: Deletes the existing CNAME record for db.example.com.
-o	update add $RECORD $TTL CNAME primary-db.example.com: Adds a new CNAME record for db.example.com pointing to primary-db.example.com with a TTL of 60 seconds.
-o	send: Sends the update request to the DNS server.
-•	The EOF marks the end of the here document.
-Overall Purpose of the Script
-The purpose of this script is to update the DNS record for db.example.com to point to the new primary database server after a failover. Specifically, it:
-1.	Takes the new primary IP address as an input argument (though the script currently doesn't use NEW_PRIMARY_IP directly).
-2.	Uses the nsupdate utility to modify the DNS zone example.com.
-3.	Deletes the existing CNAME record for db.example.com.
-4.	Adds a new CNAME record pointing db.example.com to primary-db.example.com with a TTL of 60 seconds.
-Example Usage
-To run the script, you would execute it with the new primary IP address as an argument:
+SELECT * FROM pg_stat_replication;
+2.	Promote Standby to Primary: On the standby server, promote it to primary using the pg_ctl command.
 sh
 Copy code
-./update_dns_failover.sh 192.168.1.100
-This would update the DNS record as described, ensuring that db.example.com points to the new primary database server.
-Improvements
-If you want to use NEW_PRIMARY_IP directly in the DNS update, you can modify the script to update an A record instead of a CNAME record:
-bash
+pg_ctl promote -D /path/to/standby/data_directory
+Alternatively, you can create a trigger file if it’s configured in recovery.conf:
+sh
 Copy code
-#!/bin/bash
-
-NEW_PRIMARY_IP=$1
-DNS_SERVER="your_dns_server_ip"
-ZONE="example.com"
-RECORD="db.example.com"
-TTL=60
-
-# Update DNS record using nsupdate
-nsupdate << EOF
-server $DNS_SERVER
-zone $ZONE
-update delete $RECORD A
-update add $RECORD $TTL A $NEW_PRIMARY_IP
-send
+touch /path/to/standby/trigger_file
+3.	Reconfigure Old Primary as Standby:
+a. Stop the Old Primary Server:
+sh
+Copy code
+pg_ctl stop -D /path/to/primary/data_directory -m fast
+b. Remove Recovery Configuration (if any): Remove any old recovery configurations that might be present.
+sh
+Copy code
+rm /path/to/primary/data_directory/recovery.conf
+c. Create Recovery Configuration: Create a new recovery.conf file on the old primary server to configure it as a standby.
+sh
+Copy code
+cat <<EOF > /path/to/primary/data_directory/recovery.conf
+standby_mode = 'on'
+primary_conninfo = 'host=new_primary_host port=5432 user=replication_user password=replication_password'
+trigger_file = '/path/to/primary/trigger_file'
 EOF
-In this modified version, the script:
-1.	Deletes the existing A record for db.example.com.
-2.	Adds a new A record pointing db.example.com to the new primary IP address ($NEW_PRIMARY_IP).
+d. Start the Old Primary as Standby:
+sh
+Copy code
+pg_ctl start -D /path/to/primary/data_directory
+Example Configuration
+Primary Server (Old):
+•	Data Directory: /var/lib/postgresql/12/main
+•	Host: old_primary_host
+Standby Server (New Primary):
+•	Data Directory: /var/lib/postgresql/12/main
+•	Host: new_primary_host
+Primary Conninfo (used in recovery.conf):
+sh
+Copy code
+primary_conninfo = 'host=new_primary_host port=5432 user=replication_user password=replication_password'
+Step-by-Step Commands
+1. Promote the Standby Server:
+sh
+Copy code
+# On the standby server
+pg_ctl promote -D /var/lib/postgresql/12/main
+2. Stop the Old Primary Server:
+sh
+Copy code
+# On the old primary server
+pg_ctl stop -D /var/lib/postgresql/12/main -m fast
+3. Reconfigure the Old Primary as Standby:
+sh
+Copy code
+# On the old primary server
+rm /var/lib/postgresql/12/main/recovery.conf
+
+cat <<EOF > /var/lib/postgresql/12/main/recovery.conf
+standby_mode = 'on'
+primary_conninfo = 'host=new_primary_host port=5432 user=replication_user password=replication_password'
+trigger_file = '/var/lib/postgresql/12/main/trigger_file'
+EOF
+4. Start the Old Primary as Standby:
+sh
+Copy code
+# On the old primary server
+pg_ctl start -D /var/lib/postgresql/12/main
+Verification
+On the New Primary:
+Check that the new primary is running and accepting connections:
+sh
+Copy code
+psql -h new_primary_host -U your_user -d your_database -c "SELECT pg_is_in_recovery();"
+On the Old Primary (now Standby):
+Check the replication status to ensure it is now a standby:
+sh
+Copy code
+psql -h old_primary_host -U your_user -d your_database -c "SELECT * FROM pg_stat_wal_receiver;"
