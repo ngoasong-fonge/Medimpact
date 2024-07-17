@@ -31,12 +31,10 @@ https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
 
-citus=# create schema shard;
-ERROR:  schema "shard" already exists
-citus=#
-citus=#
-citus=# drop schema shard;
-ERROR:  schema "shard" does not exist
-CONTEXT:  while executing command on 10.13.3.51:5432
-citus=#
+[svcpostgres@pv2medpg1c2 mrg]$ nohup psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_case from '/opt/backup/mrg/salesforce_case71624.csv' DELIMITER ',' CSV HEADER;" > case_output.log 2>&1
+[svcpostgres@pv2medpg1c2 mrg]$ cat case_output.log
+nohup: ignoring input
+ERROR:  unquoted carriage return found in data
+HINT:  Use quoted CSV field to represent carriage return.
+CONTEXT:  COPY salesforce_case, line 1355
 
