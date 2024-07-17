@@ -31,20 +31,75 @@ https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
 
-[svcpostgres@pv2medpg1c2 mrg]$ nohup psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_case from '/opt/backup/mrg/salesforce_case71624.csv' DELIMITER ',' CSV HEADER;" > case_output.log 2>&1
-[svcpostgres@pv2medpg1c2 mrg]$ cat case_output.log
-nohup: ignoring input
-ERROR:  unquoted carriage return found in data
-HINT:  Use quoted CSV field to represent carriage return.
-CONTEXT:  COPY salesforce_case, line 1355
 
-[svcpostgres@pv2medpg1c2 mrg]$ nohup psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_a_g_detail from '/opt/backup/mrg/salesforce_a_g_detail71624.csv' DELIMITER ',' CSV HEADER;" > detail_output.log 2>&1
-[svcpostgres@pv2medpg1c2 mrg]$ cat detail_output.log
-nohup: ignoring input
-ERROR:  extra data after last expected column
-CONTEXT:  COPY salesforce_a_g_detail, line 28: "1.00,FALSE,FALSE,,,Grievance,Part D Grievance,,the benefit(s) under dispute was/were provided to the..."
 
-The error message "extra data after last expected column" indicates that there is more data in the CSV file than expected by the COPY command, based on the table definition. This can happen if the CSV file has more fields in a row than the table has columns.
 
-The error message indicates that there is an unquoted carriage return (CR, ASCII 13) in the data being imported into the salesforce_case table. In CSV files, carriage returns should either be quoted or replaced with a suitable representation to avoid breaking the CSV format
 
+
+
+
+Yes, you can configure EnterpriseDB Failover Manager (EFM) to use a CNAME that points to the primary database and update the DNS to point to the standby after a switchover or failover. This method avoids using PgBouncer and leverages DNS updates to ensure that client applications connect to the correct primary node.
+Here’s a step-by-step guide on how to achieve this:
+Steps to Configure EFM with CNAME and Update DNS
+1.	Set Up Initial DNS Configuration
+2.	Configure EFM for Failover
+3.	Create a Failover Script to Update DNS
+4.	Integrate the Failover Script with EFM
+5.	Client Application Configuration
+1. Set Up Initial DNS Configuration
+1.	Create a CNAME Record:
+o	Create a CNAME record in your DNS that points to the current primary database node.
+Example:
+•	db.example.com -> primary-db.example.com
+2.	Initial DNS Setup:
+o	Ensure primary-db.example.com points to the IP address of the primary node.
+o	Ensure standby-db.example.com points to the IP address of the standby node.
+2. Configure EFM for Failover
+1.	Install and Configure EFM:
+o	Follow the EFM installation and configuration steps on both primary and standby nodes.
+Example efm.properties Configuration:
+properties
+Copy code
+db.user=efm
+db.password=efm_password
+db.port=5432
+db.serviceOwner=postgres
+db.reuseConnection=true
+
+# Define the cluster members
+node1.host=primary-db.example.com
+node2.host=standby-db.example.com
+
+# Script to run on failover
+failoverScript=/path/to/update_dns_failover.sh
+3. Create a Failover Script to Update DNS
+Create a script that will update the CNAME to point to the new primary node upon failover.
+Example Failover Script (update_dns_failover.sh):
+sh
+Copy code
+#!/bin/bash
+
+NEW_PRIMARY_IP=$1
+DNS_SERVER="your_dns_server_ip"
+ZONE="example.com"
+RECORD="db.example.com"
+TTL=60
+
+# Update DNS record using nsupdate
+nsupdate << EOF
+server $DNS_SERVER
+zone $ZONE
+update delete $RECORD CNAME
+update add $RECORD $TTL CNAME primary-db.example.com
+send
+EOF
+Note: Replace primary-db.example.com with the appropriate hostname or IP address. Adjust the script according to your DNS server and tools.
+4. Integrate the Failover Script with EFM
+Add the failover script path to the EFM configuration file (efm.properties):
+properties
+Copy code
+failoverScript=/path/to/update_dns_failover.sh
+5. Client Application Configuration
+Configure your client applications to connect to the CNAME (db.example.com). This ensures that clients always connect to the primary node, as defined by the CNAME record.
+Example Connection String:
+jdbc:postgresql://db.example.com:5432/mydatabase
