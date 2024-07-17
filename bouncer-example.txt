@@ -44,4 +44,6 @@ nohup: ignoring input
 ERROR:  extra data after last expected column
 CONTEXT:  COPY salesforce_a_g_detail, line 28: "1.00,FALSE,FALSE,,,Grievance,Part D Grievance,,the benefit(s) under dispute was/were provided to the..."
 
+The error message "extra data after last expected column" indicates that there is more data in the CSV file than expected by the COPY command, based on the table definition. This can happen if the CSV file has more fields in a row than the table has columns.
+
 
