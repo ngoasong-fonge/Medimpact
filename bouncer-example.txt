@@ -38,3 +38,10 @@ ERROR:  unquoted carriage return found in data
 HINT:  Use quoted CSV field to represent carriage return.
 CONTEXT:  COPY salesforce_case, line 1355
 
+[svcpostgres@pv2medpg1c2 mrg]$ nohup psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_a_g_detail from '/opt/backup/mrg/salesforce_a_g_detail71624.csv' DELIMITER ',' CSV HEADER;" > detail_output.log 2>&1
+[svcpostgres@pv2medpg1c2 mrg]$ cat detail_output.log
+nohup: ignoring input
+ERROR:  extra data after last expected column
+CONTEXT:  COPY salesforce_a_g_detail, line 28: "1.00,FALSE,FALSE,,,Grievance,Part D Grievance,,the benefit(s) under dispute was/were provided to the..."
+
+
