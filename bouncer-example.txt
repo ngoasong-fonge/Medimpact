@@ -46,4 +46,5 @@ CONTEXT:  COPY salesforce_a_g_detail, line 28: "1.00,FALSE,FALSE,,,Grievance,Par
 
 The error message "extra data after last expected column" indicates that there is more data in the CSV file than expected by the COPY command, based on the table definition. This can happen if the CSV file has more fields in a row than the table has columns.
 
+The error message indicates that there is an unquoted carriage return (CR, ASCII 13) in the data being imported into the salesforce_case table. In CSV files, carriage returns should either be quoted or replaced with a suitable representation to avoid breaking the CSV format
 
