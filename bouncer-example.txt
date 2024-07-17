@@ -38,44 +38,62 @@ https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
 
-Yes, you can configure EnterpriseDB Failover Manager (EFM) to use a CNAME that points to the primary database and update the DNS to point to the standby after a switchover or failover. This method avoids using PgBouncer and leverages DNS updates to ensure that client applications connect to the correct primary node.
-Here’s a step-by-step guide on how to achieve this:
-Steps to Configure EFM with CNAME and Update DNS
-1.	Set Up Initial DNS Configuration
-2.	Configure EFM for Failover
-3.	Create a Failover Script to Update DNS
-4.	Integrate the Failover Script with EFM
-5.	Client Application Configuration
-1. Set Up Initial DNS Configuration
-1.	Create a CNAME Record:
-o	Create a CNAME record in your DNS that points to the current primary database node.
-Example:
-•	db.example.com -> primary-db.example.com
-2.	Initial DNS Setup:
-o	Ensure primary-db.example.com points to the IP address of the primary node.
-o	Ensure standby-db.example.com points to the IP address of the standby node.
-2. Configure EFM for Failover
-1.	Install and Configure EFM:
-o	Follow the EFM installation and configuration steps on both primary and standby nodes.
-Example efm.properties Configuration:
-properties
+Script Explanation
+bash
 Copy code
-db.user=efm
-db.password=efm_password
-db.port=5432
-db.serviceOwner=postgres
-db.reuseConnection=true
-
-# Define the cluster members
-node1.host=primary-db.example.com
-node2.host=standby-db.example.com
-
-# Script to run on failover
-failoverScript=/path/to/update_dns_failover.sh
-3. Create a Failover Script to Update DNS
-Create a script that will update the CNAME to point to the new primary node upon failover.
-Example Failover Script (update_dns_failover.sh):
+#!/bin/bash
+•	This line is known as a "shebang" and indicates that the script should be run using the Bash shell.
+bash
+Copy code
+NEW_PRIMARY_IP=$1
+•	This line assigns the first argument passed to the script to the variable NEW_PRIMARY_IP. When you run the script, you can pass the new primary IP address as an argument.
+bash
+Copy code
+DNS_SERVER="your_dns_server_ip"
+ZONE="example.com"
+RECORD="db.example.com"
+TTL=60
+•	These lines define several variables:
+o	DNS_SERVER: The IP address of the DNS server you want to update.
+o	ZONE: The DNS zone you are working with, in this case, example.com.
+o	RECORD: The DNS record you want to update, here db.example.com.
+o	TTL: The Time to Live value for the DNS record, set to 60 seconds. This means the DNS record should be cached for 60 seconds before querying the DNS server again.
+bash
+Copy code
+# Update DNS record using nsupdate
+nsupdate << EOF
+•	This line starts a here document (a multi-line string that will be passed to the nsupdate command).
+•	nsupdate is a utility used to submit Dynamic DNS Update requests.
+bash
+Copy code
+server $DNS_SERVER
+zone $ZONE
+update delete $RECORD CNAME
+update add $RECORD $TTL CNAME primary-db.example.com
+send
+EOF
+•	This block contains the commands for nsupdate:
+o	server $DNS_SERVER: Specifies the DNS server to which the update request should be sent.
+o	zone $ZONE: Specifies the DNS zone being updated.
+o	update delete $RECORD CNAME: Deletes the existing CNAME record for db.example.com.
+o	update add $RECORD $TTL CNAME primary-db.example.com: Adds a new CNAME record for db.example.com pointing to primary-db.example.com with a TTL of 60 seconds.
+o	send: Sends the update request to the DNS server.
+•	The EOF marks the end of the here document.
+Overall Purpose of the Script
+The purpose of this script is to update the DNS record for db.example.com to point to the new primary database server after a failover. Specifically, it:
+1.	Takes the new primary IP address as an input argument (though the script currently doesn't use NEW_PRIMARY_IP directly).
+2.	Uses the nsupdate utility to modify the DNS zone example.com.
+3.	Deletes the existing CNAME record for db.example.com.
+4.	Adds a new CNAME record pointing db.example.com to primary-db.example.com with a TTL of 60 seconds.
+Example Usage
+To run the script, you would execute it with the new primary IP address as an argument:
 sh
+Copy code
+./update_dns_failover.sh 192.168.1.100
+This would update the DNS record as described, ensuring that db.example.com points to the new primary database server.
+Improvements
+If you want to use NEW_PRIMARY_IP directly in the DNS update, you can modify the script to update an A record instead of a CNAME record:
+bash
 Copy code
 #!/bin/bash
 
@@ -89,17 +107,10 @@ TTL=60
 nsupdate << EOF
 server $DNS_SERVER
 zone $ZONE
-update delete $RECORD CNAME
-update add $RECORD $TTL CNAME primary-db.example.com
+update delete $RECORD A
+update add $RECORD $TTL A $NEW_PRIMARY_IP
 send
 EOF
-Note: Replace primary-db.example.com with the appropriate hostname or IP address. Adjust the script according to your DNS server and tools.
-4. Integrate the Failover Script with EFM
-Add the failover script path to the EFM configuration file (efm.properties):
-properties
-Copy code
-failoverScript=/path/to/update_dns_failover.sh
-5. Client Application Configuration
-Configure your client applications to connect to the CNAME (db.example.com). This ensures that clients always connect to the primary node, as defined by the CNAME record.
-Example Connection String:
-jdbc:postgresql://db.example.com:5432/mydatabase
+In this modified version, the script:
+1.	Deletes the existing A record for db.example.com.
+2.	Adds a new A record pointing db.example.com to the new primary IP address ($NEW_PRIMARY_IP).
