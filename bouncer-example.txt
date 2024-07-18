@@ -49,8 +49,12 @@ update add $RECORD $TTL CNAME $NEW_PRIMARY_HOSTNAME
 send
 EOF
 
+Save the script to a suitable location and make it executable:
 
 
+sudo mkdir -p /opt/efm/scripts
+sudo cp update_dns_failover.sh /opt/efm/scripts/
+sudo chmod +x /opt/efm/scripts/update_dns_failover.sh
 
 
 
