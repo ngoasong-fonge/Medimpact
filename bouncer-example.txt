@@ -30,72 +30,11 @@ Truncate the data in the CSV file to fit within the existing column length const
 https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
+[postgres@uv1medpg3db1 ~]$ /usr/pgsql-15/bin/postgresql-15-setup initdb --pgdata=/opt/app/postgres-data --waldir=/opt/app/pg_wal
+systemctl: unrecognized option '--pgdata=/opt/app/postgres-data.service'
+failed to find PGDATA setting in --pgdata=/opt/app/postgres-data.service
 
 
 
 
-
-Script Breakdown
-bash
-Copy code
-#!/bin/bash
-Shebang (#!/bin/bash): This line indicates that the script should be run using the Bash shell.
-bash
-Copy code
-NEW_PRIMARY_HOSTNAME=$1
-Variable Assignment: This line assigns the first argument passed to the script to the variable NEW_PRIMARY_HOSTNAME. When the script is executed, the new primary database hostname should be provided as an argument.
-bash
-Copy code
-DNS_SERVER="your_dns_server_ip"
-ZONE="example.com"
-RECORD="db.example.com"
-TTL=60
-Variable Definitions:
-DNS_SERVER: The IP address of the DNS server that you want to update.
-ZONE: The DNS zone you are working with, in this case, example.com.
-RECORD: The DNS record you want to update, here db.example.com.
-TTL: The Time to Live value for the DNS record, set to 60 seconds. This means the DNS record should be cached for 60 seconds before querying the DNS server again.
-bash
-Copy code
-# Update DNS record using nsupdate
-nsupdate << EOF
-server $DNS_SERVER
-zone $ZONE
-update delete $RECORD CNAME
-update add $RECORD $TTL CNAME $NEW_PRIMARY_HOSTNAME
-send
-EOF
-nsupdate Block:
-nsupdate << EOF: This line starts a "here document," which allows you to pass a block of text (commands) to the nsupdate command. Everything between << EOF and EOF is treated as input to nsupdate.
-server $DNS_SERVER: Specifies the DNS server to which the update request should be sent.
-zone $ZONE: Specifies the DNS zone being updated.
-update delete $RECORD CNAME: Deletes the existing CNAME record for db.example.com.
-update add $RECORD $TTL CNAME $NEW_PRIMARY_HOSTNAME: Adds a new CNAME record for db.example.com pointing to the new primary database hostname ($NEW_PRIMARY_HOSTNAME) with a TTL of 60 seconds.
-send: Sends the update request to the DNS server.
-EOF: Marks the end of the here document.
-Purpose of the Script
-The purpose of this script is to update the DNS CNAME record for db.example.com to point to a new primary database server after a failover. Specifically, it:
-
-Takes the new primary database hostname as an input argument.
-Uses the nsupdate utility to communicate with the DNS server and make the necessary updates to the DNS zone.
-Deletes the existing CNAME record for db.example.com.
-Adds a new CNAME record for db.example.com pointing to the new primary database hostname with a TTL of 60 seconds.
-How to Use the Script
-Make the script executable:
-
-bash
-Copy code
-chmod +x /path/to/update_dns_failover.sh
-Run the script with the new primary database hostname:
-
-bash
-Copy code
-./update_dns_failover.sh primary-db.example.com
-This will update the DNS record so that db.example.com points to primary-db.example.com.
-
-Summary
-The script is designed to automate the DNS update process during a failover scenario.
-It uses the nsupdate utility to interact with the DNS server and update the CNAME record.
-The script takes the new primary hostname as an argument, deletes the old CNAME record, and adds a new one pointing to the new primary database server.
-By using this script in conjunction with EFM, you can ensure that your DNS records are automatically updated to reflect the new primary database server after a failover, ensuring minimal downtime and seamless operations.
 
