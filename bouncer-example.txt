@@ -30,7 +30,20 @@ Truncate the data in the CSV file to fit within the existing column length const
 https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
--bash: ls: command not found
+# cat .bash_profile
+[ -f /etc/profile ] && source /etc/profile
+#PGDATA=/var/lib/pgsql/15/data
+export PGDATA
+# If you want to customize your settings,
+# Use the file below. This is not overridden
+# by the RPMS.
+[ -f /var/lib/pgsql/.pgsql_profile ] && source /var/lib/pgsql/.pgsql_profile
+export PATH=/usr/pgsql-15/bin
+export PGDATA=/opt/app/postgres-data
+export PGDATABASE=postgres
+export PGUSER=postgres
+export PGPORT=5432
+
 
 
 
