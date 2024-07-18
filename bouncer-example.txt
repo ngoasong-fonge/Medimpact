@@ -30,25 +30,14 @@ Truncate the data in the CSV file to fit within the existing column length const
 https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
-# sudo systemctl start postgresql-15
-Job for postgresql-15.service failed because the control process exited with error code.
-See "systemctl status postgresql-15.service" and "journalctl -xe" for details.
-#
-#
-# sudo systemctl status postgresql-15.service
-● postgresql-15.service - PostgreSQL 15 database server
-   Loaded: loaded (/usr/lib/systemd/system/postgresql-15.service; disabled; vendor preset: disabled)
-   Active: failed (Result: exit-code) since Thu 2024-07-18 22:02:46 UTC; 3min 32s ago
-     Docs: https://www.postgresql.org/docs/15/static/
-  Process: 279316 ExecStartPre=/usr/pgsql-15/bin/postgresql-15-check-db-dir ${PGDATA} (code=exited, status=1/FAILURE)
+The error message indicates that the service is looking for the PostgreSQL data directory at the default location /var/lib/pgsql/15/data/, which is missing or empty. Since you have initialized the data directory at /opt/app/postgres-data, you need to update the service configuration to use this directory instead.
+Edit the PostgreSQL service file:
+sudo vi /usr/lib/systemd/system/postgresql-15.service
 
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com systemd[1]: Starting PostgreSQL 15 database server...
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com postgresql-15-check-db-dir[279316]: "/var/lib/pgsql/15/data/" is missing or empty.
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com postgresql-15-check-db-dir[279316]: Use "/usr/pgsql-15/bin/postgresql-15-setup initdb" to initialize the database cluster.
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com postgresql-15-check-db-dir[279316]: See /usr/share/doc/postgresql15/README.rpm-dist for more information.
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Control process exited, code=exited status=1
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Failed with result 'exit-code'.
-Jul 18 22:02:46 uv1medpg3db1.medimpact.com systemd[1]: Failed to start PostgreSQL 15 database server.
+Update the Environment line to point to your data directory change to bellow:
+Environment=PGDATA=/opt/app/postgres-data
+
+
 
 
 
