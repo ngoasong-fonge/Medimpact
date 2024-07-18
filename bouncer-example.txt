@@ -30,12 +30,7 @@ Truncate the data in the CSV file to fit within the existing column length const
 https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
-The error message indicates that the service is looking for the PostgreSQL data directory at the default location /var/lib/pgsql/15/data/, which is missing or empty. Since you have initialized the data directory at /opt/app/postgres-data, you need to update the service configuration to use this directory instead.
-Edit the PostgreSQL service file:
-sudo vi /usr/lib/systemd/system/postgresql-15.service
-
-Update the Environment line to point to your data directory change to bellow:
-Environment=PGDATA=/opt/app/postgres-data
+-bash: ls: command not found
 
 
 
