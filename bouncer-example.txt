@@ -34,6 +34,12 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 
 sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata -P -U replicator --wal-method=stream
 
+# Standby server configuration
+hot_standby = on
+primary_conninfo = 'host=primary.example.com port=5432 user=replicator password=your_password'
+restore_command = 'cp /var/lib/pgsql/wal_archive/%f %p'  # Optional, if using WAL archiving
+
+
 
 
 
