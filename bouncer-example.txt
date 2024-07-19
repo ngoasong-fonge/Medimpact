@@ -22,5 +22,105 @@ ignore_startup_parameters = extra_float_digits
 -------------------------------------------------------------------
 
 
+there are several alternatives to sftp for fetching WAL files from a remote server. Here are a few commonly used methods:
 
+1. rsync
+rsync is a versatile tool for synchronizing files and directories between two locations over a network. It is efficient and can handle large files and directories.
+
+Example restore_command using rsync:
+
+sh
+Copy code
+restore_command = 'rsync -a user@ip.of.wal.archive.host:/data/master_wal_archive/%f %p'
+2. scp
+scp (secure copy) is a straightforward and secure method to copy files over SSH.
+
+Example restore_command using scp:
+
+sh
+Copy code
+restore_command = 'scp user@ip.of.wal.archive.host:/data/master_wal_archive/%f %p'
+3. curl or wget
+These tools can be used to fetch files from a web server if the WAL files are accessible via HTTP or HTTPS.
+
+Example restore_command using curl:
+
+sh
+Copy code
+restore_command = 'curl -o %p http://ip.of.wal.archive.host/data/master_wal_archive/%f'
+Example restore_command using wget:
+
+sh
+Copy code
+restore_command = 'wget -O %p http://ip.of.wal.archive.host/data/master_wal_archive/%f'
+4. NFS (Network File System)
+Mounting the WAL archive directory via NFS and then copying files locally can be an effective solution.
+
+Example setup using NFS:
+
+On the primary server (NFS server):
+
+Install NFS server:
+
+sh
+Copy code
+sudo apt-get install nfs-kernel-server  # Debian/Ubuntu
+sudo yum install nfs-utils              # CentOS/RHEL
+Configure the NFS export:
+
+sh
+Copy code
+sudo nano /etc/exports
+Add the following line to share the archive directory:
+
+sh
+Copy code
+/opt/backup/archive <standby_server_ip>(rw,sync,no_subtree_check)
+Export the shared directory:
+
+sh
+Copy code
+sudo exportfs -a
+Start the NFS service:
+
+sh
+Copy code
+sudo systemctl start nfs-kernel-server  # Debian/Ubuntu
+sudo systemctl start nfs-server         # CentOS/RHEL
+On the standby server:
+
+Install NFS client:
+
+sh
+Copy code
+sudo apt-get install nfs-common  # Debian/Ubuntu
+sudo yum install nfs-utils       # CentOS/RHEL
+Create a mount point:
+
+sh
+Copy code
+sudo mkdir -p /mnt/pg_archive
+Mount the NFS share:
+
+sh
+Copy code
+sudo mount <primary_server_ip>:/opt/backup/archive /mnt/pg_archive
+Update restore_command in postgresql.conf:
+
+sh
+Copy code
+restore_command = 'cp /mnt/pg_archive/%f %p'
+Summary
+Each method has its own advantages and use cases:
+
+rsync: Efficient for large directories and incremental changes.
+scp: Simple and secure.
+curl/wget: Useful if files are accessible via HTTP/HTTPS.
+NFS: Directly mounting the directory can simplify the setup.
+Choose the method that best fits your environment and requirements. Here’s an example of how you might set the restore_command with rsync:
+
+sh
+Copy code
+restore_command = 'rsync -a user@ip.of.wal.archive.host:/data/master_wal_archive/%f %p'
+Ensure that whichever method you choose, the necessary tools are installed and properly configured on both the primary and standby servers.
 
