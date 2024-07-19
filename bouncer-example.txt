@@ -17,48 +17,87 @@ unix_socket_dir = /tmp
 ignore_startup_parameters = extra_float_digits
 
 
-ERROR:  value too long for type character varying(500)
-CONTEXT:  COPY salesforce_a_g_detail, line 377, column corrective_and_preventative_action__c: "Determine whether we can include tracking on all plan materials moving fwd so we can confirm that ma..."
-
-ALTER TABLE salesforce_a_g_detail ALTER COLUMN corrective_and_preventative_action__c TYPE character varying(1000);
-
-Modify the Table Schema:
-Alter the column to increase its length to accommodate the longer values.
-Preprocess the CSV File:
-Truncate the data in the CSV file to fit within the existing column length constraints.
-
-https://get.enterprisedb.com/docs/EDB_Failover_Manager_Guide_v3.5.pdf
 
 
-export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+-------------------------------------------------------------------
 
-sudo -u postgres pg_basebackup -h <primary_ip> -D /opt/pgdata -P -U replicator --wal-method=stream
+To set up the restore_command for fetching WAL files via sftp, you'll need to ensure a few things:
 
-# Standby server configuration
+SSH Key Authentication: It's typically better to use SSH key authentication for automated processes like this to avoid password prompts.
+Proper Permissions: Ensure the user on the archive host has the necessary permissions to access the WAL archive directory.
+Correct Syntax in postgresql.conf: The restore_command needs to be properly formatted.
+Here are the steps to achieve this:
+
+1. Set Up SSH Key Authentication
+On the Standby Server:
+
+Generate SSH Key (if not already done):
+
+sh
+Copy code
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+Follow the prompts to save the key (usually under ~/.ssh/id_rsa).
+
+Copy the SSH Public Key to the Archive Host:
+
+sh
+Copy code
+ssh-copy-id user@ip.of.wal.archive.host
+This sets up passwordless SSH access for the user on the archive host.
+
+2. Update restore_command in postgresql.conf
+On the Standby Server:
+
+Edit postgresql.conf:
+
+sh
+Copy code
+sudo nano /opt/app/postgres-data/postgresql.conf
+Update the restore_command:
+
+sh
+Copy code
+restore_command = 'sftp -q user@ip.of.wal.archive.host:data/master_wal_archive/%f %p'
+3. Ensure Correct Permissions
+Ensure that the user user on the archive host has read permissions for the data/master_wal_archive directory and its contents.
+
+4. Verify SSH Access
+Test the SSH access from the standby server to the archive host to ensure it works without a password prompt:
+
+sh
+Copy code
+ssh user@ip.of.wal.archive.host
+Ensure you can navigate to the data/master_wal_archive directory and list files:
+
+sh
+Copy code
+ls data/master_wal_archive/
+5. Restart the Standby Server
+After making the necessary configuration changes, restart the PostgreSQL service on the standby server:
+
+sh
+Copy code
+sudo systemctl restart postgresql-15
+Complete Example
+Here's a complete example of what your postgresql.conf might look like with the restore_command configured:
+
+sh
+Copy code
+# Enable read-only queries on the standby server
 hot_standby = on
-primary_conninfo = 'host=primary.example.com port=5432 user=replicator password=your_password'
-restore_command = 'cp /var/lib/pgsql/wal_archive/%f %p'  # Optional, if using WAL archiving
 
+# Connection settings for the primary server
+primary_conninfo = 'host=primary.server.ip port=5432 user=replicator password=your_password'
 
-
-
-# cat postgresql-Fri.log
-2024-07-19 20:37:48.323 UTC [392339] LOG:  starting PostgreSQL 15.7 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22), 64-bit
-2024-07-19 20:37:48.325 UTC [392339] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-2024-07-19 20:37:48.326 UTC [392339] LOG:  could not create IPv6 socket for address "::": Address family not supported by protocol
-2024-07-19 20:37:48.327 UTC [392339] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
-2024-07-19 20:37:48.329 UTC [392339] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
-2024-07-19 20:37:48.331 UTC [392383] LOG:  database system was shut down in recovery at 2024-07-19 19:56:40 UTC
-cp: cannot stat '/opt/backup/archive/00000002.history': No such file or directory
-2024-07-19 20:37:48.334 UTC [392383] LOG:  entering standby mode
-cp: cannot stat '/opt/backup/archive/000000010000000000000008': No such file or directory
-2024-07-19 20:37:48.338 UTC [392383] FATAL:  recovery aborted because of insufficient parameter settings
-2024-07-19 20:37:48.338 UTC [392383] DETAIL:  max_worker_processes = 4 is a lower setting than on the primary server, where its value was 8.
-2024-07-19 20:37:48.338 UTC [392383] HINT:  You can restart the server after making the necessary configuration changes.
-2024-07-19 20:37:48.339 UTC [392339] LOG:  startup process (PID 392383) exited with exit code 1
-2024-07-19 20:37:48.339 UTC [392339] LOG:  aborting startup due to startup process failure
-2024-07-19 20:37:48.342 UTC [392339] LOG:  database system is shut down
-
+# Restore command to fetch WAL files via sftp
+restore_command = 'sftp -q user@ip.of.wal.archive.host:data/master_wal_archive/%f %p'
+Summary
+Set up SSH key authentication between the standby server and the archive host.
+Configure the restore_command in postgresql.conf to use sftp.
+Ensure the user on the archive host has the necessary permissions.
+Test SSH access to confirm it works without a password prompt.
+Restart the PostgreSQL service on the standby server.
+By following these steps, you can ensure that the standby server correctly fetches WAL files from the archive host via sftp.
 
 
 
