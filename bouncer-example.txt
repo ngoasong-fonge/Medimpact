@@ -22,5 +22,17 @@ ignore_startup_parameters = extra_float_digits
 -------------------------------------------------------------------
 
 
-sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-sudo dnf install -y postgresql15-server
+# Stop the PostgreSQL service
+sudo systemctl stop postgresql-15
+
+# Remove the PostgreSQL server package
+sudo dnf remove -y postgresql15-server
+
+# Optionally, remove the PostgreSQL data directory
+sudo rm -rf /var/lib/pgsql/15/data
+
+# Optionally, remove the PostgreSQL client and utilities
+sudo dnf remove -y postgresql15
+
+# Clean up unused dependencies
+sudo dnf autoremove
