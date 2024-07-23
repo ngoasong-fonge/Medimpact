@@ -23,12 +23,9 @@ ignore_startup_parameters = extra_float_digits
 
 
 
-# cat postgresql-Tue.log
-2024-07-23 15:44:34.557 UTC [82025] LOG:  starting PostgreSQL 15.7 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22), 64-bit
-2024-07-23 15:44:34.560 UTC [82025] LOG:  listening on IPv4 address "0.0.0.0", port 5432
-2024-07-23 15:44:34.561 UTC [82025] LOG:  could not create IPv6 socket for address "::": Address family not supported by protocol
-2024-07-23 15:44:34.565 UTC [82025] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": Permission denied
-2024-07-23 15:44:34.578 UTC [82025] LOG:  database system is shut down
+[svcpostgres@uv1medpg3db1 ~]$ psql
+Password for user svcpostgres:
+
 
 
 
