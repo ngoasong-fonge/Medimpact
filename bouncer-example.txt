@@ -115,5 +115,5 @@ Can not load RPM file: /var/cache/dnf/commandline-a76fe31ae310b0c7/packages/edb-
 Could not open: /var/cache/dnf/commandline-a76fe31ae310b0c7/packages/edb-repo-latest.rpm
 
 
-
+yum install java-1.8.0-openjdk
 
