@@ -117,4 +117,7 @@ sudo dnf config-manager --set-enabled ol8_latest
 sudo dnf install -y java-17-openjdk
 
 
+# sudo dnf install -y edb-efm-4.8
+Last metadata expiration check: 2:14:20 ago on Thu 25 Jul 2024 05:29:26 PM UTC.
+No match for argument: edb-efm-4.8
 
