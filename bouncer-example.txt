@@ -108,12 +108,13 @@ By following these steps, you will successfully install and configure the latest
 
 
 
-# sudo dnf install -y https://repos.enterprisedb.com/edb-repo-latest.rpm
-Last metadata expiration check: 1:53:28 ago on Thu 25 Jul 2024 05:29:26 PM UTC.
-edb-repo-latest.rpm                                                                                                                                                                                          1.0 kB/s | 1.0 kB     00:01
-Can not load RPM file: /var/cache/dnf/commandline-a76fe31ae310b0c7/packages/edb-repo-latest.rpm.
-Could not open: /var/cache/dnf/commandline-a76fe31ae310b0c7/packages/edb-repo-latest.rpm
+sudo dnf install -y https://yum.oracle.com/repo/OracleLinux/OL8/latest/x86_64/getPackage/oraclelinux-release-el8-1.0-1.el8.noarch.rpm
+
+sudo dnf install -y oraclelinux-release-el8-1.0-1.el8.noarch.rpm
+
+sudo dnf config-manager --set-enabled ol8_latest
+
+sudo dnf install -y java-17-openjdk
 
 
-yum install java-1.8.0-openjdk
 
