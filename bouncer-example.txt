@@ -23,7 +23,99 @@ ignore_startup_parameters = extra_float_digits
 
 
 
-dnf install 
+Detailed Steps
+Add EDB Repository
+Run the following command to add the EDB repository:
+
+sh
+Copy code
+sudo dnf install -y https://repos.enterprisedb.com/edb-repo-latest.rpm
+This command downloads and installs the latest EDB repository configuration for your system.
+
+Install EDB Failover Manager
+With the repository added, install EDB Failover Manager using:
+
+sh
+Copy code
+sudo dnf install -y edb-efm-4.8
+This command will download and install the latest version of EDB Failover Manager 4.8 from the repository.
+
+Verify Installation
+After the installation, verify that EDB Failover Manager has been installed correctly by checking the version:
+
+sh
+Copy code
+efm --version
+Configure EDB Failover Manager
+Copy Configuration Files:
+
+Copy the sample configuration files to the configuration directory:
+
+sh
+Copy code
+sudo cp /usr/edb/efm-4.8/etc/efm.properties.in /etc/edb/efm-4.8/efm.properties
+sudo cp /usr/edb/efm-4.8/etc/efm.nodes.in /etc/edb/efm-4.8/efm.nodes
+Edit the Configuration Files:
+
+Edit the efm.properties and efm.nodes files to match your environment. Use an editor such as nano or vi:
+
+sh
+Copy code
+sudo nano /etc/edb/efm-4.8/efm.properties
+sudo nano /etc/edb/efm-4.8/efm.nodes
+Ensure the bind.address, db.user, db.password, and other necessary settings are configured correctly in efm.properties.
+
+Set Proper Permissions:
+
+Ensure the EFM configuration files have the correct permissions:
+
+sh
+Copy code
+sudo chmod 600 /etc/edb/efm-4.8/efm.properties
+sudo chmod 600 /etc/edb/efm-4.8/efm.nodes
+Start and Enable EFM Service
+Start the EFM Service:
+
+sh
+Copy code
+sudo systemctl start edb-efm-4.8
+Enable the EFM Service to Start on Boot:
+
+sh
+Copy code
+sudo systemctl enable edb-efm-4.8
+Verify EFM Service Status
+Check the status of the EFM service to ensure it is running correctly:
+
+sh
+Copy code
+sudo systemctl status edb-efm-4.8
+Example Configuration
+Primary Server (efm.properties):
+
+ini
+Copy code
+bind.address = primary-server-ip
+db.user = replicator
+db.password = your_password
+db.port = 5432
+db.database = your_database
+db.bin = /usr/pgsql-15/bin
+db.service.owner = svcpostgres
+admin.port = 8001
+is.witness = false
+ping.server.ip = your_ping_server_ip
+efm.loglevel = INFO
+Nodes File (efm.nodes):
+
+Add the IP addresses and ports of the primary and standby nodes:
+
+sh
+Copy code
+primary-server-ip:7800
+standby-server-ip:7800
+Summary
+By following these steps, you will successfully install and configure the latest version of EDB Failover Manager (EFM) 4.8 on your Oracle Linux Server 8.8. This setup ensures that EFM is properly installed, configured, and set to start on boot, providing high availability and automatic failover for your PostgreSQL clusters.
 
 
 
