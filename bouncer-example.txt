@@ -109,11 +109,17 @@ By following these steps, you will successfully install and configure the latest
 
 -------------------------------------------
 
-The efm_db_functions or efm_root_functions scripts perform management functions on behalf of the efm user.
+Steps to Modify Sudoers Configuration
+Copy the Existing EFM Sudoers File:
+Copy the existing /etc/sudoers.d/efm-49 file to a new file that you can modify.
 
-The sudoers file contains entries that allow the user efm to control the Failover Manager service for clusters owned by postgres or enterprisedb. You can modify a copy of the sudoers file to grant permission to efm to manage Postgres clusters owned by other users.
+sudo cp /etc/sudoers.d/efm-49 /etc/sudoers.d/efm-49-svcpostgres
+Edit the New Sudoers File:
+Edit the new sudoers file to include the necessary entries for the svcpostgres user.
 
-The efm-49 file is located in /etc/sudoers.d and contains the following entries:
+sudo nano /etc/sudoers.d/efm-49-svcpostgres
+Add Entries for svcpostgres:
+Modify the content to grant permissions for the svcpostgres user. The updated file should look like this:
 
 # Copyright EnterpriseDB Corporation, 2014-2021. All Rights Reserved.
 #
@@ -123,12 +129,13 @@ The efm-49 file is located in /etc/sudoers.d and contains the following entries:
 # This file assumes you are running your efm cluster as user 'efm'.  If not,
 # then you will need to copy this file.
 
-# Allow user 'efm' to sudo efm_db_functions as either 'postgres' or 'enterprisedb'.
+# Allow user 'efm' to sudo efm_db_functions as either 'postgres', 'enterprisedb', or 'svcpostgres'.
 # If you run your db service under a non-default account, you will need to copy
 # this file to grant the proper permissions and specify the account in your efm
 # cluster properties file by changing the 'db.service.owner' property.
 efm    ALL=(postgres)      NOPASSWD:   /usr/edb/efm-4.9/bin/efm_db_functions
 efm    ALL=(enterprisedb)  NOPASSWD:   /usr/edb/efm-4.9/bin/efm_db_functions
+efm    ALL=(svcpostgres)   NOPASSWD:   /usr/edb/efm-4.9/bin/efm_db_functions
 
 # Allow user 'efm' to sudo efm_root_functions as 'root' to write/delete the PID file,
 # validate the db.service.owner property, etc.
@@ -142,12 +149,23 @@ efm    ALL=(ALL)           NOPASSWD:   /usr/edb/efm-4.9/bin/efm_pgpool_functions
 
 # relax tty requirement for user 'efm'
 Defaults:efm !requiretty
-If you're using Failover Manager to monitor clusters that are owned by users other than postgres or enterprisedb, make a copy of the efm-49 file. Then modify the content to allow the user to access the efm_functions script to manage their clusters.
+Ensure Inclusion of Sudoers Directory:
+Make sure the /etc/sudoers file includes the following line to read drop-in files from /etc/sudoers.d:
 
-If an agent can't start because of permission problems, make sure the default /etc/sudoers file contains the following line at the end of the file:
+sudo nano /etc/sudoers
+Ensure this line is present and not commented out:
 
-## Read drop-in files from /etc/sudoers.d (the # here does not # mean a comment)
-
+## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
 #includedir /etc/sudoers.d
+Save and Exit:
+Save the file and exit the editor.
 
-For me I use svcpostgres , how should it look like ?
+Verify the Configuration
+Check Sudoers Configuration:
+Run the following command to check for syntax errors in the sudoers configuration:
+
+sudo visudo -c
+Test the EFM Functions:
+Ensure the efm user can run the necessary scripts with the new permissions. You can switch to the efm user and try executing a command:
+
+sudo -u efm /usr/edb/efm-4.9/bin/efm_db_functions
