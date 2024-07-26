@@ -109,5 +109,14 @@ By following these steps, you will successfully install and configure the latest
 
 -------------------------------------------
 
-/etc/sudoers:120:26: syntax error
-includedir /etc/sudoers.d
+[root@uv1medpg3efm1 efm-4.9]# systemctl status edb-efm-4.9.service
+● edb-efm-4.9.service - EnterpriseDB Failover Manager 4.9
+   Loaded: loaded (/usr/lib/systemd/system/edb-efm-4.9.service; disabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Fri 2024-07-26 20:42:47 UTC; 15s ago
+  Process: 322419 ExecStart=/bin/bash -c /usr/edb/efm-4.9/bin/runefm.sh start ${CLUSTER} (code=exited, status=1/FAILURE)
+
+Jul 26 20:42:44 uv1medpg3efm1.medimpact.com systemd[1]: Starting EnterpriseDB Failover Manager 4.9...
+Jul 26 20:42:47 uv1medpg3efm1.medimpact.com systemd[1]: edb-efm-4.9.service: Control process exited, code=exited status=1
+Jul 26 20:42:47 uv1medpg3efm1.medimpact.com systemd[1]: edb-efm-4.9.service: Failed with result 'exit-code'.
+Jul 26 20:42:47 uv1medpg3efm1.medimpact.com systemd[1]: Failed to start EnterpriseDB Failover Manager 4.9.
+
