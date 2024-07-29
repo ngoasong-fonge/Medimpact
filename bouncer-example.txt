@@ -109,10 +109,11 @@ By following these steps, you will successfully install and configure the latest
 
 -------------------------------------------
 
-[root@uv1medpg3efm1 efm-4.9]# sudo cat /var/log/efm-4.9/startup-efm.log
-2024-07-29 15:48:05 Starting witness.
-2024-07-29 15:48:05 Agent logs will be written to /var/log/efm-4.9/efm.log
-2024-07-29 15:48:05 The virtual.ip property is not set, starting EFM with VIP support disabled.
-2024-07-29 15:48:10 Could not reach the address 8.8.8.8. Please check the value of your ping.server.ip property.
+execute_sql "SELECT partman.create_parent( p_parent_table => 'mepstg.stg_mep_claim_file', p_control => 'created', p_type => 'range', p_interval=> '1 week', p_start_partition=> '2023-11-26', p_premake => 4);"
+
+execute_sql "INSERT INTO mepstg.stg_mep_claim_file SELECT * FROM mepstg.stg_mep_claim_file_old;"
+
+execute_sql "UPDATE partman.part_config SET infinite_time_partitions=true, retention='2 week', retention_schema='archive_schema', retention_keep_table=true, retention_keep_index=true WHERE parent_table='mepstg.stg_mep_claim_file';"
+
 
 
