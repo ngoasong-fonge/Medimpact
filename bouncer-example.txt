@@ -110,6 +110,9 @@ By following these steps, you will successfully install and configure the latest
 -------------------------------------------
 
 [root@uv1medpg3efm1 efm-4.9]# sudo cat /var/log/efm-4.9/startup-efm.log
-2024-07-26 20:42:47 The 'user.email' or 'script.notification' property must be set.
-[root@uv1medpg3efm1 efm-4.9]#
+2024-07-29 15:48:05 Starting witness.
+2024-07-29 15:48:05 Agent logs will be written to /var/log/efm-4.9/efm.log
+2024-07-29 15:48:05 The virtual.ip property is not set, starting EFM with VIP support disabled.
+2024-07-29 15:48:10 Could not reach the address 8.8.8.8. Please check the value of your ping.server.ip property.
+
 
