@@ -195,131 +195,134 @@ WHERE created >= '2024-08-25' AND created < '2024-09-01';
 
 -------------------------------------------------------------------
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240331 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-03-31 00:00:00') TO ('2024-04-07 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240331
+INSERT INTO mepstg.stg_mep_claim_10r_p20240331
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-03-31 00:00:00' AND created < '2024-04-07 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240331
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-03-31 00:00:00' AND created < '2024-04-07 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240407 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-04-07 00:00:00') TO ('2024-04-14 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240407
+INSERT INTO mepstg.stg_mep_claim_10r_p20240407
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-07 00:00:00' AND created < '2024-04-14 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240407
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-07 00:00:00' AND created < '2024-04-14 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240414 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-04-14 00:00:00') TO ('2024-04-21 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240414
+INSERT INTO mepstg.stg_mep_claim_10r_p20240414
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-14 00:00:00' AND created < '2024-04-21 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240414
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-14 00:00:00' AND created < '2024-04-21 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240421 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-04-21 00:00:00') TO ('2024-04-28 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240421
+INSERT INTO mepstg.stg_mep_claim_10r_p20240421
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-21 00:00:00' AND created < '2024-04-28 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240421
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-21 00:00:00' AND created < '2024-04-28 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240428 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-04-28 00:00:00') TO ('2024-05-05 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240428
+INSERT INTO mepstg.stg_mep_claim_10r_p20240428
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-28 00:00:00' AND created < '2024-05-05 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240428
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-04-28 00:00:00' AND created < '2024-05-05 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240505 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-05-05 00:00:00') TO ('2024-05-12 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240505
+INSERT INTO mepstg.stg_mep_claim_10r_p20240505
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-05 00:00:00' AND created < '2024-05-12 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240505
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-05 00:00:00' AND created < '2024-05-12 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240512 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-05-12 00:00:00') TO ('2024-05-19 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240512
+INSERT INTO mepstg.stg_mep_claim_10r_p20240512
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-12 00:00:00' AND created < '2024-05-19 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240512
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-12 00:00:00' AND created < '2024-05-19 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240519 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-05-19 00:00:00') TO ('2024-05-26 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240519
+INSERT INTO mepstg.stg_mep_claim_10r_p20240519
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-19 00:00:00' AND created < '2024-05-26 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240519
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-19 00:00:00' AND created < '2024-05-26 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240526 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-05-26 00:00:00') TO ('2024-06-02 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240526
+INSERT INTO mepstg.stg_mep_claim_10r_p20240526
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-26 00:00:00' AND created < '2024-06-02 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240526
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-05-26 00:00:00' AND created < '2024-06-02 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240602 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-06-02 00:00:00') TO ('2024-06-09 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240602
+INSERT INTO mepstg.stg_mep_claim_10r_p20240602
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-02 00:00:00' AND created < '2024-06-09 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240602
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-02 00:00:00' AND created < '2024-06-09 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240609 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-06-09 00:00:00') TO ('2024-06-16 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240609
+INSERT INTO mepstg.stg_mep_claim_10r_p20240609
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-09 00:00:00' AND created < '2024-06-16 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240609
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-09 00:00:00' AND created < '2024-06-16 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240616 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-06-16 00:00:00') TO ('2024-06-23 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240616
+INSERT INTO mepstg.stg_mep_claim_10r_p20240616
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-16 00:00:00' AND created < '2024-06-23 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240616
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-16 00:00:00' AND created < '2024-06-23 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240623 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-06-23 00:00:00') TO ('2024-06-30 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240623
+INSERT INTO mepstg.stg_mep_claim_10r_p20240623
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-23 00:00:00' AND created < '2024-06-30 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240623
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-23 00:00:00' AND created < '2024-06-30 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240630 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-06-30 00:00:00') TO ('2024-07-07 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240630
+INSERT INTO mepstg.stg_mep_claim_10r_p20240630
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-30 00:00:00' AND created < '2024-07-07 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240630
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-06-30 00:00:00' AND created < '2024-07-07 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240707 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-07 00:00:00') TO ('2024-07-14 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240707
+INSERT INTO mepstg.stg_mep_claim_10r_p20240707
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240707
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240714 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-14 00:00:00') TO ('2024-07-21 00:00:00')
-TABLESPACE pg_default;
+-- For partition 20240714
+INSERT INTO mepstg.stg_mep_claim_10r_p20240714
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-14 00:00:00' AND created < '2024-07-21 00:00:00';
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240714
-    OWNER TO deployadmin;
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-14 00:00:00' AND created < '2024-07-21 00:00:00';
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240721 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-21 00:00:00') TO ('2024-07-28 00:00:00')
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240721
-    OWNER TO deployadmin;
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240728 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-28 00:00:00') TO ('2024-08-04 00:00:00')
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240728
-    OWNER TO deployadmin;
-
+-- For partition 20240721
 
 
