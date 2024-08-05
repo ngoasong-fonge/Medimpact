@@ -97,60 +97,41 @@ default_table            | t
 
 ----------------------------------------------------------------------------------------------
 
-SELECT MIN(created), MAX(created) FROM mepstg.stg_mep_claim_15r_default;
+Step 1: Verify Existing Data in Default Partition
+First, check if there's data in the default partition that needs to be redistributed to the new partitions.
 
+SELECT COUNT(*), MIN(created), MAX(created) 
+FROM mepstg.stg_mep_claim_10r_default;
 
-Step 2: Manually Create Missing Partitions
-Based on the missing partitions from 2024-03-24 up to 2024-08-05, you will need to create the following partitions:
-
-For values from 2024-03-31 to 2024-04-07
-For values from 2024-04-07 to 2024-04-14
-For values from 2024-04-14 to 2024-04-21
-For values from 2024-04-21 to 2024-04-28
-For values from 2024-04-28 to 2024-05-05
-For values from 2024-05-05 to 2024-05-12
-For values from 2024-05-12 to 2024-05-19
-For values from 2024-05-19 to 2024-05-26
-For values from 2024-05-26 to 2024-06-02
-For values from 2024-06-02 to 2024-06-09
-For values from 2024-06-09 to 2024-06-16
-For values from 2024-06-16 to 2024-06-23
-For values from 2024-06-23 to 2024-06-30
-For values from 2024-06-30 to 2024-07-07
-For values from 2024-07-07 to 2024-07-14
-For values from 2024-07-14 to 2024-07-21
-For values from 2024-07-21 to 2024-07-28
-For values from 2024-07-28 to 2024-08-04
-You can create these partitions with the following SQL commands:
+Step 2: Manually Create the Missing Partitions
+Manually create the missing partitions for future dates based on your current date (2024-08-05) and the partition interval.
 
 DO $$
 DECLARE
-    start_date DATE := '2024-03-31';
+    start_date DATE := '2024-07-15';  -- This should be the day after the last partition date.
     end_date DATE;
 BEGIN
-    FOR i IN 1..18 LOOP
+    WHILE start_date <= '2024-08-05' + INTERVAL '4 weeks' LOOP
         end_date := start_date + INTERVAL '7 days';
-        EXECUTE format('CREATE TABLE mepstg.stg_mep_claim_15r_p%s PARTITION OF mepstg.stg_mep_claim_15r FOR VALUES FROM (%L) TO (%L)', to_char(start_date, 'YYYYMMDD'), start_date, end_date);
+        EXECUTE format('CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_10r_p%s PARTITION OF mepstg.stg_mep_claim_10r FOR VALUES FROM (%L) TO (%L)', 
+                       to_char(start_date, 'YYYYMMDD'), start_date, end_date);
         start_date := end_date;
     END LOOP;
 END $$;
 
-
-Step 3: Move Data from the Default Partition to the Correct Partitions
-For each new partition, move the data from the default partition to the newly created partition:
+Step 3: Move Data from Default Partition to the Correct Partitions
+Move the data from the default partition to the newly created partitions.
 
 DO $$
 DECLARE
-    start_date DATE := '2024-03-31';
+    start_date DATE := '2024-07-15';  -- This should be the day after the last partition date.
     end_date DATE;
 BEGIN
-    FOR i IN 1..18 LOOP
+    WHILE start_date <= '2024-08-05' LOOP
         end_date := start_date + INTERVAL '7 days';
-        EXECUTE format('INSERT INTO mepstg.stg_mep_claim_15r_p%s SELECT * FROM mepstg.stg_mep_claim_15r_default WHERE created >= %L AND created < %L', to_char(start_date, 'YYYYMMDD'), start_date, end_date);
-        EXECUTE format('DELETE FROM mepstg.stg_mep_claim_15r_default WHERE created >= %L AND created < %L', start_date, end_date);
+        EXECUTE format('INSERT INTO mepstg.stg_mep_claim_10r_p%s SELECT * FROM mepstg.stg_mep_claim_10r_default WHERE created >= %L AND created < %L', 
+                       to_char(start_date, 'YYYYMMDD'), start_date, end_date);
+        EXECUTE format('DELETE FROM mepstg.stg_mep_claim_10r_default WHERE created >= %L AND created < %L', start_date, end_date);
         start_date := end_date;
     END LOOP;
 END $$;
-
-
-This error indicates that when trying to attach a new partition, some rows in the default partition violated the constraint of the new partition.
