@@ -97,25 +97,9 @@ default_table            | t
 
 ----------------------------------------------------------------------------------------------
 
--- Creating partitions from 2024-07-15 to 2024-09-01
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240714 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-07-14 00:00:00') TO ('2024-07-21 00:00:00')
+TABLESPACE pg_default;
 
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240715 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-07-15') TO ('2024-07-22');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240722 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-07-22') TO ('2024-07-29');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240729 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-07-29') TO ('2024-08-05');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240805 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-08-05') TO ('2024-08-12');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240812 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-08-12') TO ('2024-08-19');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240819 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-08-19') TO ('2024-08-26');
-
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240826 PARTITION OF mepstg.stg_mep_claim_10r
-  FOR VALUES FROM ('2024-08-26') TO ('2024-09-02');
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240714
+    OWNER to deployadmin;
