@@ -140,3 +140,60 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240825
     OWNER to deployadmin;
 
+-----------------------------------------------------------
+
+
+To ensure you move all data from the default partition to the newly created partitions, you can follow a similar process for each partition. Here’s how you can do it for all the partitions:
+
+-- For partition 20240721
+INSERT INTO mepstg.stg_mep_claim_10r_p20240721
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-21' AND created < '2024-07-28';
+
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-21' AND created < '2024-07-28';
+
+-- For partition 20240728
+INSERT INTO mepstg.stg_mep_claim_10r_p20240728
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-28' AND created < '2024-08-04';
+
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-07-28' AND created < '2024-08-04';
+
+-- For partition 20240804
+INSERT INTO mepstg.stg_mep_claim_10r_p20240804
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-04' AND created < '2024-08-11';
+
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-04' AND created < '2024-08-11';
+
+-- For partition 20240811
+INSERT INTO mepstg.stg_mep_claim_10r_p20240811
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-11' AND created < '2024-08-18';
+
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-11' AND created < '2024-08-18';
+
+-- For partition 20240818
+INSERT INTO mepstg.stg_mep_claim_10r_p20240818
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-18' AND created < '2024-08-25';
+
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-18' AND created < '2024-08-25';
+
+-- For partition 20240825
+INSERT INTO mepstg.stg_mep_claim_10r_p20240825
+SELECT * FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-25' AND created < '2024-09-01';
+
+DELETE FROM mepstg.stg_mep_claim_10r_default
+WHERE created >= '2024-08-25' AND created < '2024-09-01';
+
+
+
+
+
