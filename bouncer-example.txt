@@ -193,112 +193,37 @@ WHERE created >= '2024-08-25' AND created < '2024-09-01';
 DELETE FROM mepstg.stg_mep_claim_10r_default
 WHERE created >= '2024-08-25' AND created < '2024-09-01';
 
+-------------------------------------------------------------------
 
+Step 2: Manually Create Missing Partitions
+Based on the missing partitions from 2024-03-24 up to 2024-08-05, you will need to create the following partitions:
 
+For values from 2024-03-31 to 2024-04-07
+For values from 2024-04-07 to 2024-04-14
+For values from 2024-04-14 to 2024-04-21
+For values from 2024-04-21 to 2024-04-28
+For values from 2024-04-28 to 2024-05-05
+For values from 2024-05-05 to 2024-05-12
+For values from 2024-05-12 to 2024-05-19
+For values from 2024-05-19 to 2024-05-26
+For values from 2024-05-26 to 2024-06-02
+For values from 2024-06-02 to 2024-06-09
+For values from 2024-06-09 to 2024-06-16
+For values from 2024-06-16 to 2024-06-23
+For values from 2024-06-23 to 2024-06-30
+For values from 2024-06-30 to 2024-07-07
+For values from 2024-07-07 to 2024-07-14
+For values from 2024-07-14 to 2024-07-21
+For values from 2024-07-21 to 2024-07-28
+For values from 2024-07-28 to 2024-08-04
+You can create these partitions with the following SQL commands:
 
-ERROR:  cannot acquire lock mode AccessExclusiveLock on database objects while recovery is in progress
-CONTEXT: SQL statement "ALTER TABLE mepstg.stg_mep_claim_10r DETACH PARTITION mepstg.stg_mep_claim_10r_p20240526"
-PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 173 at EXECUTE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT: Only RowExclusiveLock or less can be acquired on database objects during recovery.
-CONTEXT: PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 279 at RAISE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT:
-CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-ERROR:  cannot acquire lock mode AccessExclusiveLock on database objects while recovery is in progress
-CONTEXT: SQL statement "ALTER TABLE mepstg.stg_mep_claim_10r DETACH PARTITION mepstg.stg_mep_claim_10r_p20240526"
-PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 173 at EXECUTE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT: Only RowExclusiveLock or less can be acquired on database objects during recovery.
-CONTEXT: PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 279 at RAISE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT:
-CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-ERROR:  cannot acquire lock mode AccessExclusiveLock on database objects while recovery is in progress
-CONTEXT: SQL statement "ALTER TABLE mepstg.stg_mep_claim_10r DETACH PARTITION mepstg.stg_mep_claim_10r_p20240526"
-PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 173 at EXECUTE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT: Only RowExclusiveLock or less can be acquired on database objects during recovery.
-CONTEXT: PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 279 at RAISE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT:
-CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-ERROR:  cannot acquire lock mode AccessExclusiveLock on database objects while recovery is in progress
-CONTEXT: SQL statement "ALTER TABLE mepstg.stg_mep_claim_10r DETACH PARTITION mepstg.stg_mep_claim_10r_p20240526"
-PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 173 at EXECUTE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT: Only RowExclusiveLock or less can be acquired on database objects during recovery.
-CONTEXT: PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 279 at RAISE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT:
-CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-ERROR:  cannot acquire lock mode AccessExclusiveLock on database objects while recovery is in progress
-CONTEXT: SQL statement "ALTER TABLE mepstg.stg_mep_claim_10r DETACH PARTITION mepstg.stg_mep_claim_10r_p20240526"
-PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 173 at EXECUTE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT: Only RowExclusiveLock or less can be acquired on database objects during recovery.
-CONTEXT: PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 279 at RAISE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT:
-CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-ERROR:  cannot acquire lock mode AccessExclusiveLock on database objects while recovery is in progress
-CONTEXT: SQL statement "ALTER TABLE mepstg.stg_mep_claim_10r DETACH PARTITION mepstg.stg_mep_claim_10r_p20240526"
-PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 173 at EXECUTE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT: Only RowExclusiveLock or less can be acquired on database objects during recovery.
-CONTEXT: PL/pgSQL function drop_partition_time(text,interval,boolean,boolean,text,timestamp with time zone) line 279 at RAISE
-PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 178 at assignment
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-DETAIL:
-HINT:
-CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
-SQL statement "SELECT partman.run_maintenance('mepstg.stg_mep_claim_10r', p_jobmon := 't', p_analyze := 'f')"
-PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
-NOTICE:  Partman maintenance already running or another session has not released its advisory lock.
-CALL
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240324 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-03-24 00:00:00') TO ('2024-03-31 00:00:00')
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240324
+    OWNER to postgres;
+
 
 
