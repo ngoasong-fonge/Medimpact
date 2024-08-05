@@ -195,4 +195,7 @@ WHERE created >= '2024-08-25' AND created < '2024-09-01';
 
 -------------------------------------------------------------------
 
-WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+citus=# CREATE TABLE mepstg.stg_mep_claim_10r_p20240707 PARTITION OF mepstg.stg_mep_claim_10r
+citus-#     FOR VALUES FROM ('2024-07-07 00:00:00') TO ('2024-07-14 00:00:00')
+citus-# TABLESPACE pg_default;
+ERROR:  updated partition constraint for default partition "stg_mep_claim_10r_default" would be violated by some row
