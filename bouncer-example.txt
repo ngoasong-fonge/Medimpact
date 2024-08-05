@@ -96,34 +96,7 @@ default_table            | t
  mepstg | stg_mep_claim_15r_p20240324   | table             | postgres
 
 ----------------------------------------------------------------------------------------------
--- Step 1: Identify rows in the default partition
-SELECT *
-FROM mepstg.stg_mep_claim_10r_default
-WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
-
--- Step 2: Move data to a temporary table
-CREATE TEMP TABLE temp_stg_mep_claim_10r AS
-SELECT *
-FROM mepstg.stg_mep_claim_10r_default
-WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
-
--- Step 3: Delete the moved data from the default partition
-DELETE FROM mepstg.stg_mep_claim_10r_default
-WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
-
--- Step 4: Create the new partition
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240707 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-07 00:00:00') TO ('2024-07-14 00:00:00')
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240707
-    OWNER TO deployadmin;
-
--- Step 5: Move data back to the new partition
-INSERT INTO mepstg.stg_mep_claim_10r_p20240707
-SELECT *
-FROM temp_stg_mep_claim_10r;
-
-DROP TABLE temp_stg_mep_claim_10r;
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
 
 
