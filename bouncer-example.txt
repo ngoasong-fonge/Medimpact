@@ -64,6 +64,36 @@ citus=# \dt mepstg.*
  mepstg | stg_mep_claim_10r_p20240707  | table             | deployadmin
  mepstg | stg_mep_claim_10r_p20240714  | table             | deployadmin
 
+------------------------------------------------------
+
+parent_table             | mepstg.stg_mep_claim_15r
+control                  | created
+partition_interval       | 7 days
+partition_type           | range
+premake                  | 4
+automatic_maintenance    | on
+template_table           | partman.template_mepstg_stg_mep_claim_15r
+retention                | 4 week
+retention_schema         | archive_schema
+retention_keep_index     | t
+retention_keep_table     | t
+epoch                    | none
+constraint_cols          |
+optimize_constraint      | 30
+infinite_time_partitions | t
+datetime_string          | YYYYMMDD
+jobmon                   | t
+sub_partition_set_full   | f
+undo_in_progress         | f
+inherit_privileges       | f
+constraint_valid         | t
+ignore_default_data      | t
+default_table            | t
+
+ mepstg | stg_mep_claim_15r             | partitioned table | deployadmin
+ mepstg | stg_mep_claim_15r_default     | table             | postgres
+ mepstg | stg_mep_claim_15r_old         | table             | deployadmin
+ mepstg | stg_mep_claim_15r_p20240324   | table             | postgres
 
 
 
