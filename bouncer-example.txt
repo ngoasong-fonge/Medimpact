@@ -95,5 +95,294 @@ default_table            | t
  mepstg | stg_mep_claim_15r_old         | table             | deployadmin
  mepstg | stg_mep_claim_15r_p20240324   | table             | postgres
 
+----------------------------------------------------------------------------------------------
+
+[svcpostgres@dv1medpgsc1 partition]$ cat /opt/app/patroni/scripts/partition/partition.log
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_10r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_15r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_20r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_31r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_32r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_40c as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_file as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
+ERROR:  updated partition constraint for default partition "rep_edw_log_default" would be violated by some row
+CONTEXT: SQL statement "ALTER TABLE dmeapps.rep_edw_log ATTACH PARTITION dmeapps.rep_edw_log_p20240331 FOR VALUES FROM ('2024-03-31 00:00:00-07') TO ('2024-04-07 00:00:00-07')"
+PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 197 at EXECUTE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT: PL/pgSQL function create_partition_time(text,timestamp with time zone[],text) line 366 at RAISE
+PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 265 at assignment
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
+DETAIL:
+HINT:
+CONTEXT:  PL/pgSQL function partman.run_maintenance(text,boolean,boolean) line 389 at RAISE
+SQL statement "SELECT partman.run_maintenance('dmeapps.rep_edw_log', p_jobmon := 't', p_analyze := 'f')"
+PL/pgSQL function partman.run_maintenance_proc(integer,boolean,boolean) line 36 at EXECUTE
 
 
