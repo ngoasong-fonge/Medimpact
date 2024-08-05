@@ -97,84 +97,25 @@ default_table            | t
 
 ----------------------------------------------------------------------------------------------
 
-Step 1: Verify Existing Data in Default Partition
-First, check if there's data in the default partition that needs to be redistributed to the new partitions.
+-- Creating partitions from 2024-07-15 to 2024-09-01
 
-SELECT COUNT(*), MIN(created), MAX(created) 
-FROM mepstg.stg_mep_claim_10r_default;
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240715 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-07-15') TO ('2024-07-22');
 
-Step 2: Manually Create the Missing Partitions
-Manually create the missing partitions for future dates based on your current date (2024-08-05) and the partition interval.
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240722 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-07-22') TO ('2024-07-29');
 
-DO $$
-DECLARE
-    start_date DATE := '2024-07-15';  -- This should be the day after the last partition date.
-    end_date DATE;
-BEGIN
-    WHILE start_date <= '2024-08-05' + INTERVAL '4 weeks' LOOP
-        end_date := start_date + INTERVAL '7 days';
-        EXECUTE format('CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_10r_p%s PARTITION OF mepstg.stg_mep_claim_10r FOR VALUES FROM (%L) TO (%L)', 
-                       to_char(start_date, 'YYYYMMDD'), start_date, end_date);
-        start_date := end_date;
-    END LOOP;
-END $$;
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240729 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-07-29') TO ('2024-08-05');
 
-Step 3: Move Data from Default Partition to the Correct Partitions
-Move the data from the default partition to the newly created partitions.
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240805 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-08-05') TO ('2024-08-12');
 
-DO $$
-DECLARE
-    start_date DATE := '2024-07-15';  -- This should be the day after the last partition date.
-    end_date DATE;
-BEGIN
-    WHILE start_date <= '2024-08-05' LOOP
-        end_date := start_date + INTERVAL '7 days';
-        EXECUTE format('INSERT INTO mepstg.stg_mep_claim_10r_p%s SELECT * FROM mepstg.stg_mep_claim_10r_default WHERE created >= %L AND created < %L', 
-                       to_char(start_date, 'YYYYMMDD'), start_date, end_date);
-        EXECUTE format('DELETE FROM mepstg.stg_mep_claim_10r_default WHERE created >= %L AND created < %L', start_date, end_date);
-        start_date := end_date;
-    END LOOP;
-END $$;
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240812 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-08-12') TO ('2024-08-19');
 
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240819 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-08-19') TO ('2024-08-26');
 
-
------------------------------
-
-Given today's date of 2024-08-05 and the existing partitions up to mepstg.stg_mep_claim_10r_p20240714, let's determine how many additional partitions need to be manually created.
-
-The configuration states that partitions are created for a 7-day interval, and the premake setting is set to 4. This means you should have partitions premade for up to 4 weeks into the future.
-
-Current Situation:
-Last existing partition: mepstg.stg_mep_claim_10r_p20240714
-Each partition covers a 7-day interval.
-Premake setting: 4 partitions (4 weeks ahead).
-Missing Partitions:
-From 2024-07-15 to 2024-07-21
-From 2024-07-22 to 2024-07-28
-From 2024-07-29 to 2024-08-04
-From 2024-08-05 to 2024-08-11 (premake for the next week)
-From 2024-08-12 to 2024-08-18 (premake for the next week)
-From 2024-08-19 to 2024-08-25 (premake for the next week)
-From 2024-08-26 to 2024-09-01 (premake for the next week)
-So, a total of 7 new partitions need to be created manually.
-
-Creating the Missing Partitions:
-DO $$
-DECLARE
-    start_date DATE := '2024-07-15';
-    end_date DATE;
-BEGIN
-    WHILE start_date <= '2024-08-26' LOOP
-        end_date := start_date + INTERVAL '7 days';
-        EXECUTE format('CREATE TABLE IF NOT EXISTS mepstg.stg_mep_claim_10r_p%s PARTITION OF mepstg.stg_mep_claim_10r FOR VALUES FROM (%L) TO (%L)', 
-                       to_char(start_date, 'YYYYMMDD'), start_date, end_date);
-        start_date := end_date;
-    END LOOP;
-END $$;
-
-
-Summary:
-Create 7 new partitions covering the period from 2024-07-15 to 2024-09-01.
-Ensure data from the default partition is redistributed into the correct partitions if necessary.
-Run partman.run_maintenance to maintain future partition creation.
-If you follow these steps, you should be able to create the necessary partitions manually and ensure smooth partition maintenance for the future. If you need further assistance or encounter any issues, feel free to ask!
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240826 PARTITION OF mepstg.stg_mep_claim_10r
+  FOR VALUES FROM ('2024-08-26') TO ('2024-09-02');
