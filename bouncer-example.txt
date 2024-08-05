@@ -151,3 +151,6 @@ BEGIN
         start_date := end_date;
     END LOOP;
 END $$;
+
+
+This error indicates that when trying to attach a new partition, some rows in the default partition violated the constraint of the new partition.
