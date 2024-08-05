@@ -96,30 +96,22 @@ default_table            | t
  mepstg | stg_mep_claim_15r_p20240324   | table             | postgres
 
 ----------------------------------------------------------------------------------------------
-The error you're encountering indicates that there are rows in the default partition stg_mep_claim_10r_default that fall within the date range of the partition you are trying to create. To resolve this issue, you need to clean up the data in the default partition before creating the new partition.
-
-Step-by-Step Solution
-Identify Rows in the Default Partition:
-First, identify the rows in the default partition that fall within the date range of the partition you want to create.
-
+-- Step 1: Identify rows in the default partition
 SELECT *
 FROM mepstg.stg_mep_claim_10r_default
 WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
 
-Move Data to an Existing Partition or Temporary Table:
-Move the identified rows to an existing partition or a temporary table to avoid data loss.
+-- Step 2: Move data to a temporary table
 CREATE TEMP TABLE temp_stg_mep_claim_10r AS
 SELECT *
 FROM mepstg.stg_mep_claim_10r_default
 WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
 
-Delete the Moved Data from the Default Partition:
-Delete the identified rows from the default partition.
+-- Step 3: Delete the moved data from the default partition
 DELETE FROM mepstg.stg_mep_claim_10r_default
 WHERE created >= '2024-07-07 00:00:00' AND created < '2024-07-14 00:00:00';
 
-Create the New Partition:
-After cleaning up the default partition, create the new partition.
+-- Step 4: Create the new partition
 CREATE TABLE mepstg.stg_mep_claim_10r_p20240707 PARTITION OF mepstg.stg_mep_claim_10r
     FOR VALUES FROM ('2024-07-07 00:00:00') TO ('2024-07-14 00:00:00')
 TABLESPACE pg_default;
@@ -127,11 +119,11 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240707
     OWNER TO deployadmin;
 
-Move Data Back to the New Partition:
-Move the data from the temporary table back to the newly created partition
+-- Step 5: Move data back to the new partition
 INSERT INTO mepstg.stg_mep_claim_10r_p20240707
 SELECT *
 FROM temp_stg_mep_claim_10r;
 
 DROP TABLE temp_stg_mep_claim_10r;
+
 
