@@ -96,15 +96,47 @@ default_table            | t
  mepstg | stg_mep_claim_15r_p20240324   | table             | postgres
 
 ----------------------------------------------------------------------------------------------
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240707 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-07 00:00:00') TO ('2024-07-14 00:00:00')
+-- Creating partitions from 2024-07-21 to 2024-09-01
+
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240721 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-07-21 00:00:00') TO ('2024-07-28 00:00:00')
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240707
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240721
     OWNER to deployadmin;
-CREATE TABLE mepstg.stg_mep_claim_10r_p20240714 PARTITION OF mepstg.stg_mep_claim_10r
-    FOR VALUES FROM ('2024-07-14 00:00:00') TO ('2024-07-21 00:00:00')
+
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240728 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-07-28 00:00:00') TO ('2024-08-04 00:00:00')
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240714
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240728
     OWNER to deployadmin;
+
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240804 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-08-04 00:00:00') TO ('2024-08-11 00:00:00')
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240804
+    OWNER to deployadmin;
+
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240811 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-08-11 00:00:00') TO ('2024-08-18 00:00:00')
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240811
+    OWNER to deployadmin;
+
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240818 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-08-18 00:00:00') TO ('2024-08-25 00:00:00')
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240818
+    OWNER to deployadmin;
+
+CREATE TABLE mepstg.stg_mep_claim_10r_p20240825 PARTITION OF mepstg.stg_mep_claim_10r
+    FOR VALUES FROM ('2024-08-25 00:00:00') TO ('2024-09-01 00:00:00')
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS mepstg.stg_mep_claim_10r_p20240825
+    OWNER to deployadmin;
+
