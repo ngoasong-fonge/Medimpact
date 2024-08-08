@@ -17,13 +17,38 @@ unix_socket_dir = /tmp
 ignore_startup_parameters = extra_float_digits
 
 
+====================================
 
 
-** First make sure Java is installed on all three nodes Primary, Standby and Witness node
-sudo dnf install -y java-17-openjdk
+Steps to Clean and Uninstall EFM:
+Stop the EFM service on all nodes:
 
-** Download and Install EDB repositories on all servers
-curl -1sLf 'https://downloads.enterprisedb.com/fNc7idZ08SGrJlpn7qT3gUbuJasPvvsf/enterprise/setup.rpm.sh' | sudo -E bash
+bash
+Copy code
+sudo systemctl stop edb-efm-4.9
+Remove the EFM configuration files:
 
-** Once the repository is configured, run this to install the software packages
-sudo dnf -y install edb-efm49
+bash
+Copy code
+sudo rm -rf /etc/edb/efm-4.9
+sudo rm -rf /var/lib/edb/efm-4.9
+sudo rm -rf /var/log/edb/efm-4.9
+Uninstall the EFM package:
+
+bash
+Copy code
+sudo dnf remove -y edb-efm49
+Clean up any remaining dependencies and cache:
+
+bash
+Copy code
+sudo dnf autoremove -y
+sudo dnf clean all
+Verify the uninstallation:
+
+To ensure that EFM has been completely removed, you can check if the package is still listed:
+
+bash
+Copy code
+sudo dnf list installed | grep edb-efm
+If the command returns nothing, the package has been successfully removed.
