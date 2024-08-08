@@ -19,84 +19,11 @@ ignore_startup_parameters = extra_float_digits
 
 
 
--------------------------------------------------------------------
+** First make sure Java is installed on all three nodes Primary, Standby and Witness node
+sudo dnf install -y java-17-openjdk
 
-citus=# select * from partman.part_config ;
--[ RECORD 1 ]------------+-------------------------------------------
-parent_table             | mepstg.stg_mep_claim_10r
-control                  | created
-partition_interval       | 7 days
-partition_type           | range
-premake                  | 4
-automatic_maintenance    | on
-template_table           | partman.template_mepstg_stg_mep_claim_10r
-retention                | 2 week
-retention_schema         | archive_schema
-retention_keep_index     | t
-retention_keep_table     | t
-epoch                    | none
-constraint_cols          |
-optimize_constraint      | 30
-infinite_time_partitions | t
-datetime_string          | YYYYMMDD
-jobmon                   | t
-sub_partition_set_full   | f
-undo_in_progress         | f
-inherit_privileges       | f
-constraint_valid         | t
-ignore_default_data      | t
-default_table            | t
-date_trunc_interval      |
+** Download and Install EDB repositories on all servers
+curl -1sLf 'https://downloads.enterprisedb.com/fNc7idZ08SGrJlpn7qT3gUbuJasPvvsf/enterprise/setup.rpm.sh' | sudo -E bash
 
-citus=# \dt mepstg.*
-                            List of relations
- Schema |             Name             |       Type        |    Owner
---------+------------------------------+-------------------+-------------
- mepstg | stg_mep_claim_10r            | partitioned table | deployadmin
- mepstg | stg_mep_claim_10r_default    | table             | deployadmin
- mepstg | stg_mep_claim_10r_old        | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240526  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240602  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240609  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240616  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240623  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240630  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240707  | table             | deployadmin
- mepstg | stg_mep_claim_10r_p20240714  | table             | deployadmin
-
-------------------------------------------------------
-
-parent_table             | mepstg.stg_mep_claim_15r
-control                  | created
-partition_interval       | 7 days
-partition_type           | range
-premake                  | 4
-automatic_maintenance    | on
-template_table           | partman.template_mepstg_stg_mep_claim_15r
-retention                | 4 week
-retention_schema         | archive_schema
-retention_keep_index     | t
-retention_keep_table     | t
-epoch                    | none
-constraint_cols          |
-optimize_constraint      | 30
-infinite_time_partitions | t
-datetime_string          | YYYYMMDD
-jobmon                   | t
-sub_partition_set_full   | f
-undo_in_progress         | f
-inherit_privileges       | f
-constraint_valid         | t
-ignore_default_data      | t
-default_table            | t
-
- mepstg | stg_mep_claim_15r             | partitioned table | deployadmin
- mepstg | stg_mep_claim_15r_default     | table             | postgres
- mepstg | stg_mep_claim_15r_old         | table             | deployadmin
- mepstg | stg_mep_claim_15r_p20240324   | table             | postgres
-
-----------------------------------------------------------------------------------------------
-WARNING:  Attempt to drop final partition in partition set mepstg.stg_mep_claim_33r as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
-WARNING:  Attempt to drop final partition in partition set dmeapps.rep_edw_log as part of retention policy. If you see this message multiple times for the same table, advise reviewing retention policy and/or data entry into the partition set. Also consider setting "infinite_time_partitions = true" if there are large gaps in data insertion.).
-
-
+** Once the repository is configured, run this to install the software packages
+sudo dnf -y install edb-efm49
