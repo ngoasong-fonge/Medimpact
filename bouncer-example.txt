@@ -31,17 +31,15 @@ BYPASSRLS: Allows the user to bypass row-level security policies.
 After running this command, the postgres user will have the same privileges as the svcpostgres user.
 
 
-postgres=# drop role svcpostgres;
-ERROR:  cannot drop role svcpostgres because it is required by the database system
+psql -U svcpostgres -d postgres
 
-postgres=# \l
-                                                      List of databases
-   Name    |    Owner    | Encoding |   Collate   |    Ctype    | ICU Locale | Locale Provider |      Access privileges
------------+-------------+----------+-------------+-------------+------------+-----------------+-----------------------------
- postgres  | svcpostgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
- template0 | svcpostgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/svcpostgres             +
-           |             |          |             |             |            |                 | svcpostgres=CTc/svcpostgres
- template1 | svcpostgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/svcpostgres             +
-           |             |          |             |             |            |                 | svcpostgres=CTc/svcpostgres
+ALTER DATABASE postgres OWNER TO postgres;
+ALTER DATABASE template0 OWNER TO postgres;
+ALTER DATABASE template1 OWNER TO postgres;
 
+Once you have confirmed that svcpostgres no longer owns any critical system databases, you can attempt to drop the role:
+
+DROP ROLE svcpostgres;
+
+psql -U postgres -d postgres -c "DROP ROLE svcpostgres;"
 
