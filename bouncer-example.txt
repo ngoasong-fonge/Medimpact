@@ -34,3 +34,14 @@ After running this command, the postgres user will have the same privileges as t
 postgres=# drop role svcpostgres;
 ERROR:  cannot drop role svcpostgres because it is required by the database system
 
+postgres=# \l
+                                                      List of databases
+   Name    |    Owner    | Encoding |   Collate   |    Ctype    | ICU Locale | Locale Provider |      Access privileges
+-----------+-------------+----------+-------------+-------------+------------+-----------------+-----------------------------
+ postgres  | svcpostgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            |
+ template0 | svcpostgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/svcpostgres             +
+           |             |          |             |             |            |                 | svcpostgres=CTc/svcpostgres
+ template1 | svcpostgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |            | libc            | =c/svcpostgres             +
+           |             |          |             |             |            |                 | svcpostgres=CTc/svcpostgres
+
+
