@@ -20,35 +20,9 @@ ignore_startup_parameters = extra_float_digits
 ====================================
 
 
-Steps to Clean and Uninstall EFM:
-Stop the EFM service on all nodes:
-
-bash
-Copy code
-sudo systemctl stop edb-efm-4.9
-Remove the EFM configuration files:
-
-bash
-Copy code
-sudo rm -rf /etc/edb/efm-4.9
-sudo rm -rf /var/lib/edb/efm-4.9
-sudo rm -rf /var/log/edb/efm-4.9
-Uninstall the EFM package:
-
-bash
-Copy code
-sudo dnf remove -y edb-efm49
-Clean up any remaining dependencies and cache:
-
-bash
-Copy code
-sudo dnf autoremove -y
-sudo dnf clean all
-Verify the uninstallation:
-
-To ensure that EFM has been completely removed, you can check if the package is still listed:
-
-bash
-Copy code
-sudo dnf list installed | grep edb-efm
-If the command returns nothing, the package has been successfully removed.
+postgres=# \du
+                                    List of roles
+  Role name  |                         Attributes                         | Member of
+-------------+------------------------------------------------------------+-----------
+ replicator  | Replication                                                | {}
+ svcpostgres | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
