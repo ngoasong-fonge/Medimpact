@@ -29,3 +29,8 @@ CREATEROLE: Allows the user to create and manage roles.
 REPLICATION: Allows the user to manage replication.
 BYPASSRLS: Allows the user to bypass row-level security policies.
 After running this command, the postgres user will have the same privileges as the svcpostgres user.
+
+
+postgres=# drop role svcpostgres;
+ERROR:  cannot drop role svcpostgres because it is required by the database system
+
