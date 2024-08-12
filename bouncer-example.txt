@@ -31,15 +31,57 @@ BYPASSRLS: Allows the user to bypass row-level security policies.
 After running this command, the postgres user will have the same privileges as the svcpostgres user.
 
 
-psql -U svcpostgres -d postgres
+==================================
 
-ALTER DATABASE postgres OWNER TO postgres;
-ALTER DATABASE template0 OWNER TO postgres;
-ALTER DATABASE template1 OWNER TO postgres;
+[svcpostgres@uv1medpg3db1 postgres-data]$ sudo systemctl status postgresql-15
+● postgresql-15.service - PostgreSQL 15 database server
+   Loaded: loaded (/usr/lib/systemd/system/postgresql-15.service; enabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Mon 2024-08-12 20:37:30 UTC; 11s ago
+     Docs: https://www.postgresql.org/docs/15/static/
+  Process: 519365 ExecReload=/bin/kill -HUP $MAINPID (code=exited, status=0/SUCCESS)
+  Process: 634976 ExecStart=/usr/pgsql-15/bin/postmaster -D ${PGDATA} (code=exited, status=1/FAILURE)
+  Process: 634970 ExecStartPre=/usr/pgsql-15/bin/postgresql-15-check-db-dir ${PGDATA} (code=exited, status=0/SUCCESS)
+ Main PID: 634976 (code=exited, status=1/FAILURE)
 
-Once you have confirmed that svcpostgres no longer owns any critical system databases, you can attempt to drop the role:
+Aug 12 20:37:30 uv1medpg3db1.medimpact.com systemd[1]: Starting PostgreSQL 15 database server...
+Aug 12 20:37:30 uv1medpg3db1.medimpact.com postmaster[634976]: 2024-08-12 20:37:30.917 UTC [634976] FATAL:  could not access file "repmgr": No such file or directory
+Aug 12 20:37:30 uv1medpg3db1.medimpact.com postmaster[634976]: 2024-08-12 20:37:30.917 UTC [634976] LOG:  database system is shut down
+Aug 12 20:37:30 uv1medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Main process exited, code=exited, status=1/FAILURE
+Aug 12 20:37:30 uv1medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Failed with result 'exit-code'.
+Aug 12 20:37:30 uv1medpg3db1.medimpact.com systemd[1]: Failed to start PostgreSQL 15 database server.
+[svcpostgres@uv1medpg3db1 postgres-data]$ cd /opt/backup/log
+[svcpostgres@uv1medpg3db1 log]$ ls -la
+total 68
+drwxr-xr-x 2 svcpostgres svcpostgres  4096 Jul 29 00:00 .
+drwx------ 4 svcpostgres svcpostgres  4096 Jul 19 23:45 ..
+-rw------- 1 svcpostgres svcpostgres  4959 Aug  9 21:06 postgresql-Fri.log
+-rw------- 1 svcpostgres svcpostgres  1488 Aug 12 20:37 postgresql-Mon.log
+-rw------- 1 svcpostgres svcpostgres     0 Aug 10 00:00 postgresql-Sat.log
+-rw------- 1 svcpostgres svcpostgres   409 Aug 11 02:46 postgresql-Sun.log
+-rw------- 1 svcpostgres svcpostgres 22630 Aug  8 22:48 postgresql-Thu.log
+-rw------- 1 svcpostgres svcpostgres   350 Aug  6 21:01 postgresql-Tue.log
+-rw------- 1 svcpostgres svcpostgres  9796 Aug  7 21:13 postgresql-Wed.log
+[svcpostgres@uv1medpg3db1 log]$ ls -lrth
+total 60K
+-rw------- 1 svcpostgres svcpostgres  350 Aug  6 21:01 postgresql-Tue.log
+-rw------- 1 svcpostgres svcpostgres 9.6K Aug  7 21:13 postgresql-Wed.log
+-rw------- 1 svcpostgres svcpostgres  23K Aug  8 22:48 postgresql-Thu.log
+-rw------- 1 svcpostgres svcpostgres 4.9K Aug  9 21:06 postgresql-Fri.log
+-rw------- 1 svcpostgres svcpostgres    0 Aug 10 00:00 postgresql-Sat.log
+-rw------- 1 svcpostgres svcpostgres  409 Aug 11 02:46 postgresql-Sun.log
+-rw------- 1 svcpostgres svcpostgres 1.5K Aug 12 20:37 postgresql-Mon.log
+[svcpostgres@uv1medpg3db1 log]$ cat postgresql-Mon.log
+2024-08-12 02:48:47.552 UTC [613833] FATAL:  canceling authentication due to timeout
+2024-08-12 20:22:17.742 UTC [546148] LOG:  checkpoint starting: time
+2024-08-12 20:22:18.379 UTC [546148] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.624 s, sync=0.003 s, total=0.637 s; sync files=6, longest=0.002 s, average=0.001 s; distance=4 kB, estimate=9 kB
+2024-08-12 20:27:17.466 UTC [546148] LOG:  checkpoint starting: time
+2024-08-12 20:28:50.484 UTC [546148] LOG:  checkpoint complete: wrote 929 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=93.011 s, sync=0.002 s, total=93.018 s; sync files=303, longest=0.001 s, average=0.001 s; distance=4216 kB, estimate=4216 kB
+2024-08-12 20:37:30.605 UTC [546144] LOG:  received fast shutdown request
+2024-08-12 20:37:30.608 UTC [546144] LOG:  aborting any active transactions
+2024-08-12 20:37:30.610 UTC [546144] LOG:  background worker "logical replication launcher" (PID 546153) exited with exit code 1
+2024-08-12 20:37:30.613 UTC [546148] LOG:  shutting down
+2024-08-12 20:37:30.614 UTC [546148] LOG:  checkpoint starting: shutdown immediate
+2024-08-12 20:37:30.636 UTC [546148] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.014 s, sync=0.001 s, total=0.024 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=3794 kB
+2024-08-12 20:37:30.660 UTC [546144] LOG:  database system is shut down
 
-DROP ROLE svcpostgres;
-
-psql -U postgres -d postgres -c "DROP ROLE svcpostgres;"
 
