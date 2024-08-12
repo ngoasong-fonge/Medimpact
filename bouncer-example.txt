@@ -24,9 +24,7 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-postgres=# \du repmgr
-                             List of roles
- Role name |                   Attributes                   | Member of
------------+------------------------------------------------+-----------
- repmgr    | Superuser, Create role, Create DB, Replication | {}
+"repmgr.conf"
+"repmgr.conf" E212: Can't open file for writing
+Press ENTER or type command to continue
 
