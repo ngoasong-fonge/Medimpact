@@ -20,16 +20,7 @@ ignore_startup_parameters = extra_float_digits
 ====================================
 
 
-CREATE ROLE postgres WITH LOGIN SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS PASSWORD 'your_password';
-Explanation of the Privileges:
-LOGIN: Allows the user to log in.
-SUPERUSER: Grants superuser privileges.
-CREATEDB: Allows the user to create new databases.
-CREATEROLE: Allows the user to create and manage roles.
-REPLICATION: Allows the user to manage replication.
-BYPASSRLS: Allows the user to bypass row-level security policies.
-After running this command, the postgres user will have the same privileges as the svcpostgres user.
-
+psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
