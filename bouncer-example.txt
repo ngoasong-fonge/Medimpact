@@ -24,7 +24,14 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-"repmgr.conf"
-"repmgr.conf" E212: Can't open file for writing
-Press ENTER or type command to continue
+[svcpostgres@uv2medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf standby register
+INFO: connecting to local node "pg-node2" (ID: 2)
+ERROR: unable to connect to local node "pg-node2" (ID: 2)
+DETAIL:
+connection to server at "10.15.130.119", port 5432 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+
+HINT: to register a standby which is not running, provide primary connection parameters and use option -F/--force
+[svcpostgres@uv2medpg3db1 ~]$
+
 
