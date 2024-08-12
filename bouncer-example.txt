@@ -24,14 +24,29 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-[svcpostgres@uv2medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf standby register
-INFO: connecting to local node "pg-node2" (ID: 2)
-ERROR: unable to connect to local node "pg-node2" (ID: 2)
-DETAIL:
-connection to server at "10.15.130.119", port 5432 failed: Connection refused
-        Is the server running on that host and accepting TCP/IP connections?
 
-HINT: to register a standby which is not running, provide primary connection parameters and use option -F/--force
-[svcpostgres@uv2medpg3db1 ~]$
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
 
+# "local" is for Unix domain socket connections only
+local   repmgr        repmgr                                    trust
+local   all             all                                     trust
+# IPv4 local connections:
+host    repmgr        repmgr            10.13.102.119/32           trust
+host    repmgr        repmgr            10.15.135.119/32           trust
+host    all             all             127.0.0.1/32            trust
+host    all             all             0.0.0.0/0            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     all                                     md5
+#host    replication     all             127.0.0.1/32            md5
+#host    replication     all             ::1/128                 md5
+#host    replication     replicator     10.15.135.119/32            md5
+#host    replication     replicator     10.13.102.119/32         md5
+
+local   replication   repmgr                                    trust
+host    replication   repmgr            127.0.0.1/32            trust
+host    replication   repmgr            10.13.102.119/32           trust
+host    replication   repmgr            10.15.135.119/32           trust
 
