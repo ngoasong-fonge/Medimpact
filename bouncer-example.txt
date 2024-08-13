@@ -31,6 +31,10 @@ citus$# CREATE TRIGGER grievance_request_hist AFTER INSERT OR DELETE OR UPDATE O
 citus$# FOR EACH ROW WHEN ((CURRENT_USER <> 'MEDADMIN'::name)) EXECUTE FUNCTION mrg.grievance_request_hist()
 citus$#   $cmd$
 citus(# );
+                                              run_command_on_shards
+------------------------------------------------------------------------------------------------------------------
+ (102392,f,"ERROR:  trigger ""grievance_request_hist"" for relation ""grievance_request_102392"" already exists")
+
     run_command_on_shards
 -----------------------------
  (102392,t,"CREATE TRIGGER")
