@@ -24,6 +24,16 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-promote_command='/usr/pgsql-15/bin/repmgr standby promote -f /etc/repmgr/15/repmgr.conf' 
-follow_command='/usr/pgsql-15/bin/repmgr standby follow -f /etc/repmgr/15/repmgr.conf -W --upstream-node-id=2'
-
+SELECT
+    t.tgname AS trigger_name,
+    c.relname AS table_name,
+    n.nspname AS schema_name
+FROM
+    pg_trigger t
+JOIN
+    pg_class c ON t.tgrelid = c.oid
+JOIN
+    pg_namespace n ON c.relnamespace = n.oid
+WHERE
+    n.nspname = 'your_schema_name'
+    AND t.tgisinternal = false;
