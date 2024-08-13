@@ -24,31 +24,9 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-SELECT run_command_on_workers($cmd$
-  CREATE ROLE mrg WITH
-    LOGIN
-    SUPERUSER
-    INHERITcitus=# SELECT run_command_on_workers($cmd$
-citus$#   CREATE ROLE deployadmin WITH
-citus$#     LOGIN
-citus$#     SUPERUSER
-citus$#     INHERIT
-citus$#     NOCREATEDB
-citus$#     CREATEROLE
-citus$#     NOREPLICATION
-citus$#     ENCRYPTED PASSWORD 'SCRAM-SHA-256$4096:nRMCCv99EG99WRCAzD0SwA==$jekUyeKjdyzDf6hLD6Zc7uGHlc1FBBtNNYTbT/xOkTE=:y8Zd56J55TH1B8CUUXHv8Rm6K0+ICrDVb9bIPciP6oY='
-citus$#   $cmd$);
-                       run_command_on_workers
----------------------------------------------------------------------
- (10.13.3.48,5432,f,"ERROR:  operation is not allowed on this node")
- (10.13.3.49,5432,f,"ERROR:  operation is not allowed on this node")
- (10.13.3.50,5432,f,"ERROR:  operation is not allowed on this node")
- (10.13.3.51,5432,f,"ERROR:  operation is not allowed on this node")
-(4 rows)
-
-    NOCREATEDB
-    CREATEROLE
-    NOREPLICATION
-    ENCRYPTED PASSWORD 'SCRAM-SHA-256$4096:nRMCCv99EG99WRCAzD0SwA==$jekUyeKjdyzDf6hLD6Zc7uGHlc1FBBtNNYTbT/xOkTE=:y8Zd56J55TH1B8CUUXHv8Rm6K0+ICrDVb9bIPciP6oY='
-  $cmd$);
-
+[2024-08-13 21:38:11] [INFO] monitoring primary node "pg-node1" (ID: 1) in normal state
+[2024-08-13 21:39:46] [NOTICE] repmgrd (repmgrd 5.4.1) starting up
+[2024-08-13 21:39:46] [INFO] connecting to database "host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2"
+[2024-08-13 21:39:46] [ERROR] PID file "/tmp/repmgrd.pid" exists and seems to contain a valid PID
+[2024-08-13 21:39:46] [HINT] if repmgrd is no longer alive, remove the file and restart repmgrd
+[svcpostgres@uv1medpg3db1 ~]$
