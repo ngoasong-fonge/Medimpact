@@ -24,18 +24,11 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-SELECT
-    t.tgname AS trigger_name,
-    c.relname AS table_name
-FROM
-    pg_trigger t
-JOIN
-    pg_class c ON t.tgrelid = c.oid
-WHERE
-    c.relname LIKE 'grievance_request_%'
-    AND t.tgname = 'grievance_request_hist';
-
-
-    run_command_on_shards
------------------------------
- (102392,t,"CREATE TRIGGER")
+CREATE ROLE if not exist deployadmin WITH
+  LOGIN
+  SUPERUSER
+  INHERIT
+  NOCREATEDB
+  CREATEROLE
+  NOREPLICATION
+  ENCRYPTED PASSWORD 'SCRAM-SHA-256$4096:nRMCCv99EG99WRCAzD0SwA==$jekUyeKjdyzDf6hLD6Zc7uGHlc1FBBtNNYTbT/xOkTE=:y8Zd56J55TH1B8CUUXHv8Rm6K0+ICrDVb9bIPciP6oY=';
