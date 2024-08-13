@@ -24,12 +24,14 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-citus=# CREATE ROLE deployadmin WITH
-citus-#   LOGIN
-citus-#   SUPERUSER
-citus-#   INHERIT
-citus-#   NOCREATEDB
-citus-#   CREATEROLE
-citus-#   NOREPLICATION
-citus-#   ENCRYPTED PASSWORD 'SCRAM-SHA-256$4096:nRMCCv99EG99WRCAzD0SwA==$jekUyeKjdyzDf6hLD6Zc7uGHlc1FBBtNNYTbT/xOkTE=:y8Zd56J55TH1B8CUUXHv8Rm6K0+ICrDVb9bIPciP6oY=';
-ERROR:  role "deployadmin" already exists
+SELECT run_command_on_workers($cmd$
+  CREATE ROLE deployadmin WITH
+    LOGIN
+    SUPERUSER
+    INHERIT
+    NOCREATEDB
+    CREATEROLE
+    NOREPLICATION
+    ENCRYPTED PASSWORD 'SCRAM-SHA-256$4096:nRMCCv99EG99WRCAzD0SwA==$jekUyeKjdyzDf6hLD6Zc7uGHlc1FBBtNNYTbT/xOkTE=:y8Zd56J55TH1B8CUUXHv8Rm6K0+ICrDVb9bIPciP6oY='
+  $cmd$);
+
