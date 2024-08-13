@@ -24,6 +24,13 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-citus=# DROP ROLE IF EXISTS fdwuser;
-ERROR:  role "fdwuser" cannot be dropped because some objects depend on it
-
+citus=# SELECT run_command_on_shards(
+citus(#   'mrg.grievance_request',
+citus(#   $cmd$
+citus$# CREATE TRIGGER grievance_request_hist AFTER INSERT OR DELETE OR UPDATE ON %s
+citus$# FOR EACH ROW WHEN ((CURRENT_USER <> 'MEDADMIN'::name)) EXECUTE FUNCTION mrg.grievance_request_hist()
+citus$#   $cmd$
+citus(# );
+    run_command_on_shards
+-----------------------------
+ (102392,t,"CREATE TRIGGER")
