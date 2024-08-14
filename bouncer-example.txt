@@ -27,3 +27,25 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 repmgr event notifications can be passed to a user-defined program or script which can take further action, e.g. send email notifications. This is done by setting the event_notification_command parameter in repmgr.conf.
 event_notification_command='/path/to/some/script %n %e %s "%t" "%d"'
 can you write me an example script to send me emails about replication status?
+
+
+The following format placeholders are provided for all event notifications:
+
+%n
+node ID
+
+%e
+event type
+
+%s
+success (1) or failure (0)
+
+%t
+timestamp
+
+%d
+details
+
+The values provided for %t and %d will probably contain spaces, so should be quoted in the provided command configuration, e.g.:
+
+    event_notification_command='/path/to/some/script %n %e %s "%t" "%d"'
