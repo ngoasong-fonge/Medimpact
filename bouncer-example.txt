@@ -24,9 +24,6 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-[2024-08-13 21:38:11] [INFO] monitoring primary node "pg-node1" (ID: 1) in normal state
-[2024-08-13 21:39:46] [NOTICE] repmgrd (repmgrd 5.4.1) starting up
-[2024-08-13 21:39:46] [INFO] connecting to database "host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2"
-[2024-08-13 21:39:46] [ERROR] PID file "/tmp/repmgrd.pid" exists and seems to contain a valid PID
-[2024-08-13 21:39:46] [HINT] if repmgrd is no longer alive, remove the file and restart repmgrd
-[svcpostgres@uv1medpg3db1 ~]$
+repmgr event notifications can be passed to a user-defined program or script which can take further action, e.g. send email notifications. This is done by setting the event_notification_command parameter in repmgr.conf.
+event_notification_command='/path/to/some/script %n %e %s "%t" "%d"'
+can you write me an example script to send me emails about replication status?
