@@ -24,33 +24,16 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-#!/bin/bash
+the script should be set up on both the primary and standby nodes. Here's why:
 
-# Define the parameters passed by repmgr
-NODE_NAME=$1      # %n - Node name
-EVENT_TYPE=$2     # %e - Event type
-EVENT_STATUS=$3   # %s - Event status
-EVENT_TIMESTAMP=$4 # %t - Event timestamp
-EVENT_DETAILS=$5  # %d - Event details (optional)
+Replication Events Can Occur on Any Node: Events that require notification, such as failovers, switchovers, or other replication-related activities, can occur on either the primary or any of the standby nodes. To ensure that you are notified of these events regardless of where they occur, the script needs to be available and configured on all nodes involved in the replication setup.
 
-# Email settings
-TO_EMAIL="ngoasong.fonge@gmail.com"
-SUBJECT="PostgreSQL Replication Event Notification: $EVENT_TYPE"
-FROM_EMAIL="noreply@example.com"
+Consistency Across Nodes: By setting up the script on both the primary and standby nodes, you ensure consistent monitoring and notification behavior across your entire PostgreSQL replication environment. This is crucial for maintaining a reliable and responsive replication system.
 
-# Construct the email body
-EMAIL_BODY=$(cat <<EOF
-Replication Event Notification
+Modify the event_notification_command parameter in the repmgr.conf file on each node to point to the script:
+event_notification_command='/path/to/repmgr_event_notification.sh %n %e %s "%t" "%d"'
 
-Node Name: $NODE_NAME
-Event Type: $EVENT_TYPE
-Event Status: $EVENT_STATUS
-Timestamp: $EVENT_TIMESTAMP
-Details: $EVENT_DETAILS
+Make sure the script is executable on all nodes:
+chmod +x /path/to/repmgr_event_notification.sh
 
-This is an automated message from your PostgreSQL replication system.
-EOF
-)
-
-# Send the email
-echo "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" "$TO_EMAIL"
+After updating repmgr.conf, restart the repmgrd daemon on each node to apply the changes:
