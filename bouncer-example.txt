@@ -24,28 +24,33 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-repmgr event notifications can be passed to a user-defined program or script which can take further action, e.g. send email notifications. This is done by setting the event_notification_command parameter in repmgr.conf.
-event_notification_command='/path/to/some/script %n %e %s "%t" "%d"'
-can you write me an example script to send me emails about replication status?
+#!/bin/bash
 
+# Define the parameters passed by repmgr
+NODE_NAME=$1      # %n - Node name
+EVENT_TYPE=$2     # %e - Event type
+EVENT_STATUS=$3   # %s - Event status
+EVENT_TIMESTAMP=$4 # %t - Event timestamp
+EVENT_DETAILS=$5  # %d - Event details (optional)
 
-The following format placeholders are provided for all event notifications:
+# Email settings
+TO_EMAIL="ngoasong.fonge@gmail.com"
+SUBJECT="PostgreSQL Replication Event Notification: $EVENT_TYPE"
+FROM_EMAIL="noreply@example.com"
 
-%n
-node ID
+# Construct the email body
+EMAIL_BODY=$(cat <<EOF
+Replication Event Notification
 
-%e
-event type
+Node Name: $NODE_NAME
+Event Type: $EVENT_TYPE
+Event Status: $EVENT_STATUS
+Timestamp: $EVENT_TIMESTAMP
+Details: $EVENT_DETAILS
 
-%s
-success (1) or failure (0)
+This is an automated message from your PostgreSQL replication system.
+EOF
+)
 
-%t
-timestamp
-
-%d
-details
-
-The values provided for %t and %d will probably contain spaces, so should be quoted in the provided command configuration, e.g.:
-
-    event_notification_command='/path/to/some/script %n %e %s "%t" "%d"'
+# Send the email
+echo "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" "$TO_EMAIL"
