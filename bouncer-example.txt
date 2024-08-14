@@ -25,54 +25,5 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 ==================================
 
 
-Here is an example script that could be used as the failover_validation_command to determine whether a node should promote itself during a failover situation in a PostgreSQL replication setup using repmgr.
-
-Example Script: failover_validation.sh
-
-#!/bin/bash
-
-# Parameters passed by repmgr
-NODE_ID=$1     # %n - Node ID
-NODE_NAME=$2   # %a - Node name
-
-# Perform custom validation to determine if this node should be promoted
-# For example, check if the node has the latest WAL files, network connectivity, etc.
-
-# Example: Check if the node has access to a specific file or directory
-# This is just a placeholder for your custom logic
-if [ -f "/var/lib/postgresql/data/recovery.conf" ]; then
-    echo "Node $NODE_NAME (ID: $NODE_ID) is in recovery mode. Promotion aborted."
-    exit 1
-fi
-
-# You can add other checks here, such as checking disk space, memory usage, etc.
-
-# If all checks pass, return exit code 0 to allow promotion
-echo "Node $NODE_NAME (ID: $NODE_ID) passed validation. Proceeding with promotion."
-exit 0
-
-
-==============================================
-
-Explanation:
-Parameters:
-
-NODE_ID ($1): The node ID of the promotion candidate.
-NODE_NAME ($2): The node name of the promotion candidate.
-Custom Validation Logic:
-
-The script includes an example check to see if a specific file (/var/lib/postgresql/data/recovery.conf) exists. If this file is found, the script assumes the node is still in recovery mode and not suitable for promotion, so it exits with a non-zero code (exit 1).
-You can replace this check with any custom logic relevant to your environment. For example, you might check if the node has the latest WAL files, if it can reach other critical services, or if there are any network issues.
-Exit Code:
-
-If all the checks pass, the script returns exit 0, allowing the node to proceed with promotion.
-If any check fails, the script returns a non-zero exit code, aborting the promotion and causing the election to be rerun.
-
-Set the failover_validation_command parameter in repmgr.conf to point to the script:
-failover_validation_command='/path/to/failover_validation.sh %n %a'
-
-Deploy the Script:
-Place the script on all nodes that might be candidates for promotion, including the primary and standby nodes.
-
-Restart repmgrd:
-
+[svcpostgres@uv2medpg3db1 ~]$ sudo systemctl reload repmgr
+Failed to reload repmgr.service: Unit repmgr.service not found.
