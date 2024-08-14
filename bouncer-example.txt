@@ -24,16 +24,12 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 ==================================
 
-the script should be set up on both the primary and standby nodes. Here's why:
 
-Replication Events Can Occur on Any Node: Events that require notification, such as failovers, switchovers, or other replication-related activities, can occur on either the primary or any of the standby nodes. To ensure that you are notified of these events regardless of where they occur, the script needs to be available and configured on all nodes involved in the replication setup.
+From repmgr 4.3, repmgr makes it possible to provide a script to repmgrd which, in a failover situation, will be executed by the promotion candidate (the node which has been selected to be the new primary) to confirm whether the node should actually be promoted.
 
-Consistency Across Nodes: By setting up the script on both the primary and standby nodes, you ensure consistent monitoring and notification behavior across your entire PostgreSQL replication environment. This is crucial for maintaining a reliable and responsive replication system.
+To use this, failover_validation_command in repmgr.conf to a script executable by the postgres system user, e.g.:
+failover_validation_command=/path/to/script.sh %n %a
+The %n parameter will be replaced with the node ID, and the %a parameter will be replaced by the node name when the script is executed.
 
-Modify the event_notification_command parameter in the repmgr.conf file on each node to point to the script:
-event_notification_command='/path/to/repmgr_event_notification.sh %n %e %s "%t" "%d"'
-
-Make sure the script is executable on all nodes:
-chmod +x /path/to/repmgr_event_notification.sh
-
-After updating repmgr.conf, restart the repmgrd daemon on each node to apply the changes:
+This script must return an exit code of 0 to indicate the node should promote itself. Any other value will result in the promotion being aborted and the election rerun. There is a pause of election_rerun_interval seconds before the election is rerun.
+give me an example script
