@@ -36,3 +36,6 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 2024-08-20 21:05:17.180 UTC [2951] LOG:  could not create IPv6 socket for address "::": Address family not supported by protocol
 2024-08-20 21:05:17.183 UTC [2951] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": Permission denied
 2024-08-20 21:05:17.193 UTC [2951] LOG:  database system is shut down
+
+
+https://www.postgresql.org/developer/roadmap/
