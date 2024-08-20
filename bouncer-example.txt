@@ -25,5 +25,14 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 ==================================
 
 
-[svcpostgres@uv2medpg3db1 ~]$ sudo systemctl reload repmgr
-Failed to reload repmgr.service: Unit repmgr.service not found.
+2024-08-20 20:56:49.170 UTC [286333] LOG:  database system is shut down
+2024-08-20 21:04:15.887 UTC [2930] LOG:  starting PostgreSQL 15.7 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22), 64-bit
+2024-08-20 21:04:15.889 UTC [2930] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2024-08-20 21:04:15.891 UTC [2930] LOG:  could not create IPv6 socket for address "::": Address family not supported by protocol
+2024-08-20 21:04:15.894 UTC [2930] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": Permission denied
+2024-08-20 21:04:15.905 UTC [2930] LOG:  database system is shut down
+2024-08-20 21:05:17.177 UTC [2951] LOG:  starting PostgreSQL 15.7 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22), 64-bit
+2024-08-20 21:05:17.179 UTC [2951] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2024-08-20 21:05:17.180 UTC [2951] LOG:  could not create IPv6 socket for address "::": Address family not supported by protocol
+2024-08-20 21:05:17.183 UTC [2951] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": Permission denied
+2024-08-20 21:05:17.193 UTC [2951] LOG:  database system is shut down
