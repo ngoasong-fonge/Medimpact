@@ -25,21 +25,23 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 ==================================
 
 
-Solution 1 (By managing temporary directory /run/postgresql, /var/run/postgresql)
+[svcpostgres@uv2medpg3db1 log]$ sudo systemctl enable postgresql
+Created symlink /etc/systemd/system/multi-user.target.wants/postgresql.service → /usr/lib/systemd/system/postgresql.service.
+[svcpostgres@uv2medpg3db1 log]$
 
-Directory /run/postgresql is a temporary directory. Path /var/run/postgresql is usually a symbolic link to /run/postgresql.
+[svcpostgres@uv2medpg3db1 ~]$ sudo systemctl status postgresql-15
+● postgresql-15.service - PostgreSQL 15 database server
+   Loaded: loaded (/usr/lib/systemd/system/postgresql-15.service; enabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Wed 2024-08-21 17:49:08 UTC; 25s ago
+     Docs: https://www.postgresql.org/docs/15/static/
+  Process: 1399 ExecStart=/usr/pgsql-15/bin/postmaster -D ${PGDATA} (code=exited, status=1/FAILURE)
+  Process: 1318 ExecStartPre=/usr/pgsql-15/bin/postgresql-15-check-db-dir ${PGDATA} (code=exited, status=0/SUCCESS)
+ Main PID: 1399 (code=exited, status=1/FAILURE)
 
-systemd-tmpfiles is mechanism to manage such temporary files and directories. systemd-tmpfiles creates temporary directories during boot and sets their owner, group and permissions. It may read configuration files in three different locations. Files in /etc/tmpfiles.d override files with the same name in /usr/lib/tmpfiles.d and /run/tmpfiles.d.
-
-We can create directory /run/postgresql on the fly at boot time using systemd-tmpfiles mechanism by creating postgresql configuration file as below
-
-echo "d /run/postgresql 0755 postgres postgres -" > /usr/lib/tmpfiles.d/postgresql.conf
-Solution 2 (By relocating PostgreSQL lock file location)
-
-Another way to fix the issue is to relocate the PostgreSQL lock file location. We can do so by using below query
-
-ALTER SYSTEM SET unix_socket_directories='<any-existing-path-with-valid-permissions>, /tmp';
-Here we can provide any path for PostgreSQL lock file which is already present on the system and have required permissions to manage lock files by postgres user.
-
-
-https://www.postgresql.org/developer/roadmap/
+Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: Starting PostgreSQL 15 database server...
+Aug 21 17:49:08 uv2medpg3db1.medimpact.com postmaster[1399]: 2024-08-21 17:49:08.769 UTC [1399] FATAL:  could not open log file "/opt/backup/log/postgresql-Wed.log": No such file or directory
+Aug 21 17:49:08 uv2medpg3db1.medimpact.com postmaster[1399]: 2024-08-21 17:49:08.781 UTC [1399] LOG:  database system is shut down
+Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Main process exited, code=exited, status=1/FAILURE
+Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Failed with result 'exit-code'.
+Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: Failed to start PostgreSQL 15 database server.
+[svcpostgres@uv2medpg3db1 ~]$ sudo systemctl start postgresql-15
