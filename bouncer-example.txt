@@ -25,9 +25,16 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 ==================================
 
 
-#/bin/bash
-path=`find /opt/backup/archive -mmin +450 -name '*' -printf '%f\n' | sort -r | head -1`;
+#!/bin/bash
 
-exit
+# Define the directory where your archived WAL files are stored
+WAL_ARCHIVE_DIR="/path/to/wal/archive"
 
-find /opt/backup/archive -type f -mtime +3 -delete
+# Define the age threshold for deletion (in days)
+DAYS_OLD=5
+
+# Find and delete WAL files older than the specified number of days
+find "$WAL_ARCHIVE_DIR" -type f -name "*.wal" -mtime +$DAYS_OLD -exec rm -f {} \;
+
+# Log the action (optional)
+echo "$(date): Removed WAL files older than $DAYS_OLD days from $WAL_ARCHIVE_DIR" >> /var/log/wal_cleanup.log
