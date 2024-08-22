@@ -25,23 +25,9 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 ==================================
 
 
-[svcpostgres@uv2medpg3db1 log]$ sudo systemctl enable postgresql
-Created symlink /etc/systemd/system/multi-user.target.wants/postgresql.service → /usr/lib/systemd/system/postgresql.service.
-[svcpostgres@uv2medpg3db1 log]$
+#/bin/bash
+path=`find /var/lib/pgsql/data/archive -mmin +450 -name '*' -printf '%f\n' | sort -r | head -1`;
+/var/lib/pgsql/walarchivecleanup.sh -p /var/lib/pgsql/data/archive -f $path;
+exit
 
-[svcpostgres@uv2medpg3db1 ~]$ sudo systemctl status postgresql-15
-● postgresql-15.service - PostgreSQL 15 database server
-   Loaded: loaded (/usr/lib/systemd/system/postgresql-15.service; enabled; vendor preset: disabled)
-   Active: failed (Result: exit-code) since Wed 2024-08-21 17:49:08 UTC; 25s ago
-     Docs: https://www.postgresql.org/docs/15/static/
-  Process: 1399 ExecStart=/usr/pgsql-15/bin/postmaster -D ${PGDATA} (code=exited, status=1/FAILURE)
-  Process: 1318 ExecStartPre=/usr/pgsql-15/bin/postgresql-15-check-db-dir ${PGDATA} (code=exited, status=0/SUCCESS)
- Main PID: 1399 (code=exited, status=1/FAILURE)
-
-Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: Starting PostgreSQL 15 database server...
-Aug 21 17:49:08 uv2medpg3db1.medimpact.com postmaster[1399]: 2024-08-21 17:49:08.769 UTC [1399] FATAL:  could not open log file "/opt/backup/log/postgresql-Wed.log": No such file or directory
-Aug 21 17:49:08 uv2medpg3db1.medimpact.com postmaster[1399]: 2024-08-21 17:49:08.781 UTC [1399] LOG:  database system is shut down
-Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Main process exited, code=exited, status=1/FAILURE
-Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: postgresql-15.service: Failed with result 'exit-code'.
-Aug 21 17:49:08 uv2medpg3db1.medimpact.com systemd[1]: Failed to start PostgreSQL 15 database server.
-[svcpostgres@uv2medpg3db1 ~]$ sudo systemctl start postgresql-15
+find /opt/backup/pguat2/group0/wal_archive -type f -mtime +3 -delete
