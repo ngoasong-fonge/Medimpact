@@ -26,8 +26,8 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 
 #/bin/bash
-path=`find /var/lib/pgsql/data/archive -mmin +450 -name '*' -printf '%f\n' | sort -r | head -1`;
-/var/lib/pgsql/walarchivecleanup.sh -p /var/lib/pgsql/data/archive -f $path;
+path=`find /opt/backup/archive -mmin +450 -name '*' -printf '%f\n' | sort -r | head -1`;
+
 exit
 
-find /opt/backup/pguat2/group0/wal_archive -type f -mtime +3 -delete
+find /opt/backup/archive -type f -mtime +3 -delete
