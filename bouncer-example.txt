@@ -70,7 +70,13 @@ echo "Backup completed. Log file: $log_location"
 
 ===========
 
-[svcpostgres@uv1medpg3db1 ~]$ sudo -u svcpostgres pg_basebackup -h 127.0.0.1 -D /opt/backup/basebackup -Ft -z -P -v
-pg_basebackup: error: connection to server at "127.0.0.1", port 5432 failed: FATAL:  no pg_hba.conf entry for replication connection from host "127.0.0.1", user "svcpostgres", no encryption
+sudo -u svcpostgres pg_basebackup -h 127.0.0.1 -D /opt/backup/basebackup -F tar -z -X fetch
+-rw------- 1 svcpostgres svcpostgres   184943 Aug 23 17:00 backup_manifest
+-rw------- 1 svcpostgres svcpostgres 14130687 Aug 23 17:00 base.tar.gz
 
+
+sudo -u svcpostgres pg_basebackup -h 127.0.0.1 -D /opt/backup/basebackup -Ft -z -P -v
+-rw------- 1 svcpostgres svcpostgres   183477 Aug 23 16:55 backup_manifest
+-rw------- 1 svcpostgres svcpostgres 14103555 Aug 23 16:55 base.tar.gz
+-rw------- 1 svcpostgres svcpostgres    19655 Aug 23 16:55 pg_wal.tar.gz
 
