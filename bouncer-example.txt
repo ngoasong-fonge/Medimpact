@@ -70,7 +70,7 @@ echo "Backup completed. Log file: $log_location"
 
 ===========
 
-[svcpostgres@uv1medpg3db1 ~]$ sudo -u svcpostgres pg_basebackup -D /opt/backup/basebackup -Ft -z -P -v
-pg_basebackup: error: connection to server on socket "/run/postgresql/.s.PGSQL.5432" failed: No such file or directory
-        Is the server running locally and accepting connections on that socket?
+[svcpostgres@uv1medpg3db1 ~]$ sudo -u svcpostgres pg_basebackup -h 127.0.0.1 -D /opt/backup/basebackup -Ft -z -P -v
+pg_basebackup: error: connection to server at "127.0.0.1", port 5432 failed: FATAL:  no pg_hba.conf entry for replication connection from host "127.0.0.1", user "svcpostgres", no encryption
+
 
