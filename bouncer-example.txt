@@ -26,12 +26,13 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 
 
-  You will need to load this extension and also restart postgresql like every other extension install, but the files are now present
- 
-dv1medpgsc1 ~]$ ll /opt/app/postgresql/share/extension/pgaudit*
--rw-r--r-- 1 svcpostgres svcpostgres 699 Aug 26 23:33 /opt/app/postgresql/share/extension/pgaudit--1.7.sql
--rw-r--r-- 1 svcpostgres svcpostgres 143 Aug 26 23:33 /opt/app/postgresql/share/extension/pgaudit.control
-
-citus=# create extension pgaudit;
-ERROR:  pgaudit must be loaded via shared_preload_libraries
+When should the restart take place (e.g. 2024-08-27T17:24)  [now]: now
+Are you sure you want to restart members dv1medpgsc1, dv1medpgsc2, dv1medpgsw1, dv1medpgsw2, dv1medpgsw3, dv1medpgsw4? [y/N]: y
+Restart if the PostgreSQL version is less than provided (e.g. 9.5.2)  []: 15.1
+Failed: restart for member dv1medpgsc1, status code=503, (restart conditions are not satisfied)
+Failed: restart for member dv1medpgsc2, status code=503, (restart conditions are not satisfied)
+Failed: restart for member dv1medpgsw1, status code=503, (restart conditions are not satisfied)
+Failed: restart for member dv1medpgsw2, status code=503, (restart conditions are not satisfied)
+Failed: restart for member dv1medpgsw3, status code=503, (restart conditions are not satisfied)
+Failed: restart for member dv1medpgsw4, status code=503, (restart conditions are not satisfied)
 
