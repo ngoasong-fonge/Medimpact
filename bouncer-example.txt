@@ -60,3 +60,7 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 2024-08-28 17:16:00.837 UTC [10.13.3.56(55156)] [2661983]: [1-1] user=mrguser,db=citus,host=10.13.3.56FATAL:  the database system is shutting down
 2024-08-28 17:16:00.881 UTC [10.13.3.77(36974)] [2661985]: [1-1] user=postgres,db=citus,host=10.13.3.77FATAL:  the database system is shutting down
 
+when I run pg_ctl stop it failed
+[svcpostgres@dv1medpgsc1 log]$ pg_ctl stop
+waiting for server to shut down............................................................... failed
+pg_ctl: server does not shut down
