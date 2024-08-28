@@ -20,6 +20,6 @@ ignore_startup_parameters = extra_float_digits
 ====================================
 
 
-/path/to/your/script.sh 1 "node_failover" "success" "$(date)" "The node has successfully failed over."
+/opt/backup/event_notification/event_notification.sh 1 "node_failover" "success" "$(date)" "The node has successfully failed over."
 
 
