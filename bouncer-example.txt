@@ -19,10 +19,12 @@ ignore_startup_parameters = extra_float_digits
 
 ====================================
 
-nohup psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_a_g_detail from '/opt/backup/mrg_load/agdetailbiger.csv' DELIMITER ',' CSV HEADER;" > agdetailbiger_output.log 2>&1
-nohup: ignoring input
-ERROR:  invalid input syntax for type timestamp with time zone: ""
-CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ire_truncated__c: ""
+ createdby_name                              | character varying(255)   |           |          |
+ createddate                                 | timestamp with time zone |           | not null |
+ ctm_category__c                             | character varying(255)   |           |          |
+ ctm_subcategory__c                          | character varying(255)   |           |          |
+ date_decision_recvd_from_ire_truncated__c   | timestamp with time zone |           |          |
+ date_event_occurred__c                      | timestamp with time zone |           |          |
 
 
 
