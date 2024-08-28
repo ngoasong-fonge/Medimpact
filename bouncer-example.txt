@@ -26,15 +26,19 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 
 
-[svcpostgres@dv1medpgsw1 log]$ pg_ctl restart
-pg_ctl: PID file "/opt/app/postgres-data/data/postmaster.pid" does not exist
-Is server running?
-trying to start server anyway
-waiting for server to start....2024-08-27 16:36:49.742 UTC [] [580549]: [1-1] user=,db=,host=FATAL:  could not access file "pgaudit": No such file or directory
-2024-08-27 16:36:49.742 UTC [] [580549]: [2-1] user=,db=,host=LOG:  database system is shut down
- stopped waiting
-pg_ctl: could not start server
-Examine the log output.
+2024-08-28 16:59:53.286 UTC [] [2556479]: [10535-1] user=,db=,host=WARNING:  archiving write-ahead log file "0000006B0000069B0000008F" failed too many times, will try again later
+2024-08-28 17:00:10.166 UTC [] [2556474]: [573-1] user=,db=,host=LOG:  checkpoint starting: time
+2024-08-28 17:00:14.010 UTC [] [2556474]: [574-1] user=,db=,host=LOG:  checkpoint complete: wrote 39 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=3.813 s, sync=0.002 s, total=3.844 s; sync files=20, longest=0.001 s, average=0.001 s; distance=130 kB, estimate=14570 kB
+/usr/bin/cp: cannot create regular file '/opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F': No such file or directory
+2024-08-28 17:00:53.351 UTC [] [2556479]: [10536-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-08-28 17:00:53.351 UTC [] [2556479]: [10537-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F && /usr/bin/cp pg_wal/0000006B0000069B0000008F /opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F
+/usr/bin/cp: cannot create regular file '/opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F': No such file or directory
+2024-08-28 17:00:54.357 UTC [] [2556479]: [10538-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-08-28 17:00:54.357 UTC [] [2556479]: [10539-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F && /usr/bin/cp pg_wal/0000006B0000069B0000008F /opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F
+/usr/bin/cp: cannot create regular file '/opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F': No such file or directory
+2024-08-28 17:00:55.362 UTC [] [2556479]: [10540-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-08-28 17:00:55.362 UTC [] [2556479]: [10541-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F && /usr/bin/cp pg_wal/0000006B0000069B0000008F /opt/backup/pgsandbox/group0/wal_archive/0000006B0000069B0000008F
+
 
 
 
