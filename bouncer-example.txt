@@ -20,34 +20,6 @@ ignore_startup_parameters = extra_float_digits
 ====================================
 
 
-#!/bin/bash
+/path/to/your/script.sh 1 "node_failover" "success" "$(date)" "The node has successfully failed over."
 
-# Define the parameters passed by repmgr
-NODE_ID=$1      # %n - Node ID
-EVENT_TYPE=$2     # %e - Event type
-EVENT_STATUS=$3   # %s - Event status
-EVENT_TIMESTAMP=$4 # %t - Event timestamp
-EVENT_DETAILS=$5  # %d - Event details (optional)
-
-# Email settings
-TO_EMAIL="ngoasong.fonge@gmail.com"
-SUBJECT="PostgreSQL Replication Event Notification: $EVENT_TYPE"
-FROM_EMAIL="noreply@example.com"
-
-# Construct the email body
-EMAIL_BODY=$(cat <<EOF
-Replication Event Notification
-
-Node Name: $NODE_NAME
-Event Type: $EVENT_TYPE
-Event Status: $EVENT_STATUS
-Timestamp: $EVENT_TIMESTAMP
-Details: $EVENT_DETAILS
-
-This is an automated message from your PostgreSQL replication system.
-EOF
-)
-
-# Send the email
-echo "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" "$TO_EMAIL"
 
