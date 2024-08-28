@@ -20,13 +20,8 @@ ignore_startup_parameters = extra_float_digits
 ====================================
 
 
-psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
-
-==================================
-
-
-                     Role name                      |                         Attributes                         |                                 Member of
------------------------------------------------------+------------------------------------------------------------+---------------------------------------------------------------------------
- admin                                               | Create role, Create DB                                     | {}
- auditor                                             | Cannot login                                               | {}
-
+mailx -s "This is a test message" ngoasong.fonge@medimpact.com
+Here are some words
+I wrote in an email to myself.
+.
+ 
