@@ -41,5 +41,7 @@ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 
 
 
+[svcpostgres@dv1medpgsc1 log]$ df -h /opt/backup/pgsandbox/group0/wal_archive/
+df: /opt/backup/pgsandbox/group0/wal_archive/: No such file or directory
 
 
