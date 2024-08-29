@@ -52,7 +52,9 @@ CONTEXT:  COPY salesforce_a_g_detail, line 2, column lastmodifieddate: "Yes"
 
 
                                                              ^
-
+ERROR: duplicate key value violates unique constraint "pk_salesforce_a_g_detail"
+DETAIL: Key (case_number__c, createddate, systemmodstamp)=(02239833, 2024-06-21 06:03:36-07, 2024-07-01 13:32:53-07) already exists.
+CONTEXT: COPY salesforce_a_g_detail, line 2
 
 
 
