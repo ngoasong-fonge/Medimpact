@@ -18,10 +18,7 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-1st Replace all NULL with ' ' (Space).
-
-Then COPY r FROM '/home/y.csv' WITH DELIMITER ',' NULL as ' ' CSV;
-
-
-sed -i 's/"NULL"/ /g' /home/y.csv
-psql -h localhost -U postgres -d your_database -c "\copy r FROM '/home/y.csv' WITH DELIMITER ',' NULL AS ' ' CSV;"
+[svcpostgres@pv2medpg1c2 mrg_load]$ cat agdetailbiger_output.log
+nohup: ignoring input
+ERROR:  invalid input syntax for type timestamp with time zone: ""
+CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ire_truncated__c: ""
