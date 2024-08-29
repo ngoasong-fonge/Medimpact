@@ -27,4 +27,15 @@ ERROR:  invalid input syntax for type timestamp with time zone: "NULL"
 CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ire_truncated__c: "NULL"
 
 
+[svcpostgres@dv1medpg1c1 mrg]$ psql -h localhost -U deployadmin -d citus -c "COPY mrg.salesforce_a_g_detail from '/opt/backup/mrg/agdetailbiger.csv' with (HEADER, format csv, delimiter ',', null '', force_null(date_decision_recvd_from_ire_truncated__c));"
+ERROR:  invalid input syntax for type timestamp with time zone: ""
+CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_fwd_to_ire_truncated__c: ""
+
+[svcpostgres@dv1medpg1c1 mrg]$ psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_a_g_detail from '/opt/backup/mrg/agdetailbiger.csv' DELIMITER ',' CSV HEADER;"
+ERROR:  invalid input syntax for type timestamp with time zone: ""
+CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ire_truncated__c: ""
+
+
+
+
 
