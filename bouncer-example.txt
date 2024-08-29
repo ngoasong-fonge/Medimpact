@@ -18,7 +18,8 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-SELECT COUNT(*) AS column_count
-FROM information_schema.columns
-WHERE table_name = 'your_table_name' AND table_schema = 'your_schema_name';
+[svcpostgres@dv1medpg1c1 mrg]$ psql -h localhost -U deployadmin -d citus -c "COPY mrg.salesforce_case from '/opt/backup/mrg/casebiger.csv' with (HEADER, format csv, delimiter ',', null '', force_null(begin_date__c,birth_date__c,closeddate,createddate,datereceived__c,due_date_time__c,duedate__c,e2e_completed_date__c,e2e_start_date__c,first_comment_date__c,last_comment_date__c,lastmodifieddate,ooo_end_date__c,ooo_start_date__c,plus_2_business_days__c,requested_due_date__c,systemmodstamp,x1_minute_delay__c));"
+ERROR:  invalid input syntax for type numeric: ""
+CONTEXT:  COPY salesforce_case, line 2, column actual_hours__c: ""
+
 
