@@ -18,7 +18,7 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-[svcpostgres@pv2medpg1c2 mrg_load]$ cat agdetailbiger_output.log
-nohup: ignoring input
-ERROR:  invalid input syntax for type timestamp with time zone: ""
-CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ire_truncated__c: ""
+SELECT COUNT(*) AS column_count
+FROM information_schema.columns
+WHERE table_name = 'your_table_name' AND table_schema = 'your_schema_name';
+
