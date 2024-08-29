@@ -38,9 +38,9 @@ CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ir
 
 psql -h localhost -U deployadmin -d citus -c "COPY mrg.salesforce_a_g_detail FROM '/opt/backup/mrg_load/agdetailnotE.csv' WITH (FORMAT csv, HEADER, DELIMITER ',', NULL AS '', FORCE_NULL(date_decision_recvd_from_ire_truncated__c));"
 
-[svcpostgres@pv2medpg1c2 mrg_load]$ psql -h localhost -U deployadmin -d citus -c "COPY mrg.salesforce_a_g_detail FROM '/opt/backup/mrg_load/agdetailnotE.csv' WITH (FORMAT csv, HEADER, DELIMITER ',', NULL AS '', FORCE_NULL(date_decision_recvd_from_ire_truncated__c));"
-ERROR:  syntax error at or near "AS"
-LINE 1: ...sv' WITH (FORMAT csv, HEADER, DELIMITER ',', NULL AS '', FOR...
+sed -i 's/"NULL"//g' /opt/backup/mrg_load/agdetailnotE.csv
+cat /opt/backup/mrg_load/agdetailnotE.csv | grep '""'
+
                                                              ^
 
 
