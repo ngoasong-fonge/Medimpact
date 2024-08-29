@@ -22,4 +22,9 @@ ignore_startup_parameters = extra_float_digits
 ERROR:  invalid input syntax for type numeric: ""
 CONTEXT:  COPY salesforce_case, line 2, column actual_hours__c: ""
 
+[svcpostgres@pv2medpg1c2 mrg_load]$ psql -h localhost -U deployadmin -d citus -c "COPY mrg.salesforce_a_g_detail from '/opt/backup/mrg_load/agdetailnotE.csv' with (HEADER, format csv, delimiter ',', null '', force_null(date_decision_recvd_from_ire_truncated__c));"
+ERROR:  invalid input syntax for type timestamp with time zone: "NULL"
+CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_decision_recvd_from_ire_truncated__c: "NULL"
+
+
 
