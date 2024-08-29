@@ -18,8 +18,9 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
+[1]+  Exit 1                  nohup psql -h localhost -U postgres -d citus -c "\copy mrg.salesforce_a_g_detail from '/opt/backup/mrg/salesforce_a_g_detail71624_2.csv' DELIMITER ',' CSV HEADER;" > salesforce_a_g_detail_output.log 2>&1
+[svcpostgres@dv1medpg1c1 mrg]$ cat salesforce_a_g_detail_output.log
 nohup: ignoring input
 ERROR:  invalid input syntax for type timestamp with time zone: "NULL"
 CONTEXT:  COPY salesforce_a_g_detail, line 8, column date_decision_recvd_from_ire_truncated__c: "NULL"
-
 
