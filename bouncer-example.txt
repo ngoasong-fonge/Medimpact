@@ -44,6 +44,9 @@ cat /opt/backup/mrg_load/agdetailnotE.csv | grep '""'
 ERROR:  value too long for type character varying(50)
 CONTEXT:  COPY salesforce_a_g_detail, line 2, column denied_by__c: "Member would like: to speak with a supervisor or anyone in a higher standing for them to understand ..."
 
+ALTER TABLE mrg.salesforce_a_g_detail ALTER COLUMN denied_by__c TYPE character varying(255);
+
+
 
                                                              ^
 
