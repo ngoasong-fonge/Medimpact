@@ -18,9 +18,8 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-
-sed -i 's/,"",/,\N,/g' /opt/backup/mrg_load/agdetailnotE.csv
-
-nohup psql -h localhost -U deployadmin -d citus -c "\copy mrg.salesforce_a_g_detail from '/opt/backup/mrg_load/agdetailnotE.csv' DELIMITER ',' CSV HEADER NULL AS '\N';" > agdetailnotE_output.log 2>&1 &
+I get this error from pgadmin when trying to load data in postgresql
+ERROR: invalid input syntax for type numeric: "﻿a_g_counter__c"
+CONTEXT: COPY salesforce_a_g_detail, line 1, column a_g_counter__c: "﻿a_g_counter__c"
 
 
