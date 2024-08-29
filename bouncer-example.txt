@@ -57,5 +57,20 @@ DETAIL: Key (case_number__c, createddate, systemmodstamp)=(02239833, 2024-06-21 
 CONTEXT: COPY salesforce_a_g_detail, line 2
 
 
+SELECT case_number__c, createddate, systemmodstamp, COUNT(*)
+FROM mrg.salesforce_a_g_detail
+GROUP BY case_number__c, createddate, systemmodstamp
+HAVING COUNT(*) > 1;
+
+
+DELETE FROM mrg.salesforce_a_g_detail a
+USING mrg.salesforce_a_g_detail b
+WHERE a.ctid < b.ctid
+AND a.case_number__c = b.case_number__c
+AND a.createddate = b.createddate
+AND a.systemmodstamp = b.systemmodstamp;
+
+
+
 
 
