@@ -21,3 +21,7 @@ ignore_startup_parameters = extra_float_digits
 1st Replace all NULL with ' ' (Space).
 
 Then COPY r FROM '/home/y.csv' WITH DELIMITER ',' NULL as ' ' CSV;
+
+
+sed -i 's/"NULL"/ /g' /home/y.csv
+psql -h localhost -U postgres -d your_database -c "\copy r FROM '/home/y.csv' WITH DELIMITER ',' NULL AS ' ' CSV;"
