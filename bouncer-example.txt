@@ -18,8 +18,8 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-I get this error from pgadmin when trying to load data in postgresql
-ERROR: invalid input syntax for type numeric: "﻿a_g_counter__c"
-CONTEXT: COPY salesforce_a_g_detail, line 1, column a_g_counter__c: "﻿a_g_counter__c"
+nohup: ignoring input
+ERROR:  invalid input syntax for type timestamp with time zone: "NULL"
+CONTEXT:  COPY salesforce_a_g_detail, line 8, column date_decision_recvd_from_ire_truncated__c: "NULL"
 
 
