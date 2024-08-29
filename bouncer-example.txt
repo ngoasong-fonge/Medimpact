@@ -47,6 +47,9 @@ CONTEXT:  COPY salesforce_a_g_detail, line 2, column denied_by__c: "Member would
 ALTER TABLE mrg.salesforce_a_g_detail ALTER COLUMN denied_by__c TYPE character varying(255);
 
 
+ERROR:  invalid input syntax for type timestamp with time zone: "Yes"
+CONTEXT:  COPY salesforce_a_g_detail, line 2, column lastmodifieddate: "Yes"
+
 
                                                              ^
 
