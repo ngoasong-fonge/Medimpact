@@ -18,8 +18,17 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-2024-08-30 17:58:29.488 UTC [10.13.13.70(59295)] [2866665]: [12-1] user=auditor,db=citus,host=10.13.13.70LOG:  AUDIT: SESSION,12,1,WRITE,INSERT,,,"INSERT INTO audit.test (name, value)
-        VALUES ('Test Name 7', 10),
-               ('Test Name 8', 20),
-               ('Test Name 9', 30);",<not logged>
+SELECT
+    table_schema,
+    table_name,
+    pg_size_pretty(pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS total_size,
+    pg_size_pretty(pg_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS table_size,
+    pg_size_pretty(pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name)) - pg_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS index_size
+FROM
+    information_schema.tables
+WHERE
+    table_schema = 'public'
+    AND table_type = 'BASE TABLE'
+ORDER BY
+    pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name)) DESC;
 
