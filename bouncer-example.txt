@@ -47,20 +47,6 @@ CONTEXT:  COPY salesforce_a_g_detail, line 2, column denied_by__c: "Member would
 ALTER TABLE mrg.salesforce_a_g_detail ALTER COLUMN denied_by__c TYPE character varying(255);
 
 
-ERROR:  invalid input syntax for type timestamp with time zone: "Yes"
-CONTEXT:  COPY salesforce_a_g_detail, line 2, column lastmodifieddate: "Yes"
-
-
-                                                             ^
-ERROR: duplicate key value violates unique constraint "pk_salesforce_a_g_detail"
-DETAIL: Key (case_number__c, createddate, systemmodstamp)=(02239833, 2024-06-21 06:03:36-07, 2024-07-01 13:32:53-07) already exists.
-CONTEXT: COPY salesforce_a_g_detail, line 2
-
-
-SELECT case_number__c, createddate, systemmodstamp, COUNT(*)
-FROM mrg.salesforce_a_g_detail
-GROUP BY case_number__c, createddate, systemmodstamp
-HAVING COUNT(*) > 1;
 
 
 DELETE FROM mrg.salesforce_a_g_detail a
@@ -69,6 +55,11 @@ WHERE a.ctid < b.ctid
 AND a.case_number__c = b.case_number__c
 AND a.createddate = b.createddate
 AND a.systemmodstamp = b.systemmodstamp;
+
+[svcpostgres@dv1medpg1c1 backup]$ psql -h localhost -U deployadmin -d citus -c "COPY mrg.salesforce_a_g_detail from '/opt/backup/mrg/data157new.csv' with (HEADER, format csv, delimiter ',', null '', force_null(date_event_occurred__c));"
+ERROR:  invalid input syntax for type timestamp with time zone: "NULL"
+CONTEXT:  COPY salesforce_a_g_detail, line 2, column date_event_occurred__c: "NULL"
+
 
 
 
