@@ -18,4 +18,8 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-alter system set pgaudit.log to read,write;
+2024-08-30 17:58:29.488 UTC [10.13.13.70(59295)] [2866665]: [12-1] user=auditor,db=citus,host=10.13.13.70LOG:  AUDIT: SESSION,12,1,WRITE,INSERT,,,"INSERT INTO audit.test (name, value)
+        VALUES ('Test Name 7', 10),
+               ('Test Name 8', 20),
+               ('Test Name 9', 30);",<not logged>
+
