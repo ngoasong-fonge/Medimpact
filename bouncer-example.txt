@@ -18,17 +18,18 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-SELECT
-    table_schema,
-    table_name,
-    pg_size_pretty(pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS total_size,
-    pg_size_pretty(pg_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS table_size,
-    pg_size_pretty(pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name)) - pg_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name))) AS index_size
-FROM
-    information_schema.tables
-WHERE
-    table_schema = 'public'
-    AND table_type = 'BASE TABLE'
-ORDER BY
-    pg_total_relation_size(quote_ident(table_schema) || '.' || quote_ident(table_name)) DESC;
+with SchemaSize as
+(
+select ps.nspname as schema_name,
+sum(pg_relation_size(pc.oid)) as total_size
+from pg_class pc
+join pg_catalog.pg_namespace ps
+on ps.oid = pc.relnamespace
+group by ps.nspname
+)
+select ss.schema_name,
+pg_size_pretty(ss.total_size)
+from SchemaSize ss
+order by ss.total_size desc
+limit 10;
 
