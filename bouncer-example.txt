@@ -18,18 +18,23 @@ ignore_startup_parameters = extra_float_digits
 
 
 ====================================
-with SchemaSize as
-(
-select ps.nspname as schema_name,
-sum(pg_relation_size(pc.oid)) as total_size
-from pg_class pc
-join pg_catalog.pg_namespace ps
-on ps.oid = pc.relnamespace
-group by ps.nspname
+WITH SchemaSize AS (
+  SELECT 
+    ps.nspname AS schema_name,
+    SUM(pg_total_relation_size(pc.oid)) AS total_size
+  FROM 
+    pg_class pc
+  JOIN 
+    pg_catalog.pg_namespace ps ON ps.oid = pc.relnamespace
+  GROUP BY 
+    ps.nspname
 )
-select ss.schema_name,
-pg_size_pretty(ss.total_size)
-from SchemaSize ss
-order by ss.total_size desc
-limit 10;
+SELECT 
+  ss.schema_name,
+  pg_size_pretty(ss.total_size) AS total_size_pretty
+FROM 
+  SchemaSize ss
+ORDER BY 
+  ss.total_size DESC
+LIMIT 10;
 
