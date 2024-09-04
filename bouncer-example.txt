@@ -38,3 +38,11 @@ ORDER BY
   ss.total_size DESC
 LIMIT 10;
 
+
+======================
+
+[svcpostgres@dv1medpgsc1 mrg]$ psql -U deployadmin -d citus -f /opt/backup/mrg/salesforce_agdetail_history.sql
+The input is a PostgreSQL custom-format dump.
+Use the pg_restore command-line client to restore this dump to a database.
+
+
