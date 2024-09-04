@@ -41,8 +41,6 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@dv1medpgsc1 mrg]$ psql -U deployadmin -d citus -f /opt/backup/mrg/salesforce_agdetail_history.sql
-The input is a PostgreSQL custom-format dump.
-Use the pg_restore command-line client to restore this dump to a database.
-
+ERROR: invalid input syntax for type numeric: "00540000001N4xdAAC"
+CONTEXT: COPY salesforce_a_g_detail, line 2, column a_g_counter__c: "00540000001N4xdAAC"
 
