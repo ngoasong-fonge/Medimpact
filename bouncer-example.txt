@@ -41,6 +41,4 @@ LIMIT 10;
 
 ======================
 
-ERROR: invalid input syntax for type numeric: "00540000001N4xdAAC"
-CONTEXT: COPY salesforce_a_g_detail, line 2, column a_g_counter__c: "00540000001N4xdAAC"
-
+https://www.enterprisedb.com/blog/top-tools-manage-postgres-enterprise-administration-performance-high-availability-and
