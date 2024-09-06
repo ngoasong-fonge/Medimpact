@@ -41,4 +41,80 @@ LIMIT 10;
 
 ======================
 
-https://www.enterprisedb.com/blog/top-tools-manage-postgres-enterprise-administration-performance-high-availability-and
+Install pgAudit Analyze
+a. Download and Install pgAudit Analyze
+Download pgAudit Analyze:
+
+Clone the repository containing the pgAudit Analyze tool or download it from a trusted source (e.g., GitHub).
+
+bash
+Copy code
+git clone https://github.com/pgaudit/pgAuditAnalyzer.git
+Copy bin and lib Directories:
+
+Once you've downloaded the source, copy the bin and lib directories to a location of your choice. Ensure they are kept in the same directory.
+
+bash
+Copy code
+cp -r pgaudit_analyze/bin /desired/location/
+cp -r pgaudit_analyze/lib /desired/location/
+b. Set Up the Database for Auditing
+Execute the audit.sql Script:
+
+Switch to the database where you want to capture audit logs and run the SQL script provided by pgAudit Analyze to set up the audit schema and tables.
+
+bash
+Copy code
+psql -U postgres -d your_database_name -f /path/to/pgAuditAnalyzer/sql/audit.sql
+This script will create the necessary tables and structure within your database for storing audit logs.
+
+3. Run pgAudit Analyze
+a. Running pgAudit Analyze as a Daemon
+You can run pgAudit Analyze in daemon mode to continuously monitor and analyze logs.
+
+Start pgAudit Analyze as a Daemon:
+
+Navigate to the directory where you copied the bin and lib directories and run the following command:
+
+bash
+Copy code
+./pgaudit_analyze --daemon /path/to/log/files
+Replace /path/to/log/files with the actual directory where PostgreSQL is saving its log files (as configured earlier).
+
+Verify Logs:
+
+After running the daemon process, pgAudit Analyze will start analyzing logs in real time. It should capture audit logs based on the pgaudit settings and populate the audit tables in your database.
+
+b. Automating the Daemon Process
+To ensure that the pgAudit Analyze daemon runs persistently (e.g., after reboots), you can create a service (if you're on Linux) or set up a cron job.
+
+Example of creating a systemd service to start pgAudit Analyze automatically on system boot:
+
+bash
+Copy code
+sudo nano /etc/systemd/system/pgaudit_analyze.service
+Add the following configuration:
+
+ini
+Copy code
+[Unit]
+Description=pgAudit Analyze Daemon
+
+[Service]
+ExecStart=/path/to/your/pgaudit_analyze --daemon /path/to/log/files
+Restart=always
+User=postgres
+
+[Install]
+WantedBy=multi-user.target
+Then enable and start the service:
+
+bash
+Copy code
+sudo systemctl enable pgaudit_analyze
+sudo systemctl start pgaudit_analyze
+4. Monitoring and Analyzing Logs
+Once the daemon is running, you can query the audit tables that were set up by the audit.sql script to retrieve and analyze audit events.
+You can perform custom analysis based on the audit logs stored in PostgreSQL and export them for further investigation or auditing.
+Conclusion
+After following these steps, you will have pgAudit set up to capture audit logs in your PostgreSQL database and pgAudit Analyze running as a daemon to automatically monitor and analyze those logs. You can query the audit tables to get insights into user activity, security events, and more.
