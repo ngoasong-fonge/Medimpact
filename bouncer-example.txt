@@ -41,34 +41,34 @@ LIMIT 10;
 
 ======================
 
-
-
 ####################################################################################################################################
-# Connect to Postgres
+# Parse options
 ####################################################################################################################################
-my %oDbHash;
-my $strAuditUserName = 'pgaudit_etl';
-my $strAuditSchemaName = 'pgaudit';
+my $bHelp = false;
+my $bDaemon = false;
+my $iPort = 5432;
+my $strSocketPath;
+my $strLogOutFile = '/var/log/pgaudit_analyze.log';
+my $strDbUser = getpwuid($<);
 
-sub databaseGet
+
+GetOptions ('help' => \$bHelp,
+            'daemon' => \$bDaemon,
+            'port=s' => \$iPort,
+            'socket-path=s' => \$strSocketPath,
+            'log-file=s' => \$strLogOutFile,
+            'user=s' => \$strDbUser)
+    or pod2usage(2);
+
+# Display version and exit if requested
+if ($bHelp)
 {
-    my $strDatabaseName = shift;
+    syswrite(*STDOUT, "PostgreSQL Audit Log Analyzer\n\n");
+    pod2usage();
 
-    # Check if the database session already exists
-    if (defined($oDbHash{$strDatabaseName}))
-    {
-        # Return false if this database was found not to have an audit schema
-        return false
-            if (!$oDbHash{$strDatabaseName}{log});
+    exit 0;
+}
 
-        # Else return true to allow audit logging
-        return true;
-    }
 
-    # Connect to the database
-    $oDbHash{$strDatabaseName}{hDb} = DBI->connect(
-        "dbi:Pg:dbname=${strDatabaseName};port=${iPort};" .
-        (defined($strSocketPath) ? "host=${strSocketPath}" : ''),
-        $strDbUser, undef,
-        {AutoCommit => 0, RaiseError => 1});
+
 
