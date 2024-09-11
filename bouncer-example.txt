@@ -43,12 +43,32 @@ LIMIT 10;
 
 
 
-2024-09-11 23:06:05: reading postgresql-2024-09-11_214336.csv
-2024-09-11 23:06:05: DBI connect('dbname=citus;port=5432;','svcpostgres',...) failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  role "svcpostgres" does not exist at ./pgaudit_analyze line 166.
- at ./pgaudit_analyze line 44, <$hFile> line 34.
-        main::__ANON__("DBI connect('dbname=citus;port=5432;','svcpostgres',...) fail"...) called at /usr/share/perl5/vendor_perl/Carp.pm line 167
-        Carp::croak("DBI connect('dbname=citus;port=5432;','svcpostgres',...) fail"...) called at /usr/lib64/perl5/vendor_perl/DBI.pm line 690
-        DBI::__ANON__(undef, undef) called at /usr/lib64/perl5/vendor_perl/DBI.pm line 746
-        DBI::connect("DBI", "dbi:Pg:dbname=citus;port=5432;", "svcpostgres", undef, HASH(0x55ec3304e978)) called at ./pgaudit_analyze line 166
-        main::databaseGet("citus") called at ./pgaudit_analyze line 712
-        eval {...} called at ./pgaudit_analyze line 662
+####################################################################################################################################
+# Connect to Postgres
+####################################################################################################################################
+my %oDbHash;
+my $strAuditUserName = 'pgaudit_etl';
+my $strAuditSchemaName = 'pgaudit';
+
+sub databaseGet
+{
+    my $strDatabaseName = shift;
+
+    # Check if the database session already exists
+    if (defined($oDbHash{$strDatabaseName}))
+    {
+        # Return false if this database was found not to have an audit schema
+        return false
+            if (!$oDbHash{$strDatabaseName}{log});
+
+        # Else return true to allow audit logging
+        return true;
+    }
+
+    # Connect to the database
+    $oDbHash{$strDatabaseName}{hDb} = DBI->connect(
+        "dbi:Pg:dbname=${strDatabaseName};port=${iPort};" .
+        (defined($strSocketPath) ? "host=${strSocketPath}" : ''),
+        $strDbUser, undef,
+        {AutoCommit => 0, RaiseError => 1});
+
