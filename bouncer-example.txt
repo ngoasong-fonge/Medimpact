@@ -43,16 +43,6 @@ LIMIT 10;
 
 
 
-[svcpostgres@dv1medpgsc1 sql]$ psql -U postgres -f /opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql citus
-BEGIN
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:11: NOTICE:  extension "pgaudit" already exists, skipping
-CREATE EXTENSION
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:27: WARNING:  "function pg_temp_107.role_exists(text)" has dependency on unsupported object "schema pg_temp_107"
-DETAIL:  "function pg_temp_107.role_exists(text)" will be created only locally
-CREATE FUNCTION
-DO
-CREATE SCHEMA
-SET
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:58: ERROR:  connection to the remote node 10.13.3.77:5432 failed with the following error: FATAL:  role "pgaudit_owner" does not exist
-
+psql -U postgres -d citus -c "CREATE ROLE pgaudit_owner WITH LOGIN;"
+psql -U postgres -d citus -c "GRANT ALL PRIVILEGES ON DATABASE citus TO pgaudit_owner;"
 
