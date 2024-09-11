@@ -43,13 +43,16 @@ LIMIT 10;
 
 
 
-Install pgAudit Analyze:
-Copy the bin and lib directories to any location you prefer but make sure they are in the same directory.
+[svcpostgres@dv1medpgsc1 sql]$ psql -U postgres -f /opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql citus
+BEGIN
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:11: NOTICE:  extension "pgaudit" already exists, skipping
+CREATE EXTENSION
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:27: WARNING:  "function pg_temp_107.role_exists(text)" has dependency on unsupported object "schema pg_temp_107"
+DETAIL:  "function pg_temp_107.role_exists(text)" will be created only locally
+CREATE FUNCTION
+DO
+CREATE SCHEMA
+SET
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:58: ERROR:  connection to the remote node 10.13.3.77:5432 failed with the following error: FATAL:  role "pgaudit_owner" does not exist
 
-Execute audit.sql in the database you want to audit as postgres:
-psql -U postgres -f sql/audit.sql <db name>
-Running
-pgAudit Analyze is intended to be run as a daemon process.
-
-./pgaudit_analyze --daemon /path/to/log/files
 
