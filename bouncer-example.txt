@@ -41,50 +41,9 @@ LIMIT 10;
 
 ======================
 
-CREATE TABLE audit.employees (
-    id SERIAL PRIMARY KEY,   
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department VARCHAR(50),
-    salary NUMERIC(10, 2)
-);
+SELECT sub.*
+FROM pgaudit.audit_substatement sub
+JOIN pgaudit.session sess ON sub.session_id = sess.session_id
+WHERE sess.user_name = 'auditor';
 
-INSERT INTO audit.employees (first_name, last_name, department, salary)
-VALUES 
-('John', 'Doe', 'HR', 55000.00),
-('Jane', 'Smith', 'Engineering', 75000.00),
-('Mark', 'Taylor', 'Marketing', 60000.00),
-('Lucy', 'Williams', 'Finance', 65000.00);
-
-SELECT * FROM audit.employees;
-
-UPDATE audit.employees
-SET salary = 60000.00
-WHERE first_name = 'John' AND last_name = 'Doe';
-
-SELECT * FROM audit.employees WHERE first_name = 'John' AND last_name = 'Doe';
-
-DELETE FROM audit.employees
-WHERE first_name = 'Mark' AND last_name = 'Taylor';
-
-
-
-Instead of auditing the complete PostgreSQL instance, it is possible to audit a specific user account:
-
-ALTER USER auditor SET pgaudit.log TO 'read, write';
-SELECT pg_reload_conf();
-
-alter system set pgaudit.log_parameter= on;
-SELECT pg_reload_conf();
-
-Checking pgaudit configuration at User level:
-
-select usename, useconfig from pg_user where exists(select * from unnest(useconfig) where unnest like 'pgaudit%');
-
-
-psql -U postgres -f /opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql citus
-./pgaudit_analyze --daemon /opt/app/postgres-data/data/log 
-
-
-select * from pgaudit.audit_substatement;
 
