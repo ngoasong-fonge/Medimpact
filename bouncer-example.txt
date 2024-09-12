@@ -42,31 +42,41 @@ LIMIT 10;
 ======================
 
 
-citus=# DROP ROLE IF EXISTS pgaudit_owner;
-ERROR:  role "pgaudit_owner" cannot be dropped because some objects depend on it
-DETAIL:  privileges for database citus
-owner of schema pgaudit
-owner of table pgaudit.session
-owner of table pgaudit.logon
-owner of function pgaudit.logon_info()
-owner of table pgaudit.log_event
-owner of table pgaudit.audit_statement
-owner of table pgaudit.audit_substatement
-owner of table pgaudit.audit_substatement_detail
-owner of view pgaudit.vw_audit_event
-citus=# DROP ROLE IF EXISTS pgaudit_etl;
-ERROR:  role "pgaudit_etl" cannot be dropped because some objects depend on it
-DETAIL:  privileges for table pgaudit.session
-privileges for column application_name of table pgaudit.session
-privileges for table pgaudit.logon
-privileges for column user_name of table pgaudit.logon
-privileges for column last_success of table pgaudit.logon
-privileges for column current_success of table pgaudit.logon
-privileges for column last_failure of table pgaudit.logon
-privileges for column failures_since_last_success of table pgaudit.logon
-privileges for table pgaudit.log_event
-privileges for table pgaudit.audit_statement
-privileges for column state of table pgaudit.audit_statement
-privileges for column error_session_line_num of table pgaudit.audit_statement
-privileges for table pgaudit.audit_substatement
-privileges for table pgaudit.audit_substatement_detail
+Full Command Sequence
+Reassign ownership from pgaudit_owner:
+
+sql
+Copy code
+REASSIGN OWNED BY pgaudit_owner TO postgres;
+Reassign ownership from pgaudit_etl:
+
+sql
+Copy code
+REASSIGN OWNED BY pgaudit_etl TO postgres;
+Revoke privileges from pgaudit_etl:
+
+sql
+Copy code
+REVOKE ALL PRIVILEGES ON SCHEMA pgaudit FROM pgaudit_etl;
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA pgaudit FROM pgaudit_etl;
+REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA pgaudit FROM pgaudit_etl;
+REVOKE ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA pgaudit FROM pgaudit_etl;
+Drop the pgaudit schema and all its objects:
+
+sql
+Copy code
+DROP SCHEMA IF EXISTS pgaudit CASCADE;
+Drop the roles:
+
+sql
+Copy code
+DROP ROLE IF EXISTS pgaudit_owner;
+DROP ROLE IF EXISTS pgaudit_etl;
+After executing these steps, you should be able to drop the roles pgaudit_owner and pgaudit_etl without encountering any further issues.
+
+
+
+
+
+
+
