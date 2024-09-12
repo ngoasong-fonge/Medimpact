@@ -60,3 +60,14 @@ JOIN pgaudit.session sess ON sub.session_id = sess.session_id
 WHERE sess.user_name = 'auditor'
 AND sub.substatement LIKE 'SELECT%';
 
+
+2024-09-12 18:47:58: DBI connect('dbname=citis;port=5432;','postgres',...) failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  database "citis" does not exist at ./pgaudit_analyze line 166.
+ at ./pgaudit_analyze line 44, <$hFile> line 3720.
+        main::__ANON__("DBI connect('dbname=citis;port=5432;','postgres',...) failed:"...) called at /usr/share/perl5/vendor_perl/Carp.pm line 167
+        Carp::croak("DBI connect('dbname=citis;port=5432;','postgres',...) failed:"...) called at /usr/lib64/perl5/vendor_perl/DBI.pm line 690
+        DBI::__ANON__(undef, undef) called at /usr/lib64/perl5/vendor_perl/DBI.pm line 746
+        DBI::connect("DBI", "dbi:Pg:dbname=citis;port=5432;", "postgres", undef, HASH(0x55bfdf42a3a8)) called at ./pgaudit_analyze line 166
+        main::databaseGet("citis") called at ./pgaudit_analyze line 712
+        eval {...} called at ./pgaudit_analyze line 662
+
+
