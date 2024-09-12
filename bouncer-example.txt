@@ -41,7 +41,7 @@ LIMIT 10;
 
 ======================
 
-CREATE TABLE employees (
+CREATE TABLE audit.employees (
     id SERIAL PRIMARY KEY,   
     first_name VARCHAR(50),
     last_name VARCHAR(50),
@@ -49,22 +49,22 @@ CREATE TABLE employees (
     salary NUMERIC(10, 2)
 );
 
-INSERT INTO employees (first_name, last_name, department, salary)
+INSERT INTO audit.employees (first_name, last_name, department, salary)
 VALUES 
 ('John', 'Doe', 'HR', 55000.00),
 ('Jane', 'Smith', 'Engineering', 75000.00),
 ('Mark', 'Taylor', 'Marketing', 60000.00),
 ('Lucy', 'Williams', 'Finance', 65000.00);
 
-SELECT * FROM employees;
+SELECT * FROM audit.employees;
 
-UPDATE employees
+UPDATE audit.employees
 SET salary = 60000.00
 WHERE first_name = 'John' AND last_name = 'Doe';
 
-SELECT * FROM employees WHERE first_name = 'John' AND last_name = 'Doe';
+SELECT * FROM audit.employees WHERE first_name = 'John' AND last_name = 'Doe';
 
-DELETE FROM employees
+DELETE FROM audit.employees
 WHERE first_name = 'Mark' AND last_name = 'Taylor';
 
 
