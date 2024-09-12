@@ -69,4 +69,22 @@ WHERE first_name = 'Mark' AND last_name = 'Taylor';
 
 
 
+Instead of auditing the complete PostgreSQL instance, it is possible to audit a specific user account:
+
+ALTER USER auditor SET pgaudit.log TO 'read, write';
+SELECT pg_reload_conf();
+
+alter system set pgaudit.log_parameter= on;
+SELECT pg_reload_conf();
+
+Checking pgaudit configuration at User level:
+
+select usename, useconfig from pg_user where exists(select * from unnest(useconfig) where unnest like 'pgaudit%');
+
+
+psql -U postgres -f /opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql citus
+./pgaudit_analyze --daemon /opt/app/postgres-data/data/log 
+
+
+select * from pgaudit.audit_substatement;
 
