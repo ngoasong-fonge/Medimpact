@@ -42,21 +42,7 @@ LIMIT 10;
 ======================
 
 
-Revoke database privileges:
-
-sql
-Copy code
-REVOKE ALL PRIVILEGES ON DATABASE citus FROM pgaudit_owner;
-Reassign ownership of objects:
-
-sql
-Copy code
-REASSIGN OWNED BY pgaudit_owner TO postgres;
-Drop the role:
-
-sql
-Copy code
-DROP ROLE IF EXISTS pgaudit_owner;
+2024-09-12 19:56:41.474 UTC,"postgres","citus",917492,"127.0.0.1:55768",66e34779.dfff4,1,"SET",2024-09-12 19:56:41 UTC,63/195799,0,ERROR,22023,"role ""pgaudit_etl"" does not exist",,,,,,"set session authorization pgaudit_etl",,,"","client backend",,-3829386852659926055
 
 
 
