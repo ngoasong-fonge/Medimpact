@@ -41,9 +41,31 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@dv1medpgsc1 test]$ /opt/app/localhome/postgres/pgaudit_analyze-master/test/test.pl
-Can't locate IPC/System/Simple.pm in @INC (you may need to install the IPC::System::Simple module) (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /opt/app/localhome/postgres/pgaudit_analyze-master/test/test.pl line 19.
-BEGIN failed--compilation aborted at /opt/app/localhome/postgres/pgaudit_analyze-master/test/test.pl line 19.
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,   
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department VARCHAR(50),
+    salary NUMERIC(10, 2)
+);
+
+INSERT INTO employees (first_name, last_name, department, salary)
+VALUES 
+('John', 'Doe', 'HR', 55000.00),
+('Jane', 'Smith', 'Engineering', 75000.00),
+('Mark', 'Taylor', 'Marketing', 60000.00),
+('Lucy', 'Williams', 'Finance', 65000.00);
+
+SELECT * FROM employees;
+
+UPDATE employees
+SET salary = 60000.00
+WHERE first_name = 'John' AND last_name = 'Doe';
+
+SELECT * FROM employees WHERE first_name = 'John' AND last_name = 'Doe';
+
+DELETE FROM employees
+WHERE first_name = 'Mark' AND last_name = 'Taylor';
 
 
 
