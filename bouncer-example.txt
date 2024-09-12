@@ -42,9 +42,21 @@ LIMIT 10;
 ======================
 
 
-ERROR:  role "pgaudit_owner" cannot be dropped because some objects depend on it
-DETAIL:  privileges for database citus
+Revoke database privileges:
 
+sql
+Copy code
+REVOKE ALL PRIVILEGES ON DATABASE citus FROM pgaudit_owner;
+Reassign ownership of objects:
+
+sql
+Copy code
+REASSIGN OWNED BY pgaudit_owner TO postgres;
+Drop the role:
+
+sql
+Copy code
+DROP ROLE IF EXISTS pgaudit_owner;
 
 
 
