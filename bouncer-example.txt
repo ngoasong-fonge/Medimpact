@@ -42,93 +42,31 @@ LIMIT 10;
 ======================
 
 
-sql
-Copy code
-DROP FUNCTION IF EXISTS pg_temp.role_exists(text);
-3. Drop the Roles
-Remove the roles created by the script:
-
-sql
-Copy code
-DROP ROLE IF EXISTS pgaudit_owner;
-DROP ROLE IF EXISTS pgaudit_etl;
-DROP ROLE IF EXISTS pgaudit;
-4. Drop the Schema
-Drop the pgaudit schema and any objects within it:
-
-sql
-Copy code
-DROP SCHEMA IF EXISTS pgaudit CASCADE;
-The CASCADE option ensures that all tables, functions, and other objects within the schema will be dropped automatically.
-
-5. Drop the Tables
-If you didn’t use CASCADE when dropping the schema, you can manually drop the tables created in the script:
-
-sql
-Copy code
-DROP TABLE IF EXISTS pgaudit.session;
-DROP TABLE IF EXISTS pgaudit.logon;
-DROP TABLE IF EXISTS pgaudit.log_event;
-DROP TABLE IF EXISTS pgaudit.audit_statement;
-DROP TABLE IF EXISTS pgaudit.audit_substatement;
-DROP TABLE IF EXISTS pgaudit.audit_substatement_detail;
-6. Drop Functions and Views
-Drop the logon_info function and the vw_audit_event view:
-
-sql
-Copy code
-DROP FUNCTION IF EXISTS pgaudit.logon_info();
-DROP VIEW IF EXISTS pgaudit.vw_audit_event;
-7. Revoke Privileges
-If you granted any specific privileges, revoke them:
-
-sql
-Copy code
-REVOKE ALL PRIVILEGES ON SCHEMA pgaudit FROM public;
-REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA pgaudit FROM pgaudit_etl;
-REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA pgaudit FROM pgaudit_etl;
-8. Reset Role Configuration
-If you set any configuration settings for roles (like pgaudit.log), you can reset them:
-
-sql
-Copy code
-ALTER ROLE pgaudit RESET pgaudit.log;
-ALTER ROLE pgaudit RESET pgaudit.role;
-Final Query:
-Here’s the complete set of commands to reverse the script:
-
-sql
-Copy code
--- Drop the pgaudit extension
-DROP EXTENSION IF EXISTS pgaudit;
-
--- Drop the temporary function
-DROP FUNCTION IF EXISTS pg_temp.role_exists(text);
-
--- Drop roles
-DROP ROLE IF EXISTS pgaudit_owner;
-DROP ROLE IF EXISTS pgaudit_etl;
-DROP ROLE IF EXISTS pgaudit;
-
--- Drop schema and all associated objects
-DROP SCHEMA IF EXISTS pgaudit CASCADE;
-
--- Optionally, drop tables individually if CASCADE was not used
-DROP TABLE IF EXISTS pgaudit.session;
-DROP TABLE IF EXISTS pgaudit.logon;
-DROP TABLE IF EXISTS pgaudit.log_event;
-DROP TABLE IF EXISTS pgaudit.audit_statement;
-DROP TABLE IF EXISTS pgaudit.audit_substatement;
-DROP TABLE IF EXISTS pgaudit.audit_substatement_detail;
-
--- Drop views and functions
-DROP VIEW IF EXISTS pgaudit.vw_audit_event;
-DROP FUNCTION IF EXISTS pgaudit.logon_info();
-
--- Reset role configurations
-ALTER ROLE pgaudit RESET pgaudit.log;
-ALTER ROLE pgaudit RESET pgaudit.role;
-Notes:
-If any objects are still dependent on the roles, tables, or schemas, PostgreSQL will notify you of the dependencies. You can either resolve those dependencies or use the CASCADE option to force the removal of dependent objects.
-After running these commands, the changes made by the original script should be fully reversed from your database.
-Let me know if you encounter any issues or need further assistance!
+citus=# DROP ROLE IF EXISTS pgaudit_owner;
+ERROR:  role "pgaudit_owner" cannot be dropped because some objects depend on it
+DETAIL:  privileges for database citus
+owner of schema pgaudit
+owner of table pgaudit.session
+owner of table pgaudit.logon
+owner of function pgaudit.logon_info()
+owner of table pgaudit.log_event
+owner of table pgaudit.audit_statement
+owner of table pgaudit.audit_substatement
+owner of table pgaudit.audit_substatement_detail
+owner of view pgaudit.vw_audit_event
+citus=# DROP ROLE IF EXISTS pgaudit_etl;
+ERROR:  role "pgaudit_etl" cannot be dropped because some objects depend on it
+DETAIL:  privileges for table pgaudit.session
+privileges for column application_name of table pgaudit.session
+privileges for table pgaudit.logon
+privileges for column user_name of table pgaudit.logon
+privileges for column last_success of table pgaudit.logon
+privileges for column current_success of table pgaudit.logon
+privileges for column last_failure of table pgaudit.logon
+privileges for column failures_since_last_success of table pgaudit.logon
+privileges for table pgaudit.log_event
+privileges for table pgaudit.audit_statement
+privileges for column state of table pgaudit.audit_statement
+privileges for column error_session_line_num of table pgaudit.audit_statement
+privileges for table pgaudit.audit_substatement
+privileges for table pgaudit.audit_substatement_detail
