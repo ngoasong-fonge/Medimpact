@@ -46,4 +46,12 @@ FROM pgaudit.audit_substatement sub
 JOIN pgaudit.session sess ON sub.session_id = sess.session_id
 WHERE sess.user_name = 'auditor';
 
+SELECT sub.*
+FROM pgaudit.audit_substatement sub
+JOIN pgaudit.session sess ON sub.session_id = sess.session_id
+WHERE sess.user_name = 'auditor'
+AND sess.session_start_time >= '2024-09-01'
+AND sess.session_start_time <= '2024-09-30';
+
+
 
