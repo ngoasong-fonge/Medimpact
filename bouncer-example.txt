@@ -44,7 +44,6 @@ LIMIT 10;
 
 pg_dump -h localhost -U deployadmin -d citus --data-only -n "myschema" > "/path/to/myschema_data.sql"
 
-[svcpostgres@uv2medpg0c1 scripts]$ pg_dump -h localhost -U deployadmin -d citus --data-only -n "smartiq" > "/opt/backup/smartiq.sql"
-pg_dump: warning: there are circular foreign-key constraints on this table:
+The warning message about circular foreign-key constraints means that there are tables in the smartiq schema that have foreign key relationships where two or more tables reference each other. This creates a circular dependency, which can complicate data dumps and restores because the order in which tables are dumped and restored is important.
 
 
