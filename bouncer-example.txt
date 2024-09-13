@@ -42,7 +42,6 @@ LIMIT 10;
 ======================
 
 
-2024-09-12 19:56:41.474 UTC,"postgres","citus",917492,"127.0.0.1:55768",66e34779.dfff4,1,"SET",2024-09-12 19:56:41 UTC,63/195799,0,ERROR,22023,"role ""pgaudit_etl"" does not exist",,,,,,"set session authorization pgaudit_etl",,,"","client backend",,-3829386852659926055
-
+pg_dump -h localhost -U deployadmin -d citus --data-only -n "$original_schema" --schema="$original_schema" > "$backup_file"
 
 
