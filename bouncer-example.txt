@@ -44,5 +44,7 @@ LIMIT 10;
 
 pg_dump -h localhost -U deployadmin -d citus --data-only -n "myschema" > "/path/to/myschema_data.sql"
 
+[svcpostgres@uv2medpg0c1 scripts]$ pg_dump -h localhost -U deployadmin -d citus --data-only -n "smartiq" > "/opt/backup/smartiq.sql"
+pg_dump: warning: there are circular foreign-key constraints on this table:
 
 
