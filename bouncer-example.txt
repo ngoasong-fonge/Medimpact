@@ -41,13 +41,18 @@ LIMIT 10;
 
 ======================
 
-TRUNCATE TABLE pgaudit.audit_statement, 
-               pgaudit.audit_substatement, 
-               pgaudit.audit_substatement_detail, 
-               pgaudit.log_event, 
-               pgaudit.logon, 
-               pgaudit.session
-CASCADE;
+[svcpostgres@dv1medpgsc1 log]$ tail postgresql-2024-09-16_164546.log
+        ('Mark', 'Taylor', 'Marketing', 60000.00),
+        ('Lucy', 'Williams', 'Finance', 96000.00);",<none>
+2024-09-16 16:59:11.368 UTC [] [1653]: [6845-1] user=,db=,host=LOG:  checkpoint starting: time
+2024-09-16 16:59:19.202 UTC [] [1653]: [6846-1] user=,db=,host=LOG:  checkpoint complete: wrote 79 buffers (0.5%); 0 WAL file(s) added, 0 removed, 0 recycled; write=7.824 s, sync=0.001 s, total=7.834 s; sync files=29, longest=0.001 s, average=0.001 s; distance=264 kB, estimate=14582 kB
+2024-09-16 16:59:34.411 UTC [127.0.0.1(39388)] [1296944]: [5-1] user=auditor,db=citus,host=127.0.0.1LOG:  AUDIT: SESSION,5,1,WRITE,INSERT,,,"INSERT INTO audit.cars (first_name, last_name, department, salary)
+        VALUES
+        ('John', 'Doe', 'HR', 55000.00),
+        ('Jane', 'Smith', 'Engineering', 75000.00),
+        ('Mark', 'Taylor', 'Marketing', 60000.00),
+        ('Lucy', 'Williams', 'Finance', 50000.00);",<none>
+
 
 
 
