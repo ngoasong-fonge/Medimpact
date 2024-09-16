@@ -42,4 +42,7 @@ LIMIT 10;
 ======================
 
 
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:46: ERROR:  connection to the remote node 10.13.3.77:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:251: WARNING:  "view pgaudit.vw_audit_event" has dependency to "table pgaudit.audit_substatement_detail" that is not in Citus' metadata
+DETAIL:  "view pgaudit.vw_audit_event" will be created only locally
+HINT:  Distribute "table pgaudit.audit_substatement_detail" first to distribute "view pgaudit.vw_audit_event"
+
