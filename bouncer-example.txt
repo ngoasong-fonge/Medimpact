@@ -42,206 +42,36 @@ LIMIT 10;
 ======================
 
 
--- Create a function to check if a role exists
-CREATE FUNCTION pg_temp.role_exists(role_name TEXT)
-RETURNS BOOLEAN AS $$
-BEGIN
-    RETURN (
-        SELECT COUNT(*) = 1
-        FROM pg_roles
-        WHERE rolname = role_name
-    );
-END
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Create cluster-wide roles if they do not exist yet
-DO $$
-BEGIN
-    IF NOT pg_temp.role_exists('pgaudit_owner') THEN
-        CREATE ROLE pgaudit_owner;
-    END IF;
-
-    IF NOT pg_temp.role_exists('pgaudit_etl') THEN
-        CREATE ROLE pgaudit_etl;
-    END IF;
-
-    IF NOT pg_temp.role_exists('pgaudit') THEN
-        CREATE USER pgaudit IN ROLE pgaudit_etl;
-
-        -- Disable audit logging for the pgaudit user
-        ALTER ROLE pgaudit SET pgaudit.log = 'none';
-        ALTER ROLE pgaudit SET pgaudit.role = '';
-    END IF;
-END $$;
-
--- Create pgaudit schema
-CREATE SCHEMA pgaudit AUTHORIZATION pgaudit_owner;
-
--- Set session authorization so all schema objects are owned by pgaudit_owner
-SET SESSION AUTHORIZATION pgaudit_owner;
-
--- Create usage on schema to public
-GRANT USAGE ON SCHEMA pgaudit TO PUBLIC;
-
--- Create session table to track user database sessions
-CREATE TABLE pgaudit.session (
-    session_id TEXT NOT NULL,
-    process_id INT NOT NULL,
-    session_start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    user_name TEXT NOT NULL,
-    application_name TEXT,
-    connection_from TEXT,
-    state TEXT NOT NULL CONSTRAINT session_state_ck CHECK (state IN ('ok', 'error')),
-    CONSTRAINT session_pk PRIMARY KEY (session_id)
-);
-
--- Distribute the pgaudit.session table in Citus
-SELECT create_distributed_table('pgaudit.session', 'session_id');
-
-GRANT SELECT, INSERT, UPDATE (application_name) ON pgaudit.session TO pgaudit_etl;
-
--- Create logon table to track recent user login info
-CREATE TABLE pgaudit.logon (
-    user_name TEXT NOT NULL,
-    last_success TIMESTAMP WITH TIME ZONE,
-    current_success TIMESTAMP WITH TIME ZONE,
-    last_failure TIMESTAMP WITH TIME ZONE,
-    failures_since_last_success INT NOT NULL,
-    CONSTRAINT logon_pk PRIMARY KEY (user_name)
-);
-
--- Distribute the pgaudit.logon table in Citus
-SELECT create_distributed_table('pgaudit.logon', 'user_name');
-
-GRANT SELECT, INSERT (user_name, current_success, last_failure, failures_since_last_success),
-       UPDATE (last_success, current_success, last_failure, failures_since_last_success) ON pgaudit.logon TO pgaudit_etl;
-
--- Create logon_info() function to allow unprivileged users to get (only) their logon info
-CREATE OR REPLACE FUNCTION pgaudit.logon_info()
-RETURNS TABLE (
-    last_success TIMESTAMP WITH TIME ZONE,
-    last_failure TIMESTAMP WITH TIME ZONE,
-    failures_since_last_success INT
-) AS $$
-BEGIN
-    RETURN QUERY (
-        SELECT logon.last_success, logon.last_failure, logon.failures_since_last_success
-        FROM pgaudit.logon
-        WHERE logon.user_name = session_user
-    );
-END
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION pgaudit.logon_info() TO PUBLIC;
-
--- Create log_event table to track all events logged to the PostgreSQL log
-CREATE TABLE pgaudit.log_event (
-    session_id TEXT NOT NULL CONSTRAINT logevent_sessionid_fk REFERENCES pgaudit.session (session_id),
-    session_line_num NUMERIC NOT NULL,
-    log_time TIMESTAMP(3) WITH TIME ZONE NOT NULL,
-    command TEXT,
-    error_severity TEXT,
-    sql_state_code TEXT,
-    virtual_transaction_id TEXT,
-    transaction_id BIGINT,
-    message TEXT,
-    detail TEXT,
-    hint TEXT,
-    query TEXT,
-    query_pos INTEGER,
-    internal_query TEXT,
-    internal_query_pos INTEGER,
-    context TEXT,
-    location TEXT,
-    CONSTRAINT logevent_pk PRIMARY KEY (session_id, session_line_num)
-);
-
--- Distribute the pgaudit.log_event table in Citus
-SELECT create_distributed_table('pgaudit.log_event', 'session_id');
-
-GRANT SELECT, INSERT ON pgaudit.log_event TO pgaudit_etl;
-
--- Create audit_statement table to track all user statements logged by the pgaudit extension
-CREATE TABLE pgaudit.audit_statement (
-    session_id TEXT NOT NULL CONSTRAINT auditstatement_sessionid_fk REFERENCES pgaudit.session (session_id),
-    statement_id NUMERIC NOT NULL,
-    state TEXT NOT NULL DEFAULT 'ok' CONSTRAINT auditstatement_state_ck CHECK (state IN ('ok', 'error')),
-    error_session_line_num NUMERIC,
-    CONSTRAINT auditstatement_pk PRIMARY KEY (session_id, statement_id),
-    CONSTRAINT auditstatement_sessionid_sessionlinenum_fk FOREIGN KEY (session_id, error_session_line_num)
-    REFERENCES pgaudit.log_event (session_id, session_line_num) DEFERRABLE INITIALLY DEFERRED
-);
-
--- Distribute the pgaudit.audit_statement table in Citus
-SELECT create_distributed_table('pgaudit.audit_statement', 'session_id');
-
-GRANT SELECT, UPDATE (state, error_session_line_num), INSERT ON pgaudit.audit_statement TO pgaudit_etl;
-
--- Create audit_substatement table to track all user sub-statements logged by the pgaudit extension
-CREATE TABLE pgaudit.audit_substatement (
-    session_id TEXT NOT NULL,
-    statement_id NUMERIC NOT NULL,
-    substatement_id NUMERIC NOT NULL,
-    substatement TEXT,
-    parameter TEXT[],
-    CONSTRAINT auditsubstatement_pk PRIMARY KEY (session_id, statement_id, substatement_id),
-    CONSTRAINT auditsubstatement_sessionid_statementid_fk FOREIGN KEY (session_id, statement_id)
-    REFERENCES pgaudit.audit_statement (session_id, statement_id)
-);
-
--- Distribute the pgaudit.audit_substatement table in Citus
-SELECT create_distributed_table('pgaudit.audit_substatement', 'session_id');
-
-GRANT SELECT, INSERT ON pgaudit.audit_substatement TO pgaudit_etl;
-
--- Create audit_substatement_detail table to track all user sub-statement detail logged by the pgaudit extension
-CREATE TABLE pgaudit.audit_substatement_detail (
-    session_id TEXT NOT NULL,
-    statement_id NUMERIC NOT NULL,
-    substatement_id NUMERIC NOT NULL,
-    session_line_num NUMERIC NOT NULL,
-    audit_type TEXT NOT NULL CONSTRAINT auditsubstatementdetail_audittype_ck CHECK (audit_type IN ('session', 'object')),
-    class TEXT NOT NULL,
-    command TEXT NOT NULL,
-    object_type TEXT,
-    object_name TEXT,
-    CONSTRAINT auditsubstatementdetail_pk PRIMARY KEY (session_id, statement_id, substatement_id, session_line_num),
-    CONSTRAINT auditsubstatementdetail_sessionid_sessionlinenum_unq UNIQUE (session_id, session_line_num),
-    CONSTRAINT auditsubstatementdetail_sessionid_statementid_substatementid_fk FOREIGN KEY (session_id, statement_id, substatement_id)
-    REFERENCES pgaudit.audit_substatement (session_id, statement_id, substatement_id),
-    CONSTRAINT auditsubstatementdetail_sessionid_sessionlinenum_fk FOREIGN KEY (session_id, session_line_num)
-    REFERENCES pgaudit.log_event (session_id, session_line_num) DEFERRABLE INITIALLY DEFERRED
-);
-
--- Distribute the pgaudit.audit_substatement_detail table in Citus
-SELECT create_distributed_table('pgaudit.audit_substatement_detail', 'session_id');
-
-GRANT SELECT, INSERT ON pgaudit.audit_substatement_detail TO pgaudit_etl;
-
--- Create vw_audit_event view to allow easy access to the pgaudit log entries
-CREATE VIEW pgaudit.vw_audit_event AS
-SELECT 
-    session.session_id,
-    log_event.session_line_num,
-    log_event.log_time,
-    session.user_name,
-    audit_statement.statement_id,
-    audit_statement.state,
-    audit_statement.error_session_line_num,
-    audit_substatement.substatement_id,
-    audit_substatement.substatement,
-    audit_substatement_detail.audit_type,
-    audit_substatement_detail.class,
-    audit_substatement_detail.command,
-    audit_substatement_detail.object_type,
-    audit_substatement_detail.object_name
-FROM 
-    pgaudit.audit_substatement_detail
-    INNER JOIN pgaudit.log_event ON log_event.session_id = audit_substatement_detail.session_id
-    AND log_event.session_line_num = audit_substatement_detail.session_line_num
-    INNER JOIN pgaudit.session ON session.session_id = audit_substatement_detail.session_id
-    INNER JOIN pgaudit.audit_substatement ON audit_substatement.session_id = audit_substatement_detail.session_id
-    AND audit_substatement.statement_id = audit_substatement_detail.statement_id
-    AND audit_substatement.substatement_id = audit_substatement_detail.substatement_id
-    INNER JOIN pgaudit.audit_statement ON audit_statement.session_id = audit_substatement_detail.session_id
-    AND audit_statement.statement_id = audit_substatement_detail.statement_id;
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:40: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
+CREATE TABLE
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:55: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
+GRANT
+CREATE TABLE
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:70: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
+GRANT
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:89: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:91: ERROR:  function pgaudit.logon_info() does not exist
+CREATE TABLE
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:116: ERROR:  referenced table "session" must be a distributed table or a reference table
+DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
+HINT:  You could use SELECT create_reference_table('session') to replicate the referenced table to all nodes or consider dropping the foreign key
+GRANT
+CREATE TABLE
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:132: ERROR:  referenced table "session" must be a distributed table or a reference table
+DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
+HINT:  You could use SELECT create_reference_table('session') to replicate the referenced table to all nodes or consider dropping the foreign key
+GRANT
+CREATE TABLE
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:149: ERROR:  referenced table "audit_statement" must be a distributed table or a reference table
+DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
+HINT:  You could use SELECT create_reference_table('audit_statement') to replicate the referenced table to all nodes or consider dropping the foreign key
+GRANT
+CREATE TABLE
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:173: ERROR:  referenced table "log_event" must be a distributed table or a reference table
+DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
+HINT:  You could use SELECT create_reference_table('log_event') to replicate the referenced table to all nodes or consider dropping the foreign key
+GRANT
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:203: WARNING:  "view pgaudit.vw_audit_event" has dependency to "table pgaudit.audit_substatement_detail" that is not in Citus' metadata
+DETAIL:  "view pgaudit.vw_audit_event" will be created only locally
+HINT:  Distribute "table pgaudit.audit_substatement_detail" first to distribute "view pgaudit.vw_audit_event"
+CREATE VIEW
