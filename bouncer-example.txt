@@ -47,6 +47,10 @@ sudo rm -rf /opt/app/pg_wal
 sudo rm -f /etc/yum.repos.d/pgdg-redhat-all.repo
 sudo dnf autoremove -y
 
+[svcpostgres@uv1medpg3db1 ~]$ sudo rm -rf /opt/app/postgres-data
+rm: cannot remove '/opt/app/postgres-data': Device or resource busy
+[svcpostgres@uv1medpg3db1 ~]$ sudo rm -rf /opt/app/pg_wal
+rm: cannot remove '/opt/app/pg_wal': Device or resource busy
 
 
 
