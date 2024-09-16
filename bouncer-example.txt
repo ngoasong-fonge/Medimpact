@@ -42,8 +42,50 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@dv1medpgsc1 bin]$ ./pgaudit_analyze --daemon /opt/app/postgres-data/data/log
-unable to open pgAudit Analyze log file /opt/app/localhome/postgres/pgaudit_analyze-master/log/pgaudit_analyze.log: No such file or directory at ./pgaudit_analyze line 646.
- at ./pgaudit_analyze line 44.
-        main::__ANON__("unable to open pgAudit Analyze log file /opt/app/localhome/po"...) called at /usr/share/perl5/vendor_perl/Carp.pm line 168
-        Carp::confess("unable to open pgAudit Analyze log file /opt/app/localhome/po"...) called at ./pgaudit_analyze line 646
+CREATE FUNCTION
+DO
+CREATE SCHEMA
+SET
+GRANT
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
+
+GRANT
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
+
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:73: ERROR:  grant/revoke on column list is currently unsupported
+CREATE FUNCTION
+GRANT
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
+
+GRANT
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
+
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:134: ERROR:  grant/revoke on column list is currently unsupported
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
+
+GRANT
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
