@@ -52,6 +52,9 @@ rm: cannot remove '/opt/app/postgres-data': Device or resource busy
 [svcpostgres@uv1medpg3db1 ~]$ sudo rm -rf /opt/app/pg_wal
 rm: cannot remove '/opt/app/pg_wal': Device or resource busy
 
+[svcpostgres@uv1medpg3db1 ~]$ ps -ef | grep postgres
+root     2804025 2776749  0 21:00 pts/0    00:00:00 sudo -iu svcpostgres
+svcpost+ 2804100 2804026  0 21:04 pts/0    00:00:00 grep --color=auto postgres
 
 
 
