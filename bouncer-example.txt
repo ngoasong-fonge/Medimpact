@@ -42,68 +42,67 @@ LIMIT 10;
 ======================
 
 
--- Set up session table as a reference table
-CREATE TABLE pgaudit.session (
-    session_id TEXT NOT NULL,
-    process_id INT NOT NULL,
-    session_start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    user_name TEXT NOT NULL,
-    application_name TEXT,
-    connection_from TEXT,
-    state TEXT NOT NULL CONSTRAINT session_state_ck CHECK (state IN ('ok', 'error')),
-    CONSTRAINT session_pk PRIMARY KEY (session_id)
-);
+[svcpostgres@dv1medpgsc1 sql]$ psql -h dv1medpgs -U postgres -f /opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql citus
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:11: WARNING:  "function pg_temp_61.role_exists(text)" has dependency on unsupported object "schema pg_temp_61"
+DETAIL:  "function pg_temp_61.role_exists(text)" will be created only locally
+CREATE FUNCTION
+DO
+CREATE SCHEMA
+SET
+GRANT
+CREATE TABLE
+ create_reference_table
+------------------------
 
-SELECT create_reference_table('pgaudit.session');
+(1 row)
 
--- Set up logon table as a reference table
-CREATE TABLE pgaudit.logon (
-    user_name TEXT NOT NULL,
-    last_success TIMESTAMP WITH TIME ZONE,
-    current_success TIMESTAMP WITH TIME ZONE,
-    last_failure TIMESTAMP WITH TIME ZONE,
-    failures_since_last_success INT NOT NULL,
-    CONSTRAINT logon_pk PRIMARY KEY (user_name)
-);
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:57: ERROR:  table "session" is already distributed
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:59: ERROR:  grant/revoke on column list is currently unsupported
+CREATE TABLE
+ create_reference_table
+------------------------
 
-SELECT create_reference_table('pgaudit.logon');
+(1 row)
 
--- Continue setting up other tables and views, distributing or creating reference tables as necessary
-CREATE TABLE pgaudit.log_event (
-    session_id TEXT NOT NULL CONSTRAINT logevent_sessionid_fk REFERENCES pgaudit.session (session_id),
-    session_line_num NUMERIC NOT NULL,
-    log_time TIMESTAMP(3) WITH TIME ZONE NOT NULL,
-    command TEXT,
-    error_severity TEXT,
-    sql_state_code TEXT,
-    virtual_transaction_id TEXT,
-    transaction_id BIGINT,
-    message TEXT,
-    detail TEXT,
-    hint TEXT,
-    query TEXT,
-    query_pos INTEGER,
-    internal_query TEXT,
-    internal_query_pos INTEGER,
-    context TEXT,
-    location TEXT,
-    CONSTRAINT logevent_pk PRIMARY KEY (session_id, session_line_num)
-);
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:74: ERROR:  table "logon" is already distributed
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:77: ERROR:  grant/revoke on column list is currently unsupported
+CREATE FUNCTION
+GRANT
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:117: NOTICE:  local tables that are added to metadata automatically by citus, but not chained with reference tables via foreign keys might be automatically converted back to postgres tables
+HINT:  Executing citus_add_local_table_to_metadata($$pgaudit.log_event$$) prevents this for the given relation, and all of the connected relations
+CREATE TABLE
+ create_reference_table
+------------------------
 
-SELECT create_reference_table('pgaudit.log_event');
+(1 row)
 
--- Distribute the audit_substatement_detail table
-CREATE TABLE pgaudit.audit_substatement_detail (
-    session_id TEXT NOT NULL,
-    statement_id NUMERIC NOT NULL,
-    substatement_id NUMERIC NOT NULL,
-    session_line_num NUMERIC NOT NULL,
-    audit_type TEXT NOT NULL CONSTRAINT auditsubstatementdetail_audittype_ck CHECK (audit_type IN ('session', 'object')),
-    class TEXT NOT NULL,
-    command TEXT NOT NULL,
-    object_type TEXT,
-    object_name TEXT,
-    CONSTRAINT auditsubstatementdetail_pk PRIMARY KEY (session_id, statement_id, substatement_id, session_line_num)
-);
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:122: ERROR:  table "log_event" is already distributed
+GRANT
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:135: NOTICE:  local tables that are added to metadata automatically by citus, but not chained with reference tables via foreign keys might be automatically converted back to postgres tables
+HINT:  Executing citus_add_local_table_to_metadata($$pgaudit.audit_statement$$) prevents this for the given relation, and all of the connected relations
+CREATE TABLE
+ create_distributed_table
+--------------------------
 
-SELECT create_distributed_table('pgaudit.audit_substatement_detail', 'session_id');
+(1 row)
+
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:140: ERROR:  grant/revoke on column list is currently unsupported
+CREATE TABLE
+ create_distributed_table
+--------------------------
+
+(1 row)
+
+GRANT
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:176: NOTICE:  local tables that are added to metadata automatically by citus, but not chained with reference tables via foreign keys might be automatically converted back to postgres tables
+HINT:  Executing citus_add_local_table_to_metadata($$pgaudit.audit_substatement_detail$$) prevents this for the given relation, and all of the connected relations
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:176: NOTICE:  local tables that are added to metadata automatically by citus, but not chained with reference tables via foreign keys might be automatically converted back to postgres tables
+HINT:  Executing citus_add_local_table_to_metadata($$pgaudit.audit_substatement_detail$$) prevents this for the given relation, and all of the connected relations
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:176: ERROR:  cannot create foreign key constraint since foreign keys from reference tables and local tables to distributed tables are not supported
+DETAIL:  When adding a foreign key from a local table to a reference table, Citus applies a conversion to all the local tables in the foreign key graph
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:179: ERROR:  relation "pgaudit.audit_substatement_detail" does not exist
+LINE 1: SELECT create_distributed_table('pgaudit.audit_substatement_...
+                                        ^
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:181: ERROR:  relation "pgaudit.audit_substatement_detail" does not exist
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:209: ERROR:  relation "pgaudit.audit_substatement_detail" does not exist
+LINE 18:     pgaudit.audit_substatement_detail
