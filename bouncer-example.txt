@@ -42,5 +42,14 @@ LIMIT 10;
 ======================
 
 
-grep '"auditor"' postgresql-2024-09-16_154402.csv > auditor_logs.csv
+                     List of relations
+ Schema  |           Name            | Type  |     Owner
+---------+---------------------------+-------+---------------
+ pgaudit | audit_statement           | table | pgaudit_owner
+ pgaudit | audit_substatement        | table | pgaudit_owner
+ pgaudit | audit_substatement_detail | table | pgaudit_owner
+ pgaudit | log_event                 | table | pgaudit_owner
+ pgaudit | logon                     | table | pgaudit_owner
+ pgaudit | session                   | table | pgaudit_owner
+
 
