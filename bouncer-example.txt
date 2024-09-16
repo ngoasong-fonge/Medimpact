@@ -42,8 +42,4 @@ LIMIT 10;
 ======================
 
 
-pg_dump -h localhost -U deployadmin -d citus --data-only -n "myschema" > "/path/to/myschema_data.sql"
-
-The warning message about circular foreign-key constraints means that there are tables in the smartiq schema that have foreign key relationships where two or more tables reference each other. This creates a circular dependency, which can complicate data dumps and restores because the order in which tables are dumped and restored is important.
-
-ERROR:  connection to the remote node 10.13.3.77:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
+psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:46: ERROR:  connection to the remote node 10.13.3.77:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
