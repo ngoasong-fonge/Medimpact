@@ -42,7 +42,81 @@ LIMIT 10;
 ======================
 
 
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:251: WARNING:  "view pgaudit.vw_audit_event" has dependency to "table pgaudit.audit_substatement_detail" that is not in Citus' metadata
-DETAIL:  "view pgaudit.vw_audit_event" will be created only locally
-HINT:  Distribute "table pgaudit.audit_substatement_detail" first to distribute "view pgaudit.vw_audit_event"
+The warning you are encountering in your Citus cluster is due to the fact that the table pgaudit.audit_substatement_detail is not distributed across the Citus nodes. In a Citus environment, tables need to be distributed to leverage the cluster's distributed architecture. Since the view pgaudit.vw_audit_event depends on this table, Citus is warning that it will only create the view locally on the coordinator node, not on the worker nodes.
+
+Steps to Resolve the Warning
+To resolve this issue, you need to distribute the table pgaudit.audit_substatement_detail in Citus before creating the view. Follow these steps:
+
+1. Distribute the Table in Citus
+Before creating the view, you need to use the create_distributed_table function to distribute pgaudit.audit_substatement_detail in the Citus environment.
+
+Run the following command on the coordinator node:
+
+sql
+Copy code
+SELECT create_distributed_table('pgaudit.audit_substatement_detail', 'session_id');
+Replace 'session_id' with the appropriate distribution column. Choose a column that ensures an even distribution of data across worker nodes. In most cases, a unique identifier like session_id works well as a distribution key.
+
+2. Distribute Other Dependent Tables (if needed)
+Since the view pgaudit.vw_audit_event may depend on other tables (pgaudit.session, pgaudit.log_event, pgaudit.audit_statement, etc.), you need to ensure that all these tables are also distributed in the Citus cluster. For each table, run a command similar to the one used in step 1:
+
+For example:
+
+sql
+Copy code
+SELECT create_distributed_table('pgaudit.session', 'session_id');
+SELECT create_distributed_table('pgaudit.log_event', 'session_id');
+SELECT create_distributed_table('pgaudit.audit_statement', 'session_id');
+3. Recreate the View
+After distributing the required tables, you can recreate the view pgaudit.vw_audit_event. If the view was already created locally with a warning, you can drop and recreate it to ensure it is correctly set up.
+
+sql
+Copy code
+DROP VIEW IF EXISTS pgaudit.vw_audit_event;
+
+CREATE VIEW pgaudit.vw_audit_event AS
+SELECT 
+    session.session_id,
+    log_event.session_line_num,
+    log_event.log_time,
+    session.user_name,
+    audit_statement.statement_id,
+    audit_statement.state,
+    audit_statement.error_session_line_num,
+    audit_substatement.substatement_id,
+    audit_substatement.substatement,
+    audit_substatement_detail.audit_type,
+    audit_substatement_detail.class,
+    audit_substatement_detail.command,
+    audit_substatement_detail.object_type,
+    audit_substatement_detail.object_name
+FROM 
+    pgaudit.audit_substatement_detail
+    INNER JOIN pgaudit.log_event ON log_event.session_id = audit_substatement_detail.session_id
+    AND log_event.session_line_num = audit_substatement_detail.session_line_num
+    INNER JOIN pgaudit.session ON session.session_id = audit_substatement_detail.session_id
+    INNER JOIN pgaudit.audit_substatement ON audit_substatement.session_id = audit_substatement_detail.session_id
+    AND audit_substatement.statement_id = audit_substatement_detail.statement_id
+    AND audit_substatement.substatement_id = audit_substatement_detail.substatement_id
+    INNER JOIN pgaudit.audit_statement ON audit_statement.session_id = audit_substatement_detail.session_id
+    AND audit_statement.statement_id = audit_substatement_detail.statement_id;
+4. Verify the Distribution
+After running the distribution commands, you can verify that the tables are now part of the distributed Citus metadata:
+
+sql
+Copy code
+SELECT * FROM citus_tables WHERE table_name = 'pgaudit.audit_substatement_detail';
+If the table appears in this output, it means the table is now correctly distributed in the Citus cluster.
+
+Summary
+Use create_distributed_table to distribute pgaudit.audit_substatement_detail and other related tables in the Citus cluster.
+Drop and recreate the view after distributing the necessary tables.
+Verify that the tables are now part of the distributed metadata using the Citus metadata tables.
+By ensuring that all the tables the view depends on are distributed, you will resolve the warning and allow the view to function correctly across the Citus cluster.
+
+
+
+
+
+
 
