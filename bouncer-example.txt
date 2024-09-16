@@ -42,36 +42,68 @@ LIMIT 10;
 ======================
 
 
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:40: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
-CREATE TABLE
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:55: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
-GRANT
-CREATE TABLE
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:70: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
-GRANT
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:89: ERROR:  connection to the remote node 10.13.3.79:5432 failed with the following error: FATAL:  role "pgaudit_owner" is not permitted to log in
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:91: ERROR:  function pgaudit.logon_info() does not exist
-CREATE TABLE
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:116: ERROR:  referenced table "session" must be a distributed table or a reference table
-DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
-HINT:  You could use SELECT create_reference_table('session') to replicate the referenced table to all nodes or consider dropping the foreign key
-GRANT
-CREATE TABLE
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:132: ERROR:  referenced table "session" must be a distributed table or a reference table
-DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
-HINT:  You could use SELECT create_reference_table('session') to replicate the referenced table to all nodes or consider dropping the foreign key
-GRANT
-CREATE TABLE
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:149: ERROR:  referenced table "audit_statement" must be a distributed table or a reference table
-DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
-HINT:  You could use SELECT create_reference_table('audit_statement') to replicate the referenced table to all nodes or consider dropping the foreign key
-GRANT
-CREATE TABLE
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:173: ERROR:  referenced table "log_event" must be a distributed table or a reference table
-DETAIL:  To enforce foreign keys, the referencing and referenced rows need to be stored on the same node.
-HINT:  You could use SELECT create_reference_table('log_event') to replicate the referenced table to all nodes or consider dropping the foreign key
-GRANT
-psql:/opt/app/localhome/postgres/pgaudit_analyze-master/sql/audit.sql:203: WARNING:  "view pgaudit.vw_audit_event" has dependency to "table pgaudit.audit_substatement_detail" that is not in Citus' metadata
-DETAIL:  "view pgaudit.vw_audit_event" will be created only locally
-HINT:  Distribute "table pgaudit.audit_substatement_detail" first to distribute "view pgaudit.vw_audit_event"
-CREATE VIEW
+-- Set up session table as a reference table
+CREATE TABLE pgaudit.session (
+    session_id TEXT NOT NULL,
+    process_id INT NOT NULL,
+    session_start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    user_name TEXT NOT NULL,
+    application_name TEXT,
+    connection_from TEXT,
+    state TEXT NOT NULL CONSTRAINT session_state_ck CHECK (state IN ('ok', 'error')),
+    CONSTRAINT session_pk PRIMARY KEY (session_id)
+);
+
+SELECT create_reference_table('pgaudit.session');
+
+-- Set up logon table as a reference table
+CREATE TABLE pgaudit.logon (
+    user_name TEXT NOT NULL,
+    last_success TIMESTAMP WITH TIME ZONE,
+    current_success TIMESTAMP WITH TIME ZONE,
+    last_failure TIMESTAMP WITH TIME ZONE,
+    failures_since_last_success INT NOT NULL,
+    CONSTRAINT logon_pk PRIMARY KEY (user_name)
+);
+
+SELECT create_reference_table('pgaudit.logon');
+
+-- Continue setting up other tables and views, distributing or creating reference tables as necessary
+CREATE TABLE pgaudit.log_event (
+    session_id TEXT NOT NULL CONSTRAINT logevent_sessionid_fk REFERENCES pgaudit.session (session_id),
+    session_line_num NUMERIC NOT NULL,
+    log_time TIMESTAMP(3) WITH TIME ZONE NOT NULL,
+    command TEXT,
+    error_severity TEXT,
+    sql_state_code TEXT,
+    virtual_transaction_id TEXT,
+    transaction_id BIGINT,
+    message TEXT,
+    detail TEXT,
+    hint TEXT,
+    query TEXT,
+    query_pos INTEGER,
+    internal_query TEXT,
+    internal_query_pos INTEGER,
+    context TEXT,
+    location TEXT,
+    CONSTRAINT logevent_pk PRIMARY KEY (session_id, session_line_num)
+);
+
+SELECT create_reference_table('pgaudit.log_event');
+
+-- Distribute the audit_substatement_detail table
+CREATE TABLE pgaudit.audit_substatement_detail (
+    session_id TEXT NOT NULL,
+    statement_id NUMERIC NOT NULL,
+    substatement_id NUMERIC NOT NULL,
+    session_line_num NUMERIC NOT NULL,
+    audit_type TEXT NOT NULL CONSTRAINT auditsubstatementdetail_audittype_ck CHECK (audit_type IN ('session', 'object')),
+    class TEXT NOT NULL,
+    command TEXT NOT NULL,
+    object_type TEXT,
+    object_name TEXT,
+    CONSTRAINT auditsubstatementdetail_pk PRIMARY KEY (session_id, statement_id, substatement_id, session_line_num)
+);
+
+SELECT create_distributed_table('pgaudit.audit_substatement_detail', 'session_id');
