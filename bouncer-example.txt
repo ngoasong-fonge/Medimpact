@@ -41,7 +41,10 @@ LIMIT 10;
 
 ======================
 
-grep 'user=auditor' postgresql-2024-09-16_164546.log > auditor_logs.log
+[svcpostgres@dv1medpgsc1 log]$ cat auditor_logs.log
+2024-09-16 16:58:53.788 UTC [127.0.0.1(39388)] [1296944]: [4-1] user=auditor,db=citus,host=127.0.0.1LOG:  AUDIT: SESSION,4,1,WRITE,INSERT,,,"INSERT INTO audit.cars (first_name, last_name, department, salary)
+2024-09-16 16:59:34.411 UTC [127.0.0.1(39388)] [1296944]: [5-1] user=auditor,db=citus,host=127.0.0.1LOG:  AUDIT: SESSION,5,1,WRITE,INSERT,,,"INSERT INTO audit.cars (first_name, last_name, department, salary)
+
 
 
 
