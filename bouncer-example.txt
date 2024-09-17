@@ -41,102 +41,11 @@ LIMIT 10;
 
 ======================
 
-If PostgreSQL is using a custom installation located in /opt/app/postgresql/bin while repmgr is installed in the default path (/usr/pgsql-15/bin), the mismatch between these paths could cause the problem. PostgreSQL is attempting to load the repmgr binaries and libraries from its custom location, but they exist in the default PostgreSQL path, resulting in failure to start.
 
-To resolve this, you need to align repmgr's binaries and libraries with the custom PostgreSQL setup. Here's how to address this:
-
-Option 1: Use the Custom PostgreSQL Installation with repmgr
-You can copy the repmgr binaries and libraries from the default installation path (/usr/pgsql-15/) to your custom PostgreSQL location (/opt/app/postgresql/).
-
-Copy repmgr Binary Files to the Custom Directory:
-
-bash
-Copy code
-sudo cp /usr/pgsql-15/bin/repmgr* /opt/app/postgresql/bin/
-Copy repmgr Shared Library to the Custom Directory:
-
-bash
-Copy code
-sudo cp /usr/pgsql-15/lib/repmgr.so /opt/app/postgresql/lib/
-Verify Permissions:
-
-Ensure that the copied files have the correct ownership and permissions for the svcpostgres user:
-
-bash
-Copy code
-sudo chown svcpostgres:svcpostgres /opt/app/postgresql/bin/repmgr*
-sudo chmod 755 /opt/app/postgresql/bin/repmgr*
-
-sudo chown svcpostgres:svcpostgres /opt/app/postgresql/lib/repmgr.so
-sudo chmod 755 /opt/app/postgresql/lib/repmgr.so
-Restart PostgreSQL:
-
-After copying the files, restart PostgreSQL:
-
-bash
-Copy code
-sudo systemctl restart postgresql
-Option 2: Modify PATH to Use Default PostgreSQL Installation (Not Recommended if Custom Binary is Required)
-If you don't specifically need to use the custom PostgreSQL installation in /opt/app/postgresql/, you can modify the environment to use the default PostgreSQL binaries:
-
-Update the PATH in the Service Environment File:
-
-Edit the PostgreSQL environment file referenced in your systemd service file:
-
-bash
-Copy code
-nano /opt/app/localhome/svcpostgres/.config/postgresql
-Update the PATH variable to include /usr/pgsql-15/bin:
-
-bash
-Copy code
-export PATH=/usr/pgsql-15/bin:$PATH
-Reload and Restart PostgreSQL:
-
-Reload the systemd configuration and restart PostgreSQL:
-
-bash
-Copy code
-sudo systemctl daemon-reload
-sudo systemctl restart postgresql
-Option 3: Install repmgr in the Custom Directory
-Alternatively, you could build and install repmgr from source to your custom PostgreSQL installation directory.
-
-Download and Build repmgr:
-
-Download the repmgr source code from the official repository:
-
-bash
-Copy code
-wget https://github.com/EnterpriseDB/repmgr/archive/refs/tags/v5.4.1.tar.gz
-tar -xzvf v5.4.1.tar.gz
-cd repmgr-5.4.1
-Install the necessary build tools and dependencies:
-
-bash
-Copy code
-sudo dnf install gcc make postgresql15-server-devel
-Build and install repmgr to the custom PostgreSQL directory:
-
-bash
-Copy code
-make USE_PGXS=1 PG_CONFIG=/opt/app/postgresql/bin/pg_config
-sudo make USE_PGXS=1 PG_CONFIG=/opt/app/postgresql/bin/pg_config install
-Verify the Installation:
-
-Check that the repmgr binaries are installed in /opt/app/postgresql/bin and the shared libraries in /opt/app/postgresql/lib.
-
-Restart PostgreSQL:
-
-After building and installing repmgr, restart PostgreSQL:
-
-bash
-Copy code
-sudo systemctl restart postgresql
-Summary
-Option 1 (Recommended): Copy repmgr binaries and libraries from /usr/pgsql-15 to the custom PostgreSQL directory (/opt/app/postgresql/).
-Option 2: Modify the PATH variable to prioritize the default PostgreSQL installation in /usr/pgsql-15.
-Option 3: Build and install repmgr directly into the custom PostgreSQL installation directory.
-The easiest approach is Option 1, which involves copying the necessary repmgr files to the custom PostgreSQL directory. This ensures that PostgreSQL loads repmgr from the correct location. Let me know if you encounter further issues!
+[svcpostgres@uv1medpg3db1 bin]$ systemctl stop postgresql
+==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ====
+Authentication is required to stop 'postgresql.service'.
+Authenticating as: root
+Password:
 
 
