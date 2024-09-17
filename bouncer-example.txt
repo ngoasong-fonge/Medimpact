@@ -42,6 +42,9 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@uv1medpg3db1 ~]$ echo $PGPASSFILE
-/opt/app/localhome/svcpostgres
+repmgr=# CREATE EXTENSION repmgr;
+ERROR:  extension "repmgr" is not available
+DETAIL:  Could not open extension control file "/opt/app/postgresql-15.8/share/extension/repmgr.control": No such file or directory.
+HINT:  The extension must first be installed on the system where PostgreSQL is running.
+
 
