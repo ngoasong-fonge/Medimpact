@@ -41,20 +41,8 @@ LIMIT 10;
 
 ======================
 
-citus=# SELECT run_command_on_workers($cmd$
-citus$#   CREATE OR REPLACE FUNCTION set_author() RETURNS TRIGGER AS $$
-citus$#     BEGIN
-citus$#       NEW.author := current_user;
-citus$#       RETURN NEW;
-citus$#     END;
-citus$#   $$ LANGUAGE plpgsql;
-citus$# $cmd$);
-                       run_command_on_workers
----------------------------------------------------------------------
- (10.13.3.48,5432,f,"ERROR:  operation is not allowed on this node")
- (10.13.3.49,5432,f,"ERROR:  operation is not allowed on this node")
- (10.13.3.50,5432,f,"ERROR:  operation is not allowed on this node")
- (10.13.3.51,5432,f,"ERROR:  operation is not allowed on this node")
+[svcpostgres@uv1medpg3db1 ~]$ sudo systemctl status postgresql-15
+Unit postgresql-15.service could not be found.
 
 
 
