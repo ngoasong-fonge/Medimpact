@@ -42,13 +42,11 @@ LIMIT 10;
 ======================
 
 
+[svcpostgres@uv1medpg3db1 ~]$ rm .pgpass
+[svcpostgres@uv1medpg3db1 ~]$
+[svcpostgres@uv1medpg3db1 ~]$
 [svcpostgres@uv1medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf primary register
 INFO: connecting to primary database...
 WARNING: password file "/opt/app/localhome/svcpostgres" is not a plain file
-ERROR: connection to database failed
-DETAIL:
-connection to server at "10.13.102.119", port 5432 failed: FATAL:  no pg_hba.conf entry for host "10.13.102.119", user "repmgr", database "repmgr", no encryption
-
-DETAIL: attempted to connect using:
-  user=repmgr connect_timeout=2 dbname=repmgr host=10.13.102.119 fallback_application_name=repmgr options=-csearch_path=
+ERROR: "repmgr" extension is not available
 
