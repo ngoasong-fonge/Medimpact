@@ -41,12 +41,16 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@uv1medpg3db1 ~]$ /opt/app/postgresql/bin/pg_ctl start -D /opt/app/postgres-data
-waiting for server to start....2024-09-17 18:34:18.075 UTC [18151] FATAL:  could not access file "repmgr": No such file or directory
-2024-09-17 18:34:18.075 UTC [18151] LOG:  database system is shut down
+[svcpostgres@uv1medpg3db1 ~]$ /opt/app/postgresql/bin/pg_ctl restart -D /opt/app/postgres-data
+pg_ctl: PID file "/opt/app/postgres-data/postmaster.pid" does not exist
+Is server running?
+trying to start server anyway
+waiting for server to start....2024-09-17 19:20:39.970 UTC [19146] FATAL:  could not access file "repmgr": No such file or directory
+2024-09-17 19:20:39.971 UTC [19146] LOG:  database system is shut down
  stopped waiting
 pg_ctl: could not start server
 Examine the log output.
+
 
 
 
