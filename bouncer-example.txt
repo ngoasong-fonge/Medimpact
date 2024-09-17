@@ -41,16 +41,35 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@uv1medpg3db1 ~]$ /opt/app/postgresql/bin/pg_ctl restart -D /opt/app/postgres-data
-pg_ctl: PID file "/opt/app/postgres-data/postmaster.pid" does not exist
-Is server running?
-trying to start server anyway
-waiting for server to start....2024-09-17 19:20:39.970 UTC [19146] FATAL:  could not access file "repmgr": No such file or directory
-2024-09-17 19:20:39.971 UTC [19146] LOG:  database system is shut down
- stopped waiting
-pg_ctl: could not start server
-Examine the log output.
+Total                                                                                                                                                                                                        3.5 MB/s | 8.8 MB     00:02
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                                                                                                                                                                                     1/1
+  Installing       : postgresql15-libs-15.8-1EDB.el8.x86_64                                                                                                                                                                              1/5
+  Running scriptlet: postgresql15-libs-15.8-1EDB.el8.x86_64                                                                                                                                                                              1/5
+  Installing       : postgresql15-15.8-1EDB.el8.x86_64                                                                                                                                                                                   2/5
+  Running scriptlet: postgresql15-15.8-1EDB.el8.x86_64                                                                                                                                                                                   2/5
+  Running scriptlet: postgresql15-server-15.8-1EDB.el8.x86_64                                                                                                                                                                            3/5
+  Installing       : postgresql15-server-15.8-1EDB.el8.x86_64                                                                                                                                                                            3/5
+  Running scriptlet: postgresql15-server-15.8-1EDB.el8.x86_64                                                                                                                                                                            3/5
+  Running scriptlet: repmgr15-5.4.1-1.el8.x86_64                                                                                                                                                                                         4/5
+  Installing       : repmgr15-5.4.1-1.el8.x86_64                                                                                                                                                                                         4/5
+  Running scriptlet: repmgr15-5.4.1-1.el8.x86_64                                                                                                                                                                                         4/5
+  Installing       : repmgr15-debuginfo-5.4.1-1.el8.x86_64                                                                                                                                                                               5/5
+  Running scriptlet: repmgr15-debuginfo-5.4.1-1.el8.x86_64                                                                                                                                                                               5/5
+[/usr/lib/tmpfiles.d/repmgr15.conf:1] Line references path below legacy directory /var/run/, updating /var/run/repmgr → /run/repmgr; please update the tmpfiles.d/ drop-in file accordingly.
 
+  Verifying        : postgresql15-15.8-1EDB.el8.x86_64                                                                                                                                                                                   1/5
+  Verifying        : postgresql15-libs-15.8-1EDB.el8.x86_64                                                                                                                                                                              2/5
+  Verifying        : postgresql15-server-15.8-1EDB.el8.x86_64                                                                                                                                                                            3/5
+  Verifying        : repmgr15-5.4.1-1.el8.x86_64                                                                                                                                                                                         4/5
+  Verifying        : repmgr15-debuginfo-5.4.1-1.el8.x86_64                                                                                                                                                                               5/5
+
+Installed:
+  postgresql15-15.8-1EDB.el8.x86_64            postgresql15-libs-15.8-1EDB.el8.x86_64            postgresql15-server-15.8-1EDB.el8.x86_64            repmgr15-5.4.1-1.el8.x86_64            repmgr15-debuginfo-5.4.1-1.el8.x86_64
 
 
 
