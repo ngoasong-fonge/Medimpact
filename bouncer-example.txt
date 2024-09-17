@@ -45,4 +45,6 @@ LIMIT 10;
 [svcpostgres@uv2medpg3db1 bin]$ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
 Password for user repmgr:
 
+[svcpostgres@uv1medpg3db1 ~]$ cat .pgpass
+10.13.102.119:5432:repmgr:repmgr:xD4BHeKmf
 
