@@ -42,11 +42,6 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@uv1medpg3db1 ~]$ rm .pgpass
-[svcpostgres@uv1medpg3db1 ~]$
-[svcpostgres@uv1medpg3db1 ~]$
-[svcpostgres@uv1medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf primary register
-INFO: connecting to primary database...
-WARNING: password file "/opt/app/localhome/svcpostgres" is not a plain file
-ERROR: "repmgr" extension is not available
+[svcpostgres@uv1medpg3db1 ~]$ echo $PGPASSFILE
+/opt/app/localhome/svcpostgres
 
