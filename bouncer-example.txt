@@ -42,9 +42,63 @@ LIMIT 10;
 ======================
 
 
-repmgr=# CREATE EXTENSION repmgr;
-ERROR:  extension "repmgr" is not available
-DETAIL:  Could not open extension control file "/opt/app/postgresql-15.8/share/extension/repmgr.control": No such file or directory.
-HINT:  The extension must first be installed on the system where PostgreSQL is running.
+Steps to Fix the "Extension Not Available" Error
+1. Check repmgr Installation Location
+Since repmgr was installed in /usr/pgsql-15, but your PostgreSQL binary directory is /opt/app/postgresql/, you likely need to copy the repmgr extension files to the custom PostgreSQL installation directories.
 
+2. Copy the repmgr Extension Files
+Find the repmgr extension files in the default PostgreSQL path and copy them to the custom PostgreSQL installation directory.
+
+Locate the Extension Files:
+
+The default location of the repmgr extension files is typically in /usr/pgsql-15/share/extension/. List the files to verify their existence:
+
+bash
+Copy code
+ls /usr/pgsql-15/share/extension/repmgr*
+You should see files like repmgr.control, repmgr--*.sql, etc.
+
+Copy the Extension Files to the Custom PostgreSQL Directory:
+
+Assuming you find the files, copy them to your custom PostgreSQL installation's share/extension directory:
+
+bash
+Copy code
+sudo cp /usr/pgsql-15/share/extension/repmgr* /opt/app/postgresql/share/extension/
+Copy the Shared Library (.so File):
+
+Similarly, you need to ensure that the repmgr shared library (repmgr.so) is in the custom PostgreSQL's library directory:
+
+bash
+Copy code
+sudo cp /usr/pgsql-15/lib/repmgr.so /opt/app/postgresql/lib/
+Verify Permissions:
+
+Make sure the copied files have the appropriate ownership and permissions:
+
+bash
+Copy code
+sudo chown svcpostgres:svcpostgres /opt/app/postgresql/share/extension/repmgr*
+sudo chown svcpostgres:svcpostgres /opt/app/postgresql/lib/repmgr.so
+
+sudo chmod 644 /opt/app/postgresql/share/extension/repmgr*
+sudo chmod 755 /opt/app/postgresql/lib/repmgr.so
+3. Create the Extension in PostgreSQL
+After copying the files, try creating the repmgr extension in the database:
+
+bash
+Copy code
+/opt/app/postgresql/bin/psql -h 10.13.102.119 -U postgres -d repmgr -c "CREATE EXTENSION repmgr;"
+4. Restart PostgreSQL
+If the extension was successfully created, restart PostgreSQL to ensure all changes are loaded:
+
+bash
+Copy code
+sudo systemctl restart postgresql
+Summary
+Copy the repmgr extension files (.control and .sql) from /usr/pgsql-15/share/extension/ to /opt/app/postgresql/share/extension/.
+Copy the repmgr shared library (repmgr.so) to /opt/app/postgresql/lib/.
+Set the appropriate permissions for the copied files.
+Attempt to create the repmgr extension in the PostgreSQL database again.
+By placing the repmgr files in the custom PostgreSQL directories, you allow PostgreSQL to recognize and use the repmgr extension.
 
