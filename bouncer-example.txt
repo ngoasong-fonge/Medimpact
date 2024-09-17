@@ -41,8 +41,9 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@uv1medpg3db1 ~]$ sudo systemctl status postgresql-15
-Unit postgresql-15.service could not be found.
+[svcpostgres@uv1medpg3db1 ~]$ systemctl list-units | grep postgres
+  opt-app-postgres\x2ddata.mount                                                                   loaded active mounted   /opt/app/postgres-data
+
 
 
 
