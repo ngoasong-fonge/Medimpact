@@ -43,23 +43,6 @@ LIMIT 10;
 
 
 [svcpostgres@uv2medpg3db1 bin]$ psql 'host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2'
-psql: error: connection to server at "10.13.102.119", port 5432 failed: FATAL:  no pg_hba.conf entry for host "10.15.135.119", user "repmgr", database "repmgr", no encryption
-[svcpostgres@uv2medpg3db1 bin]$
+Password for user repmgr:
 
-
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-
-# "local" is for Unix domain socket connections only
-local   all             all                                     trust
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            trust
-# IPv6 local connections:
-host    all             all             ::1/128                 trust
-# Allow replication connections from localhost, by a user with the
-# replication privilege.
-local   replication     all                                     trust
-host    replication     all             127.0.0.1/32            trust
-host    replication     all             ::1/128                 trust
-host    replication     repmgr     127.0.0.1/32                 trust
-host    replication     repmgr     10.15.135.119/32             trust
 
