@@ -41,8 +41,8 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@uv1medpg3db1 ~]$ systemctl list-units | grep postgres
-  opt-app-postgres\x2ddata.mount                                                                   loaded active mounted   /opt/app/postgres-data
+[svcpostgres@uv1medpg3db1 ~]$ which psql
+/opt/app/postgresql/bin/psql
 
 
 
