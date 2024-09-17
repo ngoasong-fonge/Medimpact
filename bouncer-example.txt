@@ -41,22 +41,20 @@ LIMIT 10;
 
 ======================
 
-sudo dnf remove -y repmgr15* postgresql15-server postgresql15*
-sudo rm -rf /opt/app/postgres-data
-sudo rm -rf /opt/app/pg_wal
-sudo rm -f /etc/yum.repos.d/pgdg-redhat-all.repo
-sudo dnf autoremove -y
-
-[svcpostgres@uv1medpg3db1 ~]$ sudo rm -rf /opt/app/postgres-data
-rm: cannot remove '/opt/app/postgres-data': Device or resource busy
-[svcpostgres@uv1medpg3db1 ~]$ sudo rm -rf /opt/app/pg_wal
-rm: cannot remove '/opt/app/pg_wal': Device or resource busy
-
-[svcpostgres@uv1medpg3db1 ~]$ ps -ef | grep postgres
-root     2804025 2776749  0 21:00 pts/0    00:00:00 sudo -iu svcpostgres
-svcpost+ 2804100 2804026  0 21:04 pts/0    00:00:00 grep --color=auto postgres
-
-
+citus=# SELECT run_command_on_workers($cmd$
+citus$#   CREATE OR REPLACE FUNCTION set_author() RETURNS TRIGGER AS $$
+citus$#     BEGIN
+citus$#       NEW.author := current_user;
+citus$#       RETURN NEW;
+citus$#     END;
+citus$#   $$ LANGUAGE plpgsql;
+citus$# $cmd$);
+                       run_command_on_workers
+---------------------------------------------------------------------
+ (10.13.3.48,5432,f,"ERROR:  operation is not allowed on this node")
+ (10.13.3.49,5432,f,"ERROR:  operation is not allowed on this node")
+ (10.13.3.50,5432,f,"ERROR:  operation is not allowed on this node")
+ (10.13.3.51,5432,f,"ERROR:  operation is not allowed on this node")
 
 
 
