@@ -41,12 +41,13 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@uv1medpg3db1 ~]$ systemctl status postgresql.service
-● postgresql.service - PostgreSQL database server
-   Loaded: loaded (/usr/lib/systemd/system/postgresql.service; disabled; vendor preset: disabled)
-   Active: failed (Result: exit-code) since Tue 2024-09-17 18:30:08 UTC; 31s ago
-     Docs: https://www.postgresql.org/docs/
-  Process: 17950 ExecStart=/opt/app/postgresql/bin/pg_ctl start -D ${PGDATA} (code=exited, status=1/FAILURE)
+[svcpostgres@uv1medpg3db1 ~]$ /opt/app/postgresql/bin/pg_ctl start -D /opt/app/postgres-data
+waiting for server to start....2024-09-17 18:34:18.075 UTC [18151] FATAL:  could not access file "repmgr": No such file or directory
+2024-09-17 18:34:18.075 UTC [18151] LOG:  database system is shut down
+ stopped waiting
+pg_ctl: could not start server
+Examine the log output.
+
 
 
 
