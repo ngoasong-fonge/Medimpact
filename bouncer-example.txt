@@ -41,8 +41,32 @@ LIMIT 10;
 
 ======================
 
-[svcpostgres@uv1medpg3db1 ~]$ which psql
-/opt/app/postgresql/bin/psql
+[svcpostgres@uv1medpg3db1 system]$ cat /usr/lib/systemd/system/postgresql.service
+[Unit]
+Description=PostgreSQL database server
+Documentation=https://www.postgresql.org/docs/
+After=network.target
+
+[Service]
+Type=forking
+
+User=svcpostgres
+Group=svcpostgres
+
+OOMScoreAdjust=-1000
+EnvironmentFile=/opt/app/localhome/svcpostgres/.config/postgresql
+
+ExecStart=/opt/app/postgresql/bin/pg_ctl start -D ${PGDATA}
+ExecStop=/opt/app/postgresql/bin/pg_ctl stop -D ${PGDATA}
+ExecReload=/opt/app/postgresql/bin/pg_ctl reload -D ${PGDATA}
+KillMode=mixed
+KillSignal=SIGINT
+
+# No artificial start/stop timeout (rhbz#1525477, pgrpms#2786).
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target
 
 
 
