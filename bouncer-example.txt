@@ -42,33 +42,4 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@uv2medpg3db1 ~]$ repmgr standby switchover -f /etc/repmgr/15/repmgr.conf
-NOTICE: executing switchover on node "pg2" (ID: 2)
-NOTICE: attempting to pause repmgrd on 2 nodes
-NOTICE: local node "pg2" (ID: 2) will be promoted to primary; current primary "pg1" (ID: 1) will be demoted to standby
-NOTICE: stopping current primary node "pg1" (ID: 1)
-NOTICE: issuing CHECKPOINT on node "pg1" (ID: 1)
-DETAIL: executing server command "systemctl stop postgresql"
-INFO: checking for primary shutdown; 1 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 2 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 3 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 4 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 5 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 6 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 7 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 8 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 9 of 10 attempts ("shutdown_check_timeout")
-INFO: checking for primary shutdown; 10 of 10 attempts ("shutdown_check_timeout")
-ERROR: shutdown of the primary server could not be confirmed
-HINT: check the primary server status before performing any further actions
-[svcpostgres@uv2medpg3db1 ~]$ tail /var/log/repmgr/repmgr-15.log
-[2024-09-18 16:05:48] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:10:48] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:15:49] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:20:50] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:25:51] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:30:52] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:35:53] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:40:54] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:45:55] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
-[2024-09-18 16:50:56] [INFO] node "pg2" (ID: 2) monitoring upstream node "pg1" (ID: 1) in normal state (automatic failover disabled)
+log_line_prefix = '%t [%p]: user=%u, db=%d, host=%h, app=%a, xid=%x, status=%e: '
