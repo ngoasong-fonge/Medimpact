@@ -42,4 +42,7 @@ LIMIT 10;
 ======================
 
 
-log_line_prefix = '%t [%p]: user=%u, db=%d, host=%h, app=%a, xid=%x, status=%e: '
+sh-4.4# dnf install repmgr15* -y
+Last metadata expiration check: 3:14:01 ago on Tue 24 Sep 2024 06:42:07 PM UTC.
+No match for argument: repmgr15*
+Error: Unable to find a match: repmgr15*
