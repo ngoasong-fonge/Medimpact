@@ -73,3 +73,7 @@ sudo dnf install json-c-devel -y
 /usr/bin/ld: cannot find -lreadline
 collect2: error: ld returned 1 exit status
 make: *** [Makefile:84: repmgr] Error 1
+
+
+sudo dnf install lz4-devel -y
+sudo dnf install readline-devel -y
