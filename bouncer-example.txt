@@ -70,3 +70,50 @@ Building against PostgreSQL 15
 /usr/bin/install -c -m 644 .//repmgr.control '/opt/app/postgresql-15.8/share/extension/'
 /usr/bin/install -c -m 644 .//repmgr--unpackaged--4.0.sql .//repmgr--unpackaged--5.1.sql .//repmgr--unpackaged--5.2.sql .//repmgr--unpackaged--5.3.sql .//repmgr--4.0.sql .//repmgr--4.0--4.1.sql .//repmgr--4.1.sql .//repmgr--4.1--4.2.sql .//repmgr--4.2.sql .//repmgr--4.2--4.3.sql .//repmgr--4.3.sql .//repmgr--4.3--4.4.sql .//repmgr--4.4.sql .//repmgr--4.4--5.0.sql .//repmgr--5.0.sql .//repmgr--5.0--5.1.sql .//repmgr--5.1.sql .//repmgr--5.1--5.2.sql .//repmgr--5.2.sql .//repmgr--5.2--5.3.sql .//repmgr--5.3.sql .//repmgr--5.3--5.4.sql .//repmgr--5.4.sql  '/opt/app/postgresql-15.8/share/extension/'
 /usr/bin/install -c -m 755 repmgr repmgrd '/opt/app/postgresql-15.8/bin/'
+
+
+[svcpostgres@pv1medpg3db1 bin]$ cd /opt/app/postgresql-15.8/bin/
+[svcpostgres@pv1medpg3db1 bin]$ ls -la
+total 14580
+drwxrwxr-x 2 svcpostgres svcpostgres    4096 Sep 16 20:52 .
+drwxrwxr-x 7 svcpostgres svcpostgres      88 Sep 16 20:52 ..
+-rwxr-xr-x 1 svcpostgres svcpostgres    4379 Sep 16 20:52 check_unique_constraint.py
+-rwxr-xr-x 1 svcpostgres svcpostgres   97584 Sep 16 20:51 clusterdb
+-rwxr-xr-x 1 svcpostgres svcpostgres  101904 Sep 16 20:51 createdb
+-rwxr-xr-x 1 svcpostgres svcpostgres   98016 Sep 16 20:51 createuser
+-rwxr-xr-x 1 svcpostgres svcpostgres   92800 Sep 16 20:51 dropdb
+-rwxr-xr-x 1 svcpostgres svcpostgres   92736 Sep 16 20:51 dropuser
+-rwxr-xr-x 1 svcpostgres svcpostgres    5765 Sep 16 20:52 dump_partition.py
+-rwxr-xr-x 1 svcpostgres svcpostgres 1010328 Sep 16 20:51 ecpg
+-rwxr-xr-x 1 svcpostgres svcpostgres  165400 Sep 16 20:51 initdb
+-rwxr-xr-x 1 svcpostgres svcpostgres   63504 Sep 16 20:51 oid2name
+-rwxr-xr-x 1 svcpostgres svcpostgres  124752 Sep 16 20:51 pg_amcheck
+-rwxr-xr-x 1 svcpostgres svcpostgres   58184 Sep 16 20:51 pg_archivecleanup
+-rwxr-xr-x 1 svcpostgres svcpostgres  178872 Sep 16 20:51 pg_basebackup
+-rwxr-xr-x 1 svcpostgres svcpostgres  220824 Sep 16 20:51 pgbench
+-rwxr-xr-x 1 svcpostgres svcpostgres   81416 Sep 16 20:51 pg_checksums
+-rwxr-xr-x 1 svcpostgres svcpostgres   56640 Sep 16 20:51 pg_config
+-rwxr-xr-x 1 svcpostgres svcpostgres   75368 Sep 16 20:51 pg_controldata
+-rwxr-xr-x 1 svcpostgres svcpostgres   90696 Sep 16 20:51 pg_ctl
+-rwxr-xr-x 1 svcpostgres svcpostgres   31241 Sep 16 20:52 pg_dbms_job
+-rwxr-xr-x 1 svcpostgres svcpostgres  422312 Sep 16 20:51 pg_dump
+-rwxr-xr-x 1 svcpostgres svcpostgres  129624 Sep 16 20:51 pg_dumpall
+-rwxr-xr-x 1 svcpostgres svcpostgres   92352 Sep 16 20:51 pg_isready
+-rwxr-xr-x 1 svcpostgres svcpostgres  120960 Sep 16 20:51 pg_receivewal
+-rwxr-xr-x 1 svcpostgres svcpostgres  121024 Sep 16 20:51 pg_recvlogical
+-rwxr-xr-x 1 svcpostgres svcpostgres   85512 Sep 16 20:51 pg_resetwal
+-rwxr-xr-x 1 svcpostgres svcpostgres  207944 Sep 16 20:51 pg_restore
+-rwxr-xr-x 1 svcpostgres svcpostgres  169152 Sep 16 20:51 pg_rewind
+-rwxr-xr-x 1 svcpostgres svcpostgres   63616 Sep 16 20:51 pg_test_fsync
+-rwxr-xr-x 1 svcpostgres svcpostgres   52888 Sep 16 20:51 pg_test_timing
+-rwxr-xr-x 1 svcpostgres svcpostgres  179856 Sep 16 20:51 pg_upgrade
+-rwxr-xr-x 1 svcpostgres svcpostgres  120256 Sep 16 20:51 pg_verifybackup
+-rwxr-xr-x 1 svcpostgres svcpostgres  127824 Sep 16 20:51 pg_waldump
+-rwxr-xr-x 1 svcpostgres svcpostgres 9297472 Sep 16 20:51 postgres
+lrwxrwxrwx 1 svcpostgres svcpostgres       8 Sep 16 20:51 postmaster -> postgres
+-rwxr-xr-x 1 svcpostgres svcpostgres  727896 Sep 16 20:51 psql
+-rwxr-xr-x 1 svcpostgres svcpostgres  106792 Sep 16 20:51 reindexdb
+-rwxr-xr-x 1 svcpostgres svcpostgres  107016 Sep 16 20:51 vacuumdb
+-rwxr-xr-x 1 svcpostgres svcpostgres   63224 Sep 16 20:52 vacuumlo
+-rwxr-xr-x 1 svcpostgres svcpostgres   11382 Sep 16 20:52 vacuum_maintenance.py
+
