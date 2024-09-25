@@ -49,3 +49,8 @@ LIMIT 10;
 
 make
 sudo make install
+
+
+./configure --prefix=/opt/app/postgresql --with-pgsql-bin-dir=/opt/app/postgresql/bin --with-pgsql-lib-dir=/opt/app/postgresql/lib --with-pgsql-include-dir=/opt/app/postgresql/include
+configure: WARNING: unrecognized options: --with-pgsql-bin-dir, --with-pgsql-lib-dir, --with-pgsql-include-dir
+ 
