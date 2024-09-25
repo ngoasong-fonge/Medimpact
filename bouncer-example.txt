@@ -64,3 +64,8 @@ sudo: make: command not found
 /usr/bin/ld: cannot find -ljson-c
 collect2: error: ld returned 1 exit status
 make: *** [/opt/app/postgresql-15.8/lib/pgxs/src/makefiles/../../src/Makefile.shlib:293: repmgr.so] Error 1
+
+
+sudo dnf install libcurl-devel -y
+sudo dnf install json-c-devel -y
+
