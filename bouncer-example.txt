@@ -69,3 +69,7 @@ make: *** [/opt/app/postgresql-15.8/lib/pgxs/src/makefiles/../../src/Makefile.sh
 sudo dnf install libcurl-devel -y
 sudo dnf install json-c-devel -y
 
+/usr/bin/ld: cannot find -llz4
+/usr/bin/ld: cannot find -lreadline
+collect2: error: ld returned 1 exit status
+make: *** [Makefile:84: repmgr] Error 1
