@@ -71,15 +71,5 @@ Building against PostgreSQL 15
 /usr/bin/install -c -m 644 .//repmgr--unpackaged--4.0.sql .//repmgr--unpackaged--5.1.sql .//repmgr--unpackaged--5.2.sql .//repmgr--unpackaged--5.3.sql .//repmgr--4.0.sql .//repmgr--4.0--4.1.sql .//repmgr--4.1.sql .//repmgr--4.1--4.2.sql .//repmgr--4.2.sql .//repmgr--4.2--4.3.sql .//repmgr--4.3.sql .//repmgr--4.3--4.4.sql .//repmgr--4.4.sql .//repmgr--4.4--5.0.sql .//repmgr--5.0.sql .//repmgr--5.0--5.1.sql .//repmgr--5.1.sql .//repmgr--5.1--5.2.sql .//repmgr--5.2.sql .//repmgr--5.2--5.3.sql .//repmgr--5.3.sql .//repmgr--5.3--5.4.sql .//repmgr--5.4.sql  '/opt/app/postgresql-15.8/share/extension/'
 /usr/bin/install -c -m 755 repmgr repmgrd '/opt/app/postgresql-15.8/bin/'
 
-
-Rajesh Juluru, we are getting empty event notifications. 
- 
-Replication Event Notification
- 
-Node Name:
-Event Type:
-Event Status:
-Timestamp:
-Details:
- 
-This is an automated message from your PostgreSQL replication system.
+event_notification_command='/opt/backup/event_notification/event_notification.sh'
+event_notification_command='/opt/backup/event_notification/event_notification.sh %n %e %s "%t" "%d"'
