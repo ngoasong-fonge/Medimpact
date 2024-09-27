@@ -60,16 +60,7 @@ configure: WARNING: unrecognized options: --with-pgsql-bin-dir, --with-pgsql-lib
 sudo: make: command not found
 
 
-[svcpostgres@pv2medpg3db1 repmgr-5.4.0]$ sudo make install
-Building against PostgreSQL 15
-/usr/bin/mkdir -p '/opt/app/postgresql-15.8/lib'
-/usr/bin/mkdir -p '/opt/app/postgresql-15.8/share/extension'
-/usr/bin/mkdir -p '/opt/app/postgresql-15.8/share/extension'
-/usr/bin/mkdir -p '/opt/app/postgresql-15.8/bin'
-/usr/bin/install -c -m 755  repmgr.so '/opt/app/postgresql-15.8/lib/repmgr.so'
-/usr/bin/install -c -m 644 .//repmgr.control '/opt/app/postgresql-15.8/share/extension/'
-/usr/bin/install -c -m 644 .//repmgr--unpackaged--4.0.sql .//repmgr--unpackaged--5.1.sql .//repmgr--unpackaged--5.2.sql .//repmgr--unpackaged--5.3.sql .//repmgr--4.0.sql .//repmgr--4.0--4.1.sql .//repmgr--4.1.sql .//repmgr--4.1--4.2.sql .//repmgr--4.2.sql .//repmgr--4.2--4.3.sql .//repmgr--4.3.sql .//repmgr--4.3--4.4.sql .//repmgr--4.4.sql .//repmgr--4.4--5.0.sql .//repmgr--5.0.sql .//repmgr--5.0--5.1.sql .//repmgr--5.1.sql .//repmgr--5.1--5.2.sql .//repmgr--5.2.sql .//repmgr--5.2--5.3.sql .//repmgr--5.3.sql .//repmgr--5.3--5.4.sql .//repmgr--5.4.sql  '/opt/app/postgresql-15.8/share/extension/'
-/usr/bin/install -c -m 755 repmgr repmgrd '/opt/app/postgresql-15.8/bin/'
-
-event_notification_command='/opt/backup/event_notification/event_notification.sh'
-event_notification_command='/opt/backup/event_notification/event_notification.sh %n %e %s "%t" "%d"'
+[svcpostgres@pv1medpg3db1 ~]$ repmgr -h 10.15.2.190 -U repmgr -d repmgr -f /opt/app/repmgr/repmgr.conf standby clone --copy-external-config-files --dry-run
+NOTICE: destination directory "/opt/app/postgres-data" provided
+ERROR: specified data directory "/opt/app/postgres-data" appears to contain a running PostgreSQL instance
+HINT: ensure the target data directory does not contain a running PostgreSQL instance
