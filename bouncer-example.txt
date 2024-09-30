@@ -42,25 +42,51 @@ LIMIT 10;
 ======================
 
 
-./configure --prefix=/opt/app/postgresql \
-            --with-pgsql-bin-dir=/opt/app/postgresql/bin \
-            --with-pgsql-lib-dir=/opt/app/postgresql/lib \
-            --with-pgsql-include-dir=/opt/app/postgresql/include
+ERROR: node "pguat2" (ID: 2) promoted to primary, but demotion candidate "pg1" (ID: 1) did not connect to the new primary
+DETAIL: check the PostgreSQL log file on  demotion candidate "pg1" (ID: 1)
+INFO: executing notification command for event "standby_switchover"
+DETAIL: command is:
+  /opt/backup/event_notification/event_notification.sh 2 standby_switchover 0 "2024-09-30 15:43:41.817023+00" "node \"pguat2\" (ID: 2) promoted to primary, but demotion candidate \"pg1\" (ID: 1) did not connect to the new primary
+check the PostgreSQL log file on  demotion candidate \"pg1\" (ID: 1)"
+WARNING: node "pg1" not found in "pg_stat_replication"
+NOTICE: switchover is incomplete
+DETAIL: node "pg2" is now primary but node "pg1" is not attached as standby
+NOTICE: STANDBY SWITCHOVER has completed with issues
+HINT: see preceding log message(s) for details
+[svcpostgres@uv2medpg3db1 ~]$
+[svcpostgres@uv2medpg3db1 ~]$
+[svcpostgres@uv2medpg3db1 ~]$
+[svcpostgres@uv2medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf cluster show
+WARNING: node "pg1" not found in "pg_stat_replication"
+ ID | Name | Role    | Status    | Upstream | Location | Priority | Timeline | Connection string
+----+------+---------+-----------+----------+----------+----------+----------+----------------------------------------------------------------
+ 1  | pg1  | standby |   running | ! pg2    | default  | 100      | 3        | host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2
+ 2  | pg2  | primary | * running |          | default  | 100      | 4        | host=10.15.135.119 user=repmgr dbname=repmgr connect_timeout=2
 
-make
-sudo make install
+WARNING: following issues were detected
+  - node "pg1" (ID: 1) is not attached to its upstream node "pg2" (ID: 2)
+after checking the PostgreSQL log file on  demotion candidate \"pg1\" i see bellow logs
+
+[svcpostgres@uv1medpg3db1 log]$ cat postgresql-2024-09-30_000000.log
+2024-09-30 02:00:02.041 UTC [107482] LOG:  checkpoint starting: force wait
+2024-09-30 02:00:02.070 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.016 s, sync=0.001 s, total=0.030 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16383 kB, estimate=16384 kB
+2024-09-30 02:05:02.171 UTC [107482] LOG:  checkpoint starting: time
+2024-09-30 02:05:02.190 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 2 recycled; write=0.012 s, sync=0.001 s, total=0.020 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16384 kB, estimate=16384 kB
+2024-09-30 02:50:59.703 UTC [1321676] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "postgres", no encryption
+2024-09-30 02:50:59.705 UTC [1321677] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "postgres", no encryption
+2024-09-30 02:51:08.434 UTC [1321713] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "repmgr", no encryption
+2024-09-30 02:51:08.437 UTC [1321714] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "repmgr", no encryption
+2024-09-30 15:42:39.195 UTC [107482] LOG:  checkpoint starting: immediate force wait
+2024-09-30 15:42:39.222 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.013 s, sync=0.001 s, total=0.028 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=14745 kB
+2024-09-30 15:42:39.271 UTC [107478] LOG:  received fast shutdown request
+2024-09-30 15:42:39.272 UTC [107478] LOG:  aborting any active transactions
+2024-09-30 15:42:39.272 UTC [107493] FATAL:  terminating connection due to administrator command
+2024-09-30 15:42:39.272 UTC [107641] FATAL:  terminating connection due to administrator command
+2024-09-30 15:42:39.275 UTC [107478] LOG:  background worker "logical replication launcher" (PID 107594) exited with exit code 1
+2024-09-30 15:42:39.276 UTC [107482] LOG:  shutting down
+2024-09-30 15:42:39.311 UTC [107482] LOG:  checkpoint starting: shutdown immediate
+2024-09-30 15:42:39.334 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.012 s, sync=0.001 s, total=0.026 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16383 kB, estimate=16383 kB
+2024-09-30 15:42:39.547 UTC [107478] LOG:  database system is shut down
 
 
-./configure --prefix=/opt/app/postgresql --with-pgsql-bin-dir=/opt/app/postgresql/bin --with-pgsql-lib-dir=/opt/app/postgresql/lib --with-pgsql-include-dir=/opt/app/postgresql/include
-configure: WARNING: unrecognized options: --with-pgsql-bin-dir, --with-pgsql-lib-dir, --with-pgsql-include-dir
- 
-[svcpostgres@pv2medpg3db1 repmgr-5.4.0]$ make
--bash: make: command not found
-[svcpostgres@pv2medpg3db1 repmgr-5.4.0]$ sudo make install
-sudo: make: command not found
 
-
-[svcpostgres@pv1medpg3db1 ~]$ repmgr -h 10.15.2.190 -U repmgr -d repmgr -f /opt/app/repmgr/repmgr.conf standby clone --copy-external-config-files --dry-run
-NOTICE: destination directory "/opt/app/postgres-data" provided
-ERROR: specified data directory "/opt/app/postgres-data" appears to contain a running PostgreSQL instance
-HINT: ensure the target data directory does not contain a running PostgreSQL instance
