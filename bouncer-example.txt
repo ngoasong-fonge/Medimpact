@@ -88,7 +88,7 @@ after checking the PostgreSQL log file on  demotion candidate \"pg1\" i see bell
 2024-09-30 15:42:39.334 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.012 s, sync=0.001 s, total=0.026 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16383 kB, estimate=16383 kB
 2024-09-30 15:42:39.547 UTC [107478] LOG:  database system is shut down
 
-on pg1 my hba.conf looks like bellow
+on pg1 which is 10.13.102.119 my hba.conf looks like bellow
 
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 
@@ -113,3 +113,26 @@ host    repmgr     repmgr     10.15.135.119/32             trust
 host    repmgr     repmgr     10.13.102.119/32             trust
 
 
+on pg2 which is 10.15.135.119 it looks like bellow
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            trust
+host    replication     all             ::1/128                 trust
+local   replication     repmgr                                  trust
+host    replication     repmgr     127.0.0.1/32                 trust
+host    replication     repmgr     10.15.135.119/32             trust
+host    replication     repmgr     10.13.102.119/32             trust
+local   repmgr     repmgr                                  trust
+host    repmgr     repmgr     127.0.0.1/32                 trust
+host    repmgr     repmgr     10.15.135.119/32             trust
+host    repmgr     repmgr     10.13.102.119/32             trust
