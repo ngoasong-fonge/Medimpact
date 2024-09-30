@@ -148,4 +148,17 @@ connection to server at "10.15.135.119", port 5432 failed: fe_sendauth: no passw
 DETAIL: attempted to connect using:
   user=repmgr connect_timeout=2 dbname=repmgr host=10.15.135.119 fallback_application_name=repmgr options=-csearch_path=
 
+[svcpostgres@uv1medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf cluster show --verbose
+NOTICE: using provided configuration file "/etc/repmgr/15/repmgr.conf"
+INFO: connecting to database
+WARNING: node "pg1" not found in "pg_stat_replication"
+ ID | Name | Role    | Status    | Upstream | Location | Priority | Timeline | Connection string
+----+------+---------+-----------+----------+----------+----------+----------+----------------------------------------------------------------
+ 1  | pg1  | standby |   running | ! pg2    | default  | 100      | 4        | host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2
+ 2  | pg2  | primary | * running |          | default  | 100      | 4        | host=10.15.135.119 user=repmgr dbname=repmgr connect_timeout=2
+
+WARNING: following issues were detected
+  - node "pg1" (ID: 1) is not attached to its upstream node "pg2" (ID: 2)
+
+
 
