@@ -136,3 +136,7 @@ local   repmgr     repmgr                                  trust
 host    repmgr     repmgr     127.0.0.1/32                 trust
 host    repmgr     repmgr     10.15.135.119/32             trust
 host    repmgr     repmgr     10.13.102.119/32             trust
+
+
+repmgr -h 10.15.135.119 -U repmgr -d repmgr -f /etc/repmgr/15/repmgr.conf standby follow
+
