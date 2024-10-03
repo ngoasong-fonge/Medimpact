@@ -79,3 +79,12 @@ echo "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" "$TO_EMAIL"
 #   %t - timestamp
 #   %d - details
 
+event_notification_command='/opt/backup/event_notification/event_notification.sh %n %e %s "%t" "%d"'
+
+Replication Event Notification
+
+Node Name: 
+Event Type: repmgrd_standby_reconnect
+Event Status: 1
+Timestamp: 2024-10-03 18:31:31.409123+00
+Details: node has become a standby, monitoring connection to upstream node 2
