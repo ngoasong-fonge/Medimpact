@@ -72,3 +72,10 @@ EOF
 
 # Send the email
 echo "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" "$TO_EMAIL"
+
+#   %n - node ID
+#   %e - event type
+#   %s - success (1 or 0)
+#   %t - timestamp
+#   %d - details
+
