@@ -42,123 +42,33 @@ LIMIT 10;
 ======================
 
 
-ERROR: node "pguat2" (ID: 2) promoted to primary, but demotion candidate "pg1" (ID: 1) did not connect to the new primary
-DETAIL: check the PostgreSQL log file on  demotion candidate "pg1" (ID: 1)
-INFO: executing notification command for event "standby_switchover"
-DETAIL: command is:
-  /opt/backup/event_notification/event_notification.sh 2 standby_switchover 0 "2024-09-30 15:43:41.817023+00" "node \"pguat2\" (ID: 2) promoted to primary, but demotion candidate \"pg1\" (ID: 1) did not connect to the new primary
-check the PostgreSQL log file on  demotion candidate \"pg1\" (ID: 1)"
-WARNING: node "pg1" not found in "pg_stat_replication"
-NOTICE: switchover is incomplete
-DETAIL: node "pg2" is now primary but node "pg1" is not attached as standby
-NOTICE: STANDBY SWITCHOVER has completed with issues
-HINT: see preceding log message(s) for details
-[svcpostgres@uv2medpg3db1 ~]$
-[svcpostgres@uv2medpg3db1 ~]$
-[svcpostgres@uv2medpg3db1 ~]$
-[svcpostgres@uv2medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf cluster show
-WARNING: node "pg1" not found in "pg_stat_replication"
- ID | Name | Role    | Status    | Upstream | Location | Priority | Timeline | Connection string
-----+------+---------+-----------+----------+----------+----------+----------+----------------------------------------------------------------
- 1  | pg1  | standby |   running | ! pg2    | default  | 100      | 3        | host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2
- 2  | pg2  | primary | * running |          | default  | 100      | 4        | host=10.15.135.119 user=repmgr dbname=repmgr connect_timeout=2
+#!/bin/bash
 
-WARNING: following issues were detected
-  - node "pg1" (ID: 1) is not attached to its upstream node "pg2" (ID: 2)
-after checking the PostgreSQL log file on  demotion candidate \"pg1\" i see bellow logs
+# Define the parameters passed by repmgr
+NODE_ID=$1      # %n - Node ID
+EVENT_TYPE=$2     # %e - Event type
+EVENT_STATUS=$3   # %s - Event status
+EVENT_TIMESTAMP=$4 # %t - Event timestamp
+EVENT_DETAILS=$5  # %d - Event details (optional)
 
-[svcpostgres@uv1medpg3db1 log]$ cat postgresql-2024-09-30_000000.log
-2024-09-30 02:00:02.041 UTC [107482] LOG:  checkpoint starting: force wait
-2024-09-30 02:00:02.070 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.016 s, sync=0.001 s, total=0.030 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16383 kB, estimate=16384 kB
-2024-09-30 02:05:02.171 UTC [107482] LOG:  checkpoint starting: time
-2024-09-30 02:05:02.190 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 2 recycled; write=0.012 s, sync=0.001 s, total=0.020 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16384 kB, estimate=16384 kB
-2024-09-30 02:50:59.703 UTC [1321676] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "postgres", no encryption
-2024-09-30 02:50:59.705 UTC [1321677] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "postgres", no encryption
-2024-09-30 02:51:08.434 UTC [1321713] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "repmgr", no encryption
-2024-09-30 02:51:08.437 UTC [1321714] FATAL:  no pg_hba.conf entry for host "10.13.102.240", user "postgres", database "repmgr", no encryption
-2024-09-30 15:42:39.195 UTC [107482] LOG:  checkpoint starting: immediate force wait
-2024-09-30 15:42:39.222 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.013 s, sync=0.001 s, total=0.028 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=14745 kB
-2024-09-30 15:42:39.271 UTC [107478] LOG:  received fast shutdown request
-2024-09-30 15:42:39.272 UTC [107478] LOG:  aborting any active transactions
-2024-09-30 15:42:39.272 UTC [107493] FATAL:  terminating connection due to administrator command
-2024-09-30 15:42:39.272 UTC [107641] FATAL:  terminating connection due to administrator command
-2024-09-30 15:42:39.275 UTC [107478] LOG:  background worker "logical replication launcher" (PID 107594) exited with exit code 1
-2024-09-30 15:42:39.276 UTC [107482] LOG:  shutting down
-2024-09-30 15:42:39.311 UTC [107482] LOG:  checkpoint starting: shutdown immediate
-2024-09-30 15:42:39.334 UTC [107482] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.012 s, sync=0.001 s, total=0.026 s; sync files=0, longest=0.000 s, average=0.000 s; distance=16383 kB, estimate=16383 kB
-2024-09-30 15:42:39.547 UTC [107478] LOG:  database system is shut down
+# Email settings
+TO_EMAIL="ngoasong.fonge@medimpact.com"
+SUBJECT="PostgreSQL Replication Event Notification: $EVENT_TYPE"
+FROM_EMAIL="noreply@example.com"
 
-on pg1 which is 10.13.102.119 my hba.conf looks like bellow
+# Construct the email body
+EMAIL_BODY=$(cat <<EOF
+Replication Event Notification
 
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
+Node Name: $NODE_NAME
+Event Type: $EVENT_TYPE
+Event Status: $EVENT_STATUS
+Timestamp: $EVENT_TIMESTAMP
+Details: $EVENT_DETAILS
 
-# "local" is for Unix domain socket connections only
-local   all             all                                     trust
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            trust
-# IPv6 local connections:
-host    all             all             ::1/128                 trust
-# Allow replication connections from localhost, by a user with the
-# replication privilege.
-local   replication     all                                     trust
-host    replication     all             127.0.0.1/32            trust
-host    replication     all             ::1/128                 trust
-local   replication     repmgr                                  trust
-host    replication     repmgr     127.0.0.1/32                 trust
-host    replication     repmgr     10.15.135.119/32             trust
-host    replication     repmgr     10.13.102.119/32             trust
-local   repmgr     repmgr                                  trust
-host    repmgr     repmgr     127.0.0.1/32                 trust
-host    repmgr     repmgr     10.15.135.119/32             trust
-host    repmgr     repmgr     10.13.102.119/32             trust
+This is an automated message from your PostgreSQL replication system.
+EOF
+)
 
-
-on pg2 which is 10.15.135.119 it looks like bellow
-
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-
-# "local" is for Unix domain socket connections only
-local   all             all                                     trust
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            trust
-# IPv6 local connections:
-host    all             all             ::1/128                 trust
-# Allow replication connections from localhost, by a user with the
-# replication privilege.
-local   replication     all                                     trust
-host    replication     all             127.0.0.1/32            trust
-host    replication     all             ::1/128                 trust
-local   replication     repmgr                                  trust
-host    replication     repmgr     127.0.0.1/32                 trust
-host    replication     repmgr     10.15.135.119/32             trust
-host    replication     repmgr     10.13.102.119/32             trust
-local   repmgr     repmgr                                  trust
-host    repmgr     repmgr     127.0.0.1/32                 trust
-host    repmgr     repmgr     10.15.135.119/32             trust
-host    repmgr     repmgr     10.13.102.119/32             trust
-
-
-repmgr -h 10.15.135.119 -U repmgr -d repmgr -f /etc/repmgr/15/repmgr.conf standby follow
-
-[svcpostgres@uv1medpg3db1 log]$ repmgr -f /etc/repmgr/15/repmgr.conf node check
-ERROR: connection to database failed
-DETAIL:
-connection to server at "10.15.135.119", port 5432 failed: fe_sendauth: no password supplied
-
-DETAIL: attempted to connect using:
-  user=repmgr connect_timeout=2 dbname=repmgr host=10.15.135.119 fallback_application_name=repmgr options=-csearch_path=
-
-[svcpostgres@uv1medpg3db1 ~]$ repmgr -f /etc/repmgr/15/repmgr.conf cluster show --verbose
-NOTICE: using provided configuration file "/etc/repmgr/15/repmgr.conf"
-INFO: connecting to database
-WARNING: node "pg1" not found in "pg_stat_replication"
- ID | Name | Role    | Status    | Upstream | Location | Priority | Timeline | Connection string
-----+------+---------+-----------+----------+----------+----------+----------+----------------------------------------------------------------
- 1  | pg1  | standby |   running | ! pg2    | default  | 100      | 4        | host=10.13.102.119 user=repmgr dbname=repmgr connect_timeout=2
- 2  | pg2  | primary | * running |          | default  | 100      | 4        | host=10.15.135.119 user=repmgr dbname=repmgr connect_timeout=2
-
-WARNING: following issues were detected
-  - node "pg1" (ID: 1) is not attached to its upstream node "pg2" (ID: 2)
-
-
-
+# Send the email
+echo "$EMAIL_BODY" | mail -s "$SUBJECT" -r "$FROM_EMAIL" "$TO_EMAIL"
