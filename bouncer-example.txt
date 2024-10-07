@@ -42,9 +42,31 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@uv1medpg3db1 ~]$ sudo dnf remove repmgr
-No match for argument: repmgr
-No packages marked for removal.
-Dependencies resolved.
-Nothing to do.
-Complete!
+[svcpostgres@uv2medpg3db1 ~]$ repmgr -h 10.13.102.119 -U repmgr -d repmgr -f /opt/app/repmgr/repmgr.conf standby clone -F
+NOTICE: destination directory "/opt/app/postgres-data" provided
+INFO: connecting to source node
+DETAIL: connection string is: host=10.13.102.119 user=repmgr dbname=repmgr
+DETAIL: current installation size is 28 MB
+INFO: replication slot usage not requested;  no replication slot will be set up for this standby
+NOTICE: checking for available walsenders on the source node (2 required)
+NOTICE: checking replication connections can be made to the source server (2 required)
+WARNING: data checksums are not enabled and "wal_log_hints" is "off"
+DETAIL: pg_rewind requires "wal_log_hints" to be enabled
+WARNING: directory "/opt/app/postgres-data" exists but is not empty
+NOTICE: -F/--force provided - deleting existing data directory "/opt/app/postgres-data"
+/opt/app/postgres-data: Permission denied
+NOTICE: starting backup (using pg_basebackup)...
+HINT: this may take some time; consider using the -c/--fast-checkpoint option
+INFO: executing:
+  /usr/pgsql-15/bin/pg_basebackup -l "repmgr base backup"  -D /opt/app/postgres-data -h 10.13.102.119 -p 5432 -U repmgr -X stream
+NOTICE: standby clone (using pg_basebackup) complete
+NOTICE: you can now start your PostgreSQL server
+HINT: for example: sudo systemctl start postgresql
+HINT: after starting the server, you need to register this standby with "repmgr standby register"
+INFO: executing notification command for event "standby_clone"
+DETAIL: command is:
+  /opt/backup/event_notification/event_notification.sh 2 standby_clone 1 "2024-10-07 19:45:01.671216+00" "cloned from host \"10.13.102.119\", port 5432; backup method: pg_basebackup; --force: Y"
+psql: error: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (::1), port 5432 failed: could not create socket: Address family not supported by protocol
+
