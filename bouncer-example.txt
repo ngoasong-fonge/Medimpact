@@ -107,6 +107,9 @@ fi
 ================================
 
 0 2 * * * /opt/app/patroni/scripts/pgdump_ngmep_backup.sh
+This cron job is scheduled to run the script /opt/app/patroni/scripts/pgdump_ngmep_backup.sh at 2:00 AM every day
+
+=====
 
 The script uses pg_basebackup to take a full backup of the PostgreSQL instance. It connects to the PostgreSQL instance running on localhost (127.0.0.1) and saves the backup in the specified directory
 
