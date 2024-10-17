@@ -103,3 +103,7 @@ if [ `ls ${BASEBACKUP_DIR}* |wc -l` -gt ${RETENTION_DAYS} ]; then
     find ${BASEBACKUP_DIR} -mtime +$(( ${RETENTION_DAYS} - 1 )) -exec rm -rf {} \;
     find ${ROOT_BACKUP_DIR}/wal_archive/ -mtime +$(( ${WAL_RETENTION_DAYS} - 1 )) -exec rm -rf {} \;
 fi
+
+================================
+
+The script uses pg_basebackup to take a full backup of the PostgreSQL instance. It connects to the PostgreSQL instance running on localhost (127.0.0.1) and saves the backup in the specified directory
