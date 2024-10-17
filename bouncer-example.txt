@@ -42,31 +42,64 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@uv2medpg3db1 ~]$ repmgr -h 10.13.102.119 -U repmgr -d repmgr -f /opt/app/repmgr/repmgr.conf standby clone -F
-NOTICE: destination directory "/opt/app/postgres-data" provided
-INFO: connecting to source node
-DETAIL: connection string is: host=10.13.102.119 user=repmgr dbname=repmgr
-DETAIL: current installation size is 28 MB
-INFO: replication slot usage not requested;  no replication slot will be set up for this standby
-NOTICE: checking for available walsenders on the source node (2 required)
-NOTICE: checking replication connections can be made to the source server (2 required)
-WARNING: data checksums are not enabled and "wal_log_hints" is "off"
-DETAIL: pg_rewind requires "wal_log_hints" to be enabled
-WARNING: directory "/opt/app/postgres-data" exists but is not empty
-NOTICE: -F/--force provided - deleting existing data directory "/opt/app/postgres-data"
-/opt/app/postgres-data: Permission denied
-NOTICE: starting backup (using pg_basebackup)...
-HINT: this may take some time; consider using the -c/--fast-checkpoint option
-INFO: executing:
-  /usr/pgsql-15/bin/pg_basebackup -l "repmgr base backup"  -D /opt/app/postgres-data -h 10.13.102.119 -p 5432 -U repmgr -X stream
-NOTICE: standby clone (using pg_basebackup) complete
-NOTICE: you can now start your PostgreSQL server
-HINT: for example: sudo systemctl start postgresql
-HINT: after starting the server, you need to register this standby with "repmgr standby register"
-INFO: executing notification command for event "standby_clone"
-DETAIL: command is:
-  /opt/backup/event_notification/event_notification.sh 2 standby_clone 1 "2024-10-07 19:45:01.671216+00" "cloned from host \"10.13.102.119\", port 5432; backup method: pg_basebackup; --force: Y"
-psql: error: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
-        Is the server running on that host and accepting TCP/IP connections?
-connection to server at "localhost" (::1), port 5432 failed: could not create socket: Address family not supported by protocol
+[svcpostgres@pv2medpg1c1 ~]$ cat /opt/app/patroni/scripts/backup_postgres.sh
+#! /bin/bash
 
+# add this to crontab
+# # Backup postgres at 8pm every day (4am UTC)
+# 0 4 * * * /opt/app/patroni/scripts/backup-postgres.sh -c "pgsandbox" -g 0 -r 14 > /dev/null 2>&1
+
+export PATH=/opt/app/postgresql/bin:/usr/bin:/usr/local/bin:$PATH
+
+unset -v PATRONI_CLUSTER
+unset -v PATRONI_GROUP
+unset -v RETENTION_DAYS
+unset -v WAL_RETENTION_DAYS
+
+while getopts c:g:r: flag
+do
+    case "${flag}" in
+        c) PATRONI_CLUSTER=${OPTARG};;
+        g) PATRONI_GROUP=${OPTARG};;
+        r) RETENTION_DAYS=${OPTARG};;
+        w) WAL_RETENTION_DAYS=${OPTARG};;
+    esac
+done
+
+if [ -z "$PATRONI_CLUSTER" ] || [ -z "$PATRONI_GROUP" ] || [ -z "$RETENTION_DAYS" ]; then
+        echo 'Missing options. Must set -c, -g, and -r flags.' >&2
+        exit 1
+fi
+
+if [ -z "$WAL_RETENTION_DAYS" ]; then
+        echo "WAL_RETENTION_DAYS was not set. Setting to $RETENTION_DAYS."
+        WAL_RETENTION_DAYS=$RETENTION_DAYS
+fi
+
+HOST=`hostname -s`
+ROOT_BACKUP_DIR=/opt/backup/${PATRONI_CLUSTER}/group${PATRONI_GROUP}
+BASEBACKUP_DIR=/${ROOT_BACKUP_DIR}/${HOST}/basebackup
+DATE=`date '+%Y-%m-%dT%H%M%SZ'`
+BACKUP_DIR=${BASEBACKUP_DIR}/${DATE}
+USERNAME='patroni_replicator'
+PATRONI_IP=`hostname -I | awk '{print $1}'`
+
+patroni_status=$(curl -s ${PATRONI_IP}:8008)
+role=$(echo $patroni_status | jq -r '.role')
+
+if [[ "$role" != "standby_leader" ]] && [[ "$role" != "master" ]]; then
+        echo 'Not the leader. Skipping backup.'
+        exit 0
+fi
+
+if [ ! -d "${BACKUP_DIR}" ]; then
+    mkdir -p ${BACKUP_DIR}
+    chmod 700 ${BACKUP_DIR}
+fi
+
+pg_basebackup -h 127.0.0.1 -D ${BACKUP_DIR} --username=${USERNAME} -Ft -z -P -v |& logger -t pgbackups
+
+if [ `ls ${BASEBACKUP_DIR}* |wc -l` -gt ${RETENTION_DAYS} ]; then
+    find ${BASEBACKUP_DIR} -mtime +$(( ${RETENTION_DAYS} - 1 )) -exec rm -rf {} \;
+    find ${ROOT_BACKUP_DIR}/wal_archive/ -mtime +$(( ${WAL_RETENTION_DAYS} - 1 )) -exec rm -rf {} \;
+fi
