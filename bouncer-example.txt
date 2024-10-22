@@ -42,75 +42,15 @@ LIMIT 10;
 ======================
 
 
-[svcpostgres@pv2medpg1c1 ~]$ cat /opt/app/patroni/scripts/backup_postgres.sh
-#! /bin/bash
+the user that runs splunk is:
 
-# add this to crontab
-# # Backup postgres at 8pm every day (4am UTC)
-# 0 4 * * * /opt/app/patroni/scripts/backup-postgres.sh -c "pgsandbox" -g 0 -r 14 > /dev/null 2>&1
+id splunk
 
-export PATH=/opt/app/postgresql/bin:/usr/bin:/usr/local/bin:$PATH
+uid=20027(splunk) gid=20027(splunk) groups=20027(splunk)
+ 
+so, i want to set up an ACL to allow that splunk user the ability to read the files in this folder
 
-unset -v PATRONI_CLUSTER
-unset -v PATRONI_GROUP
-unset -v RETENTION_DAYS
-unset -v WAL_RETENTION_DAYS
-
-while getopts c:g:r: flag
-do
-    case "${flag}" in
-        c) PATRONI_CLUSTER=${OPTARG};;
-        g) PATRONI_GROUP=${OPTARG};;
-        r) RETENTION_DAYS=${OPTARG};;
-        w) WAL_RETENTION_DAYS=${OPTARG};;
-    esac
-done
-
-if [ -z "$PATRONI_CLUSTER" ] || [ -z "$PATRONI_GROUP" ] || [ -z "$RETENTION_DAYS" ]; then
-        echo 'Missing options. Must set -c, -g, and -r flags.' >&2
-        exit 1
-fi
-
-if [ -z "$WAL_RETENTION_DAYS" ]; then
-        echo "WAL_RETENTION_DAYS was not set. Setting to $RETENTION_DAYS."
-        WAL_RETENTION_DAYS=$RETENTION_DAYS
-fi
-
-HOST=`hostname -s`
-ROOT_BACKUP_DIR=/opt/backup/${PATRONI_CLUSTER}/group${PATRONI_GROUP}
-BASEBACKUP_DIR=/${ROOT_BACKUP_DIR}/${HOST}/basebackup
-DATE=`date '+%Y-%m-%dT%H%M%SZ'`
-BACKUP_DIR=${BASEBACKUP_DIR}/${DATE}
-USERNAME='patroni_replicator'
-PATRONI_IP=`hostname -I | awk '{print $1}'`
-
-patroni_status=$(curl -s ${PATRONI_IP}:8008)
-role=$(echo $patroni_status | jq -r '.role')
-
-if [[ "$role" != "standby_leader" ]] && [[ "$role" != "master" ]]; then
-        echo 'Not the leader. Skipping backup.'
-        exit 0
-fi
-
-if [ ! -d "${BACKUP_DIR}" ]; then
-    mkdir -p ${BACKUP_DIR}
-    chmod 700 ${BACKUP_DIR}
-fi
-
-pg_basebackup -h 127.0.0.1 -D ${BACKUP_DIR} --username=${USERNAME} -Ft -z -P -v |& logger -t pgbackups
-
-if [ `ls ${BASEBACKUP_DIR}* |wc -l` -gt ${RETENTION_DAYS} ]; then
-    find ${BASEBACKUP_DIR} -mtime +$(( ${RETENTION_DAYS} - 1 )) -exec rm -rf {} \;
-    find ${ROOT_BACKUP_DIR}/wal_archive/ -mtime +$(( ${WAL_RETENTION_DAYS} - 1 )) -exec rm -rf {} \;
-fi
-
-================================
-
-0 2 * * * /opt/app/patroni/scripts/pgdump_ngmep_backup.sh
-This cron job is scheduled to run the script /opt/app/patroni/scripts/pgdump_ngmep_backup.sh at 2:00 AM every day
-
-=====
-
-The script uses pg_basebackup to take a full backup of the PostgreSQL instance. It connects to the PostgreSQL instance running on localhost (127.0.0.1) and saves the backup in the specified directory
-
-This will run the script every day at 4 AM UTC, performing backups for the pgsandbox cluster, group 0, with a retention of 14 days
+/opt/app/postgres-data/data/log/
+ 
+but if i remember correctly, postgresql will complain if the permissions are not 600 for that folder, right?
+ 
