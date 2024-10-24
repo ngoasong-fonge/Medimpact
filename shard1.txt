@@ -196,6 +196,14 @@ citus(# );
  (10.13.3.49,5432,102482,102514,f,"ERROR:  syntax error at or near "".""")
 
 ============
+The trigger function needs to be created on each worker node independently, but you cannot use run_command_on_workers for it. Instead, you should create the function on the coordinator node first:
+
+Key Changes and Explanation
+Create the trigger function on the coordinator node: Unlike regular tables, Citus requires the function to be defined on the coordinator, as it will be used across worker nodes.
+Ensure proper schema reference: When specifying the procedure in the trigger creation command, use the schema-qualified function name (shard7.embiggen), to avoid ambiguity.
+Additional Notes
+Placement of the %s placeholders: The %s placeholders in the command template are placeholders for the specific shard tables (shard placements). run_command_on_colocated_placements will replace these with the appropriate shard table names.
+Ensure that the distributed tables are actually colocated: The run_command_on_colocated_placements function only works correctly when the specified tables are properly colocated, meaning their shards align on the same nodes.
 
 CREATE OR REPLACE FUNCTION shard7.embiggen() RETURNS TRIGGER AS $$
 BEGIN
