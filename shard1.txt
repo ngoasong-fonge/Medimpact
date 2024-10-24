@@ -216,3 +216,19 @@ BEGIN
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+=======
+
+2024-10-24 17:40:42.826 UTC [] [356544]: [1342906-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-10-24 17:40:42.826 UTC [] [356544]: [1342907-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
+2024-10-24 17:40:42.826 UTC [] [356544]: [1342908-1] user=,db=,host=WARNING:  archiving write-ahead log file "00000002.history" failed too many times, will try again later
+2024-10-24 17:41:42.891 UTC [] [356544]: [1342909-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-10-24 17:41:42.891 UTC [] [356544]: [1342910-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
+2024-10-24 17:41:43.895 UTC [] [356544]: [1342911-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-10-24 17:41:43.895 UTC [] [356544]: [1342912-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
+2024-10-24 17:41:44.898 UTC [] [356544]: [1342913-1] user=,db=,host=LOG:  archive command failed with exit code 1
+2024-10-24 17:41:44.898 UTC [] [356544]: [1342914-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
+2024-10-24 17:41:44.898 UTC [] [356544]: [1342915-1] user=,db=,host=WARNING:  archiving write-ahead log file "00000002.history" failed too many times, will try again later
+
