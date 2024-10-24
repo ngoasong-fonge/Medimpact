@@ -186,10 +186,49 @@ SELECT run_command_on_placements(
   $cmd$
 );
 
+===============
 
-CREATE SEQUENCE IF NOT EXISTS shard6.account_account_id_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
+citus=# SELECT run_command_on_placements(
+citus(#   'shard7.account_hist',
+citus(#   $cmd$
+citus$#     CREATE OR REPLACE FUNCTION shard7.tfn_account_hist() RETURNS TRIGGER AS $$
+citus$#     BEGIN
+citus$#       IF (TG_OP = 'INSERT') THEN
+citus$#         INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
+citus$#                         account_code, account_desc, account_type, status, version, effective_date)
+citus$#         VALUES (NEW.entered, NEW.entered_by, CURRENT_TIMESTAMP, current_user, NEW.account_id, NEW.client_id,
+citus$#                 NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type,
+citus$#                 NEW.status, NEW.version, NEW.effective_date);
+citus$#       ELSIF (TG_OP = 'UPDATE') THEN
+citus$#         INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
+citus$#                         account_code, account_desc, account_type, status, version, effective_date)
+citus$#         VALUES (OLD.entered, OLD.entered_by, CURRENT_TIMESTAMP, current_user, OLD.account_id, OLD.client_id,
+citus$#                 OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type,
+citus$#                 OLD.status, OLD.version, OLD.effective_date);
+citus$#       ELSIF (TG_OP = 'DELETE') THEN
+citus$#         INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
+citus$#                         account_code, account_desc, account_type, status, version, effective_date)
+citus$#         VALUES (OLD.entered, OLD.entered_by, CURRENT_TIMESTAMP, current_user, OLD.account_id, OLD.client_id,
+citus$#                 OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type,
+citus$#                 OLD.status, OLD.version, OLD.effective_date);
+citus$#       END IF;
+citus$#       RETURN NEW;
+citus$#     END;
+citus$#     $$ LANGUAGE plpgsql;
+citus$#   $cmd$
+citus(# );
+ERROR:  too few arguments for format()
+CONTEXT:  SQL statement "WITH citus_placements AS (
+  SELECT
+   ds.logicalrelid::regclass AS tablename,
+   ds.shardid AS shardid,
+   shard_name(ds.logicalrelid, ds.shardid) AS shardname,
+   dsp.nodename AS nodename, dsp.nodeport::int AS nodeport
+  FROM pg_dist_shard ds JOIN pg_dist_shard_placement dsp USING (shardid)
+  WHERE dsp.shardstate = 1 and ds.logicalrelid::regclass = table_name
+  ORDER BY ds.logicalrelid, ds.shardid, dsp.nodename, dsp.nodeport)
+ SELECT
+  array_agg(cp.nodename), array_agg(cp.nodeport), array_agg(cp.shardid),
+  array_agg(format(command, cp.shardname))
+                                        FROM citus_placements cp"
+PL/pgSQL function run_command_on_placements(regclass,text,boolean) line 8 at SQL statement
