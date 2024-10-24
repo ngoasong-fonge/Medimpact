@@ -232,3 +232,4 @@ $$ LANGUAGE plpgsql;
 2024-10-24 17:41:44.898 UTC [] [356544]: [1342914-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
 2024-10-24 17:41:44.898 UTC [] [356544]: [1342915-1] user=,db=,host=WARNING:  archiving write-ahead log file "00000002.history" failed too many times, will try again later
 
+archive_command: test ! -f /opt/backup/pgdev2/group4/wal_archive/%f && /usr/bin/cp %p /opt/backup/pgdev2/group4/wal_archive/%f
