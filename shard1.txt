@@ -243,3 +243,5 @@ sudo -u svcpostgres bash -c "test ! -f /opt/backup/pgdev2/group4/wal_archive/000
 
 [svcpostgres@dv1medpg1w4 wal_archive]$ test ! -f /opt/backup/pgdev2/group4/wal_archive/%f && /usr/bin/cp /opt/app/postgres-data/data/pg_wal/%f /opt/backup/pgdev2/group4/wal_archive/%f
 /usr/bin/cp: cannot stat '/opt/app/postgres-data/data/pg_wal/%f': No such file or directory
+
+drwxrwxr-x 2 svcpostgres svcpostgres 8192 Oct 24 17:58 wal_archive
