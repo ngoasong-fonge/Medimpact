@@ -238,3 +238,4 @@ test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp 
 
 sudo -u postgres test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
 
+sudo -u postgres bash -c "test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history"
