@@ -238,4 +238,8 @@ test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp 
 
 sudo -u postgres test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
 
-sudo -u postgres bash -c "test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history"
+sudo -u svcpostgres bash -c "test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history"
+
+
+[svcpostgres@dv1medpg1w4 wal_archive]$ test ! -f /opt/backup/pgdev2/group4/wal_archive/%f && /usr/bin/cp /opt/app/postgres-data/data/pg_wal/%f /opt/backup/pgdev2/group4/wal_archive/%f
+/usr/bin/cp: cannot stat '/opt/app/postgres-data/data/pg_wal/%f': No such file or directory
