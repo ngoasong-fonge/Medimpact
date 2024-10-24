@@ -1,0 +1,155 @@
+To summarize, this approach involves setting up triggers directly on the individual shards (placements) of distributed tables in Citus. Here’s a breakdown of the main concepts and steps:
+Explanation of Triggers on Distributed Tables in Citus
+1.	Issue with Triggers on Distributed Tables: Citus, a distributed database extension for PostgreSQL, does not natively support creating triggers on distributed tables. This is because triggers in PostgreSQL are usually local to the node where the table resides, while distributed tables in Citus span multiple worker nodes.
+2.	Workaround via Shard-Level Triggers:
+o	To create triggers, you have to manually add them on the individual shards of the distributed table.
+o	This is done by executing the trigger setup directly on the worker nodes where the shards (placements) of the distributed tables exist.
+3.	Colocated Distributed Tables:
+o	When two distributed tables are colocated (i.e., their shards reside on the same worker nodes and are partitioned by the same key), it’s possible to create a trigger on one table that affects the other.
+o	Citus provides a helper function, run_command_on_colocated_placements, which allows you to create triggers between pairs of colocated placements.
+Example Code Breakdown
+1.	Create Tables and Distribute:
+sql
+Copy code
+CREATE TABLE little_vals (key int, val int);
+CREATE TABLE big_vals    (key int, val int);
+
+SELECT create_distributed_table('little_vals', 'key');
+SELECT create_distributed_table('big_vals', 'key');
+o	This creates two tables, little_vals and big_vals, which are distributed based on the key column.
+2.	Create a Trigger Function on Worker Nodes:
+sql
+Copy code
+SELECT run_command_on_workers($cmd$
+  CREATE OR REPLACE FUNCTION embiggen() RETURNS TRIGGER AS $$
+    BEGIN
+      IF (TG_OP = 'INSERT') THEN
+        EXECUTE format(
+          'INSERT INTO %s (key, val) SELECT ($1).key, ($1).val*2;',
+          TG_ARGV[0]
+        ) USING NEW;
+      END IF;
+      RETURN NULL;
+    END;
+  $$ LANGUAGE plpgsql;
+$cmd$);
+o	This creates a trigger function called embiggen() on the worker nodes.
+o	The function doubles the value of the val column from little_vals and inserts it into big_vals.
+3.	Attach Trigger to Colocated Placements:
+sql
+Copy code
+SELECT run_command_on_colocated_placements(
+  'little_vals',
+  'big_vals',
+  $cmd$
+    CREATE TRIGGER after_insert AFTER INSERT ON %s
+      FOR EACH ROW EXECUTE PROCEDURE embiggen(%s)
+  $cmd$
+);
+o	This command adds the trigger after_insert to the colocated shards.
+o	It ensures that whenever a new row is inserted into little_vals, a row is also inserted into big_vals with the val column doubled.
+Key Functions Used
+•	run_command_on_workers(cmd): Executes the given command on all worker nodes.
+•	run_command_on_colocated_placements(table1, table2, cmd): Executes the given command on colocated shard pairs of two distributed tables.
+Important Considerations
+•	Colocation Requirement: For this method to work, the tables must be properly colocated, meaning they should share the same distribution key and reside on the same worker nodes.
+•	Trigger Behavior: Because the trigger operates directly on shards, it doesn’t apply to distributed tables as a whole but rather to their individual shards.
+This setup allows distributed systems like Citus to leverage PostgreSQL's triggers in a distributed environment, albeit with some manual configuration at the shard level.
+
+========================
+To adapt the creation of the smartiq.account and smartiq.account_hist tables for a Citus distributed environment, I’ll focus on distributing these tables based on the client_id column, which is a logical choice for distribution, as it is likely to group related data effectively.
+Step 1: Create and Distribute the Tables
+First, I'll create the two tables as distributed tables in Citus, using client_id as the distribution column:
+-- Create the smartiq.account table
+CREATE TABLE IF NOT EXISTS smartiq.account
+(
+    account_id bigint NOT NULL DEFAULT nextval('smartiq.account_account_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    account_code character varying(1000) COLLATE pg_catalog."default",
+    account_desc character varying(9000) COLLATE pg_catalog."default",
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_pkey PRIMARY KEY (account_id)
+) TABLESPACE pg_default;
+
+-- Distribute the account table on client_id
+SELECT create_distributed_table('smartiq.account', 'client_id');
+
+-- Create the smartiq.account_hist table
+CREATE TABLE IF NOT EXISTS smartiq.account_hist
+(
+    account_hist_id bigint NOT NULL DEFAULT nextval('smartiq.account_hist_account_hist_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    replaced timestamp without time zone NOT NULL,
+    replaced_by character varying(100) COLLATE pg_catalog."default",
+    account_id bigint NOT NULL,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    account_code character varying(1000) COLLATE pg_catalog."default",
+    account_desc character varying(9000) COLLATE pg_catalog."default",
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_hist_pkey PRIMARY KEY (account_hist_id)
+) TABLESPACE pg_default;
+
+-- Distribute the account_hist table on client_id
+SELECT create_distributed_table('smartiq.account_hist', 'client_id');
+
+Step 2: Create the Trigger Function for Shard-Level Operations
+The trigger function needs to be adjusted to work at the shard level, inserting records into the smartiq.account_hist table when changes are made to smartiq.account. Here’s the modification:
+Trigger Function Creation on Worker Nodes
+First, create the trigger function on each worker node:
+
+SELECT run_command_on_workers($cmd$
+  CREATE OR REPLACE FUNCTION smartiq.tfn_account_hist() RETURNS TRIGGER AS $$
+    BEGIN
+      IF (TG_OP = 'INSERT') THEN
+        EXECUTE format(
+          'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date) 
+           VALUES ($1.entered, $1.entered_by, CURRENT_TIMESTAMP, NULL, $1.account_id, $1.client_id, $1.account_name, $1.account_code, $1.account_desc, $1.account_type, $1.status, $1.version, $1.effective_date);',
+          TG_ARGV[0]
+        ) USING NEW;
+      ELSIF (TG_OP = 'UPDATE') THEN
+        EXECUTE format(
+          'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date) 
+           VALUES ($1.entered, $1.entered_by, CURRENT_TIMESTAMP, $2.entered_by, $1.account_id, $1.client_id, $1.account_name, $1.account_code, $1.account_desc, $1.account_type, $1.status, $1.version, $1.effective_date);',
+          TG_ARGV[0]
+        ) USING NEW, OLD;
+      ELSIF (TG_OP = 'DELETE') THEN
+        EXECUTE format(
+          'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date) 
+           VALUES (CURRENT_TIMESTAMP, OLD.entered_by, CURRENT_TIMESTAMP, NULL, OLD.account_id, OLD.client_id, OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, OLD.status, OLD.version, OLD.effective_date);',
+          TG_ARGV[0]
+        ) USING OLD;
+      END IF;
+      RETURN NULL;
+    END;
+  $$ LANGUAGE plpgsql;
+$cmd$);
+
+Step 3: Attach the Trigger to the Colocated Shards
+The final step is to add the trigger to the colocated shards of smartiq.account and smartiq.account_hist:
+
+SELECT run_command_on_colocated_placements(
+  'smartiq.account',
+  'smartiq.account_hist',
+  $cmd$
+    CREATE TRIGGER trg_account_hist 
+    AFTER INSERT OR UPDATE OR DELETE ON %s
+    FOR EACH ROW EXECUTE PROCEDURE smartiq.tfn_account_hist(%s)
+  $cmd$
+);
+
+Key Notes
+•	Distribution Column (client_id): The choice of client_id as the distribution column ensures that related data is colocated, facilitating efficient operations between the smartiq.account and smartiq.account_hist tables.
+•	Using run_command_on_workers and run_command_on_colocated_placements: These functions help propagate the creation of functions and triggers across the shards of distributed tables.
+•	Shard-Level Triggers: Since the trigger operates at the shard level, this setup ensures data consistency for the history table in a distributed manner.
+
