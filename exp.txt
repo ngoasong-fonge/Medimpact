@@ -37,3 +37,61 @@ SELECT run_command_on_placements(
 INSERT INTO insert_target (value) VALUES ('inserted value');
 
 TABLE audit_table;
+
+==================
+
+Considering the workaround above to create trigger between two refernce tables, can you create bellow two refrence tables smartiq.account and smartiq.account_hist using the table definition I provided and try to use the trigger trg_account_hist modifying it to suite above scenario  
+
+
+CREATE TABLE IF NOT EXISTS smartiq.account
+(
+    account_id bigint NOT NULL DEFAULT nextval('smartiq.account_account_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    account_code character varying(1000) COLLATE pg_catalog."default",
+    account_desc character varying(9000) COLLATE pg_catalog."default",
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_pkey PRIMARY KEY (account_id),
+    CONSTRAINT dfk_account_client FOREIGN KEY (client_id)
+        REFERENCES smartiq.client (client_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE INITIALLY DEFERRED
+)
+
+TABLESPACE pg_default;
+
+
+CREATE OR REPLACE TRIGGER trg_account_hist
+    AFTER INSERT OR DELETE OR UPDATE 
+    ON smartiq.account
+    FOR EACH ROW
+    EXECUTE FUNCTION smartiq.tfn_account_hist();
+
+
+CREATE TABLE IF NOT EXISTS smartiq.account_hist
+(
+    account_hist_id bigint NOT NULL DEFAULT nextval('smartiq.account_hist_account_hist_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    replaced timestamp without time zone NOT NULL,
+    replaced_by character varying(100) COLLATE pg_catalog."default",
+    account_id bigint NOT NULL,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    account_code character varying(1000) COLLATE pg_catalog."default",
+    account_desc character varying(9000) COLLATE pg_catalog."default",
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_hist_pkey PRIMARY KEY (account_hist_id)
+)
+
+TABLESPACE pg_default;
+
