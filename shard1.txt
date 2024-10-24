@@ -61,9 +61,9 @@ To adapt the creation of the smartiq.account and smartiq.account_hist tables for
 Step 1: Create and Distribute the Tables
 First, I'll create the two tables as distributed tables in Citus, using client_id as the distribution column:
 -- Create the smartiq.account table
-CREATE TABLE IF NOT EXISTS smartiq.account
+CREATE TABLE IF NOT EXISTS shard6.account
 (
-    account_id bigint NOT NULL DEFAULT nextval('smartiq.account_account_id_seq'::regclass),
+    account_id bigint NOT NULL DEFAULT nextval('shard6.account_account_id_seq'::regclass),
     entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
     client_id bigint NOT NULL,
@@ -78,12 +78,12 @@ CREATE TABLE IF NOT EXISTS smartiq.account
 ) TABLESPACE pg_default;
 
 -- Distribute the account table on client_id
-SELECT create_distributed_table('smartiq.account', 'client_id');
+SELECT create_distributed_table('shard6.account', 'client_id');
 
 -- Create the smartiq.account_hist table
-CREATE TABLE IF NOT EXISTS smartiq.account_hist
+CREATE TABLE IF NOT EXISTS shard6.account_hist
 (
-    account_hist_id bigint NOT NULL DEFAULT nextval('smartiq.account_hist_account_hist_id_seq'::regclass),
+    account_hist_id bigint NOT NULL DEFAULT nextval('shard6.account_hist_account_hist_id_seq'::regclass),
     entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
     replaced timestamp without time zone NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS smartiq.account_hist
 ) TABLESPACE pg_default;
 
 -- Distribute the account_hist table on client_id
-SELECT create_distributed_table('smartiq.account_hist', 'client_id');
+SELECT create_distributed_table('shard6.account_hist', 'client_id');
 
 Step 2: Create the Trigger Function for Shard-Level Operations
 The trigger function needs to be adjusted to work at the shard level, inserting records into the smartiq.account_hist table when changes are made to smartiq.account. Here’s the modification:
@@ -109,7 +109,7 @@ Trigger Function Creation on Worker Nodes
 First, create the trigger function on each worker node:
 
 SELECT run_command_on_workers($cmd$
-  CREATE OR REPLACE FUNCTION smartiq.tfn_account_hist() RETURNS TRIGGER AS $$
+  CREATE OR REPLACE FUNCTION shard6.tfn_account_hist() RETURNS TRIGGER AS $$
     BEGIN
       IF (TG_OP = 'INSERT') THEN
         EXECUTE format(
@@ -139,8 +139,8 @@ Step 3: Attach the Trigger to the Colocated Shards
 The final step is to add the trigger to the colocated shards of smartiq.account and smartiq.account_hist:
 
 SELECT run_command_on_colocated_placements(
-  'smartiq.account',
-  'smartiq.account_hist',
+  'shard6.account',
+  'shard6.account_hist',
   $cmd$
     CREATE TRIGGER trg_account_hist 
     AFTER INSERT OR UPDATE OR DELETE ON %s
