@@ -157,29 +157,14 @@ Key Notes
 
 =======================
 
-citus=# SELECT create_distributed_table('shard6.account_hist', 'client_id');
-ERROR:  table "account_hist" is already distributed
 citus=# SELECT run_command_on_workers($cmd$
-citus$#   CREATE OR REPLACE FUNCTION shard6.tfn_account_hist() RETURNS TRIGGER AS $$
+citus$#   CREATE OR REPLACE FUNCTION shard7.embiggen() RETURNS TRIGGER AS $$
 citus$#     BEGIN
 citus$#       IF (TG_OP = 'INSERT') THEN
 citus$#         EXECUTE format(
-citus$#           'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date)
-citus$#            VALUES ($1.entered, $1.entered_by, CURRENT_TIMESTAMP, NULL, $1.account_id, $1.client_id, $1.account_name, $1.account_code, $1.account_desc, $1.account_type, $1.status, $1.version, $1.effective_date);',
+citus$#           'INSERT INTO %s (key, val) SELECT ($1).key, ($1).val*2;',
 citus$#           TG_ARGV[0]
 citus$#         ) USING NEW;
-citus$#       ELSIF (TG_OP = 'UPDATE') THEN
-citus$#         EXECUTE format(
-citus$#           'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date)
-citus$#            VALUES ($1.entered, $1.entered_by, CURRENT_TIMESTAMP, $2.entered_by, $1.account_id, $1.client_id, $1.account_name, $1.account_code, $1.account_desc, $1.account_type, $1.status, $1.version, $1.effective_date);',
-citus$#           TG_ARGV[0]
-citus$#         ) USING NEW, OLD;
-citus$#       ELSIF (TG_OP = 'DELETE') THEN
-citus$#         EXECUTE format(
-citus$#           'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date)
-citus$#            VALUES (CURRENT_TIMESTAMP, OLD.entered_by, CURRENT_TIMESTAMP, NULL, OLD.account_id, OLD.client_id, OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, OLD.status, OLD.version, OLD.effective_date);',
-citus$#           TG_ARGV[0]
-citus$#         ) USING OLD;
 citus$#       END IF;
 citus$#       RETURN NULL;
 citus$#     END;
@@ -191,4 +176,22 @@ citus$# $cmd$);
  (10.13.3.49,5432,f,"ERROR:  operation is not allowed on this node")
  (10.13.3.50,5432,f,"ERROR:  operation is not allowed on this node")
  (10.13.3.51,5432,f,"ERROR:  operation is not allowed on this node")
+(4 rows)
+
+citus=# SELECT run_command_on_colocated_placements(
+citus(#   'shard7.little_vals',
+citus(#   'shard7.big_vals',
+citus(#   $cmd$
+citus$#     CREATE TRIGGER after_insert AFTER INSERT ON %s
+citus$#       FOR EACH ROW EXECUTE PROCEDURE embiggen(%s)
+citus$#   $cmd$
+citus(# );
+                    run_command_on_colocated_placements
+---------------------------------------------------------------------------
+ (10.13.3.48,5432,102477,102509,f,"ERROR:  syntax error at or near "".""")
+ (10.13.3.49,5432,102478,102510,f,"ERROR:  syntax error at or near "".""")
+ (10.13.3.50,5432,102479,102511,f,"ERROR:  syntax error at or near "".""")
+ (10.13.3.51,5432,102480,102512,f,"ERROR:  syntax error at or near "".""")
+ (10.13.3.48,5432,102481,102513,f,"ERROR:  syntax error at or near "".""")
+ (10.13.3.49,5432,102482,102514,f,"ERROR:  syntax error at or near "".""")
 
