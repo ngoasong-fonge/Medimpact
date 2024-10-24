@@ -42,13 +42,47 @@ LIMIT 10;
 ======================
 
 
-the user that runs splunk is:
+Triggers on Distributed Tables
+Citus does not yet support creating triggers on distributed tables. As a workaround you can manually create triggers on table shards directly on the worker nodes. This works differently in different scenarios.
 
-id splunk
+Trigger between colocated tables.
 
-uid=20027(splunk) gid=20027(splunk) groups=20027(splunk)
- 
-so, i want to set up an ACL to allow that splunk user the ability to read the files in this folder
+When two distributed tables are colocated, then we can create a trigger to modify one based on changes in the other. The idea, once again, is to create triggers on the placements, but the trigger must be between pairs of placements that are themselves colocated. For this Citus has a special helper function run_command_on_colocated_placements.
+
+Suppose that for every value inserted into little_vals we want to insert one twice as big into big_vals.
+
+CREATE TABLE little_vals (key int, val int);
+CREATE TABLE big_vals    (key int, val int);
+SELECT create_distributed_table('little_vals', 'key');
+SELECT create_distributed_table('big_vals',    'key');
+
+-- This trigger function takes the destination placement as an argument
+
+SELECT run_command_on_workers($cmd$
+  CREATE OR REPLACE FUNCTION embiggen() RETURNS TRIGGER AS $$
+    BEGIN
+      IF (TG_OP = 'INSERT') THEN
+        EXECUTE format(
+          'INSERT INTO %s (key, val) SELECT ($1).key, ($1).val*2;',
+          TG_ARGV[0]
+        ) USING NEW;
+      END IF;
+      RETURN NULL;
+    END;
+  $$ LANGUAGE plpgsql;
+$cmd$);
+
+-- Next we relate the co-located tables by the trigger function
+-- on each co-located placement
+
+SELECT run_command_on_colocated_placements(
+  'little_vals',
+  'big_vals',
+  $cmd$
+    CREATE TRIGGER after_insert AFTER INSERT ON %s
+      FOR EACH ROW EXECUTE PROCEDURE embiggen(%s)
+  $cmd$
+);
 
 /opt/app/postgres-data/data/log/
  
