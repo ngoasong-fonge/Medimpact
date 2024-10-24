@@ -42,49 +42,57 @@ LIMIT 10;
 ======================
 
 
-Triggers on Distributed Tables
-Citus does not yet support creating triggers on distributed tables. As a workaround you can manually create triggers on table shards directly on the worker nodes. This works differently in different scenarios.
+Considering the workaround above can you create bellow two tables smartiq.account and smartiq.account_hist using the table definition I provided and distribute based on your suggested key column, and try to use the trigger trg_account_hist modifying it so it can be created on a shard distributed scenario  
 
-Trigger between colocated tables.
 
-When two distributed tables are colocated, then we can create a trigger to modify one based on changes in the other. The idea, once again, is to create triggers on the placements, but the trigger must be between pairs of placements that are themselves colocated. For this Citus has a special helper function run_command_on_colocated_placements.
+CREATE TABLE IF NOT EXISTS smartiq.account
+(
+    account_id bigint NOT NULL DEFAULT nextval('smartiq.account_account_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    account_code character varying(1000) COLLATE pg_catalog."default",
+    account_desc character varying(9000) COLLATE pg_catalog."default",
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_pkey PRIMARY KEY (account_id),
+    CONSTRAINT dfk_account_client FOREIGN KEY (client_id)
+        REFERENCES smartiq.client (client_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE INITIALLY DEFERRED
+)
 
-Suppose that for every value inserted into little_vals we want to insert one twice as big into big_vals.
+TABLESPACE pg_default;
 
-CREATE TABLE little_vals (key int, val int);
-CREATE TABLE big_vals    (key int, val int);
-SELECT create_distributed_table('little_vals', 'key');
-SELECT create_distributed_table('big_vals',    'key');
 
--- This trigger function takes the destination placement as an argument
+CREATE OR REPLACE TRIGGER trg_account_hist
+    AFTER INSERT OR DELETE OR UPDATE 
+    ON smartiq.account
+    FOR EACH ROW
+    EXECUTE FUNCTION smartiq.tfn_account_hist();
 
-SELECT run_command_on_workers($cmd$
-  CREATE OR REPLACE FUNCTION embiggen() RETURNS TRIGGER AS $$
-    BEGIN
-      IF (TG_OP = 'INSERT') THEN
-        EXECUTE format(
-          'INSERT INTO %s (key, val) SELECT ($1).key, ($1).val*2;',
-          TG_ARGV[0]
-        ) USING NEW;
-      END IF;
-      RETURN NULL;
-    END;
-  $$ LANGUAGE plpgsql;
-$cmd$);
 
--- Next we relate the co-located tables by the trigger function
--- on each co-located placement
+CREATE TABLE IF NOT EXISTS smartiq.account_hist
+(
+    account_hist_id bigint NOT NULL DEFAULT nextval('smartiq.account_hist_account_hist_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+    replaced timestamp without time zone NOT NULL,
+    replaced_by character varying(100) COLLATE pg_catalog."default",
+    account_id bigint NOT NULL,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+    account_code character varying(1000) COLLATE pg_catalog."default",
+    account_desc character varying(9000) COLLATE pg_catalog."default",
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_hist_pkey PRIMARY KEY (account_hist_id)
+)
 
-SELECT run_command_on_colocated_placements(
-  'little_vals',
-  'big_vals',
-  $cmd$
-    CREATE TRIGGER after_insert AFTER INSERT ON %s
-      FOR EACH ROW EXECUTE PROCEDURE embiggen(%s)
-  $cmd$
-);
-
-/opt/app/postgres-data/data/log/
- 
-but if i remember correctly, postgresql will complain if the permissions are not 600 for that folder, right?
- 
+TABLESPACE pg_default;
