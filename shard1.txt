@@ -157,59 +157,38 @@ Key Notes
 
 =======================
 
-citus=# CREATE TABLE IF NOT EXISTS shard6.account
-citus-# (
-citus(#     account_id bigint NOT NULL DEFAULT nextval('shard6.account_account_id_seq'::regclass),
-citus(#     entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-citus(#     entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
-citus(#     client_id bigint NOT NULL,
-citus(#     account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-citus(#     account_code character varying(1000) COLLATE pg_catalog."default",
-citus(#     account_desc character varying(9000) COLLATE pg_catalog."default",
-citus(#     account_type smallint NOT NULL,
-citus(#     status smallint NOT NULL,
-citus(#     version integer NOT NULL,
-citus(#     effective_date timestamp without time zone,
-citus(#     CONSTRAINT account_pkey PRIMARY KEY (account_id)
-citus(# ) TABLESPACE pg_default;
-ERROR:  relation "shard6.account_account_id_seq" does not exist
-LINE 3:     account_id bigint NOT NULL DEFAULT nextval('shard6.accou...
-                                                       ^
-citus=# CREATE SEQUENCE IF NOT EXISTS shard6.account_account_id_seq
-citus-#     INCREMENT 1
-citus-#     START 1
-citus-#     MINVALUE 1
-citus-#     MAXVALUE 9223372036854775807
-citus-#     CACHE 1
-citus-#     OWNED BY account.account_id;
-ERROR:  relation "account" does not exist
-
-
-
-CREATE SEQUENCE IF NOT EXISTS shard6.account_account_id_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-CREATE TABLE IF NOT EXISTS shard6.account
-(
-    account_id bigint NOT NULL DEFAULT nextval('shard6.account_account_id_seq'::regclass),
-    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
-    client_id bigint NOT NULL,
-    account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
-    account_code character varying(1000) COLLATE pg_catalog."default",
-    account_desc character varying(9000) COLLATE pg_catalog."default",
-    account_type smallint NOT NULL,
-    status smallint NOT NULL,
-    version integer NOT NULL,
-    effective_date timestamp without time zone,
-    CONSTRAINT account_pkey PRIMARY KEY (account_id)
-) TABLESPACE pg_default;
-
-
-ALTER SEQUENCE shard6.account_account_id_seq
-    OWNED BY shard6.account.account_id;
+citus=# SELECT create_distributed_table('shard6.account_hist', 'client_id');
+ERROR:  table "account_hist" is already distributed
+citus=# SELECT run_command_on_workers($cmd$
+citus$#   CREATE OR REPLACE FUNCTION shard6.tfn_account_hist() RETURNS TRIGGER AS $$
+citus$#     BEGIN
+citus$#       IF (TG_OP = 'INSERT') THEN
+citus$#         EXECUTE format(
+citus$#           'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date)
+citus$#            VALUES ($1.entered, $1.entered_by, CURRENT_TIMESTAMP, NULL, $1.account_id, $1.client_id, $1.account_name, $1.account_code, $1.account_desc, $1.account_type, $1.status, $1.version, $1.effective_date);',
+citus$#           TG_ARGV[0]
+citus$#         ) USING NEW;
+citus$#       ELSIF (TG_OP = 'UPDATE') THEN
+citus$#         EXECUTE format(
+citus$#           'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date)
+citus$#            VALUES ($1.entered, $1.entered_by, CURRENT_TIMESTAMP, $2.entered_by, $1.account_id, $1.client_id, $1.account_name, $1.account_code, $1.account_desc, $1.account_type, $1.status, $1.version, $1.effective_date);',
+citus$#           TG_ARGV[0]
+citus$#         ) USING NEW, OLD;
+citus$#       ELSIF (TG_OP = 'DELETE') THEN
+citus$#         EXECUTE format(
+citus$#           'INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, account_code, account_desc, account_type, status, version, effective_date)
+citus$#            VALUES (CURRENT_TIMESTAMP, OLD.entered_by, CURRENT_TIMESTAMP, NULL, OLD.account_id, OLD.client_id, OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, OLD.status, OLD.version, OLD.effective_date);',
+citus$#           TG_ARGV[0]
+citus$#         ) USING OLD;
+citus$#       END IF;
+citus$#       RETURN NULL;
+citus$#     END;
+citus$#   $$ LANGUAGE plpgsql;
+citus$# $cmd$);
+                       run_command_on_workers
+---------------------------------------------------------------------
+ (10.13.3.48,5432,f,"ERROR:  operation is not allowed on this node")
+ (10.13.3.49,5432,f,"ERROR:  operation is not allowed on this node")
+ (10.13.3.50,5432,f,"ERROR:  operation is not allowed on this node")
+ (10.13.3.51,5432,f,"ERROR:  operation is not allowed on this node")
 
