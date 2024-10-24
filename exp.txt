@@ -188,42 +188,9 @@ SELECT run_command_on_placements(
 
 ===============
 
-SELECT run_command_on_placements(
-  'shard7.account_hist',
-  $cmd$
-    CREATE OR REPLACE FUNCTION shard7.tfn_account_hist() RETURNS TRIGGER AS $$
-    DECLARE
-      shard_name text := '%s';  -- Declare a variable for the shard name
-    BEGIN
-      IF (TG_OP = 'INSERT') THEN
-        EXECUTE format('INSERT INTO %I (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
-                        account_code, account_desc, account_type, status, version, effective_date)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-                       shard_name)
-        USING NEW.entered, NEW.entered_by, CURRENT_TIMESTAMP, current_user, NEW.account_id, NEW.client_id, 
-              NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type, NEW.status, 
-              NEW.version, NEW.effective_date;
+The trigger function will insert a record into the smartiq.account_hist table whenever an INSERT, UPDATE, or DELETE occurs on the smartiq.account table.
 
-      ELSIF (TG_OP = 'UPDATE') THEN
-        EXECUTE format('INSERT INTO %I (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
-                        account_code, account_desc, account_type, status, version, effective_date)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-                       shard_name)
-        USING OLD.entered, OLD.entered_by, CURRENT_TIMESTAMP, current_user, OLD.account_id, OLD.client_id, 
-              OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, OLD.status, 
-              OLD.version, OLD.effective_date;
-
-      ELSIF (TG_OP = 'DELETE') THEN
-        EXECUTE format('INSERT INTO %I (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
-                        account_code, account_desc, account_type, status, version, effective_date)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-                       shard_name)
-        USING OLD.entered, OLD.entered_by, CURRENT_TIMESTAMP, current_user, OLD.account_id, OLD.client_id, 
-              OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, OLD.status, 
-              OLD.version, OLD.effective_date;
-      END IF;
-      RETURN NEW;
-    END;
-    $$ LANGUAGE plpgsql;
-  $cmd$
-);
+Explanation
+Reference Tables: Both smartiq.account and smartiq.account_hist are distributed as reference tables, making them accessible on all worker nodes.
+Trigger Function: The trigger function smartiq.tfn_account_hist inserts records into the smartiq.account_hist table whenever an operation is performed on smartiq.account.
+Trigger Creation: The trigger is created on all placements of the smartiq.account table using the run_command_on_placements() function.
