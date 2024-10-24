@@ -195,3 +195,16 @@ citus(# );
  (10.13.3.48,5432,102481,102513,f,"ERROR:  syntax error at or near "".""")
  (10.13.3.49,5432,102482,102514,f,"ERROR:  syntax error at or near "".""")
 
+============
+
+CREATE OR REPLACE FUNCTION shard7.embiggen() RETURNS TRIGGER AS $$
+BEGIN
+  IF (TG_OP = 'INSERT') THEN
+    EXECUTE format(
+      'INSERT INTO %s (key, val) SELECT ($1).key, ($1).val*2;',
+      TG_ARGV[0]
+    ) USING NEW;
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
