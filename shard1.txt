@@ -153,3 +153,33 @@ Key Notes
 •	Using run_command_on_workers and run_command_on_colocated_placements: These functions help propagate the creation of functions and triggers across the shards of distributed tables.
 •	Shard-Level Triggers: Since the trigger operates at the shard level, this setup ensures data consistency for the history table in a distributed manner.
 
+
+
+=======================
+
+citus=# CREATE TABLE IF NOT EXISTS shard6.account
+citus-# (
+citus(#     account_id bigint NOT NULL DEFAULT nextval('shard6.account_account_id_seq'::regclass),
+citus(#     entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+citus(#     entered_by character varying(100) COLLATE pg_catalog."default" NOT NULL DEFAULT CURRENT_USER,
+citus(#     client_id bigint NOT NULL,
+citus(#     account_name character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+citus(#     account_code character varying(1000) COLLATE pg_catalog."default",
+citus(#     account_desc character varying(9000) COLLATE pg_catalog."default",
+citus(#     account_type smallint NOT NULL,
+citus(#     status smallint NOT NULL,
+citus(#     version integer NOT NULL,
+citus(#     effective_date timestamp without time zone,
+citus(#     CONSTRAINT account_pkey PRIMARY KEY (account_id)
+citus(# ) TABLESPACE pg_default;
+ERROR:  relation "shard6.account_account_id_seq" does not exist
+LINE 3:     account_id bigint NOT NULL DEFAULT nextval('shard6.accou...
+                                                       ^
+citus=# CREATE SEQUENCE IF NOT EXISTS shard6.account_account_id_seq
+citus-#     INCREMENT 1
+citus-#     START 1
+citus-#     MINVALUE 1
+citus-#     MAXVALUE 9223372036854775807
+citus-#     CACHE 1
+citus-#     OWNED BY account.account_id;
+ERROR:  relation "account" does not exist
