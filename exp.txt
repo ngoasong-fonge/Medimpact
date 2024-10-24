@@ -1,204 +1,39 @@
+-- create the reference tables
 
-psql:/opt/backup/ngmep_backup_2024-03-28-020001.sql:167750: error: invalid command \N
-psql:/opt/backup/ngmep_backup_2024-03-28-020001.sql:167758: ERROR:  syntax error at or near "5000000001"
-LINE 1: 5000000001 2023-12-02 06:48:35.947341 populate_encounter 500...
+CREATE TABLE insert_target (
+  value text
+);
+CREATE TABLE audit_table(
+  author name NOT NULL,
+  value text
+);
+SELECT create_reference_table('insert_target');
+SELECT create_reference_table('audit_table');
 
-Determine the Desired Size: First, you need to decide how much memory you want to allocate to the shared_buffers parameter. In this example, you want to allocate 1GB of memory.
+To make a trigger on each worker that updates audit_table, we need to know the name of that table’s shard. Rather than looking up the name in the metadata tables and using it manually in run_command_on_workers, we can use run_command_on_placements. Reference tables have exactly one placement per worker node, so the following creates what we want.
 
-Convert to Kilobytes (KB): Amazon RDS for PostgreSQL uses kilobytes as the unit for the shared_buffers parameter. To convert 1GB to kilobytes, you perform the following conversions:
-
-1 GB = 1024 MB (since 1 GB = 1024 megabytes)
-1024 MB = 1024 * 1024 KB (since 1 megabyte = 1024 kilobytes)
-1024 * 1024 KB = 1048576 KB
-So, 1 GB is equal to 1048576 KB.
-
-Divide by the Unit Size: The shared_buffers parameter is specified in 8KB units. To calculate the value you should set, you divide the total number of kilobytes (calculated in step 2) by the size of each unit, which is 8KB:
-
-1048576 KB / 8 KB = 131072
-So, you should set the shared_buffers parameter to 131072 in your Amazon RDS parameter group.
-
-https://dba.stackexchange.com/questions/137297/how-to-set-up-amazon-rds-parameter-group-for-postgres
-
--------------------------------------------------------------------------------------------------------------
-
-To calculate the value for the wal_buffer parameter in PostgreSQL on Amazon RDS when you want to allocate 16 MB of memory, you can use the following steps:
-
-You want to allocate 16 MB of memory.
-The unit of wal_buffer in PostgreSQL is 8 KB.
-Here's how you calculate it:
-
-16 MB = 16 * 1024 KB (1 MB = 1024 KB).
-
-So, to allocate 16 MB of memory for the wal_buffer, you need:
-
-(16 * 1024 KB) / 8 KB = 2048
-
-So, you should set the wal_buffer parameter to 2048 in your RDS parameter group to allocate 16 MB of memory for the Write-Ahead Logging (WAL) buffer. 
-
-
-CREATE TABLE shard.employee (
-    employee_id serial ,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department_id INT,
-    created_date DATE
+SELECT run_command_on_placements(
+  'audit_table',
+  $cmd$
+    CREATE OR REPLACE FUNCTION process_audit() RETURNS TRIGGER AS $$
+      BEGIN
+        INSERT INTO %s (author,value)
+          VALUES (current_user,NEW.value);
+        RETURN NEW;
+      END;
+    $$ LANGUAGE plpgsql;
+  $cmd$
 );
 
+SELECT run_command_on_placements(
+  'insert_target',
+  $cmd$
+    CREATE TRIGGER emp_audit
+    AFTER INSERT OR UPDATE ON %s
+      FOR EACH ROW EXECUTE PROCEDURE process_audit();
+  $cmd$
+);
 
-0 2 * * 6,0,1,2,3 /opt/app/patroni/scripts/pgdump_schemabackup.sh
+INSERT INTO insert_target (value) VALUES ('inserted value');
 
-
-CREATE FOREIGN TABLE dmeapps.departments_tst
-(
-  DEPARTMENT_ID    NUMERIC(10,0)                   NOT NULL,
-  DEPARTMENT_NAME  CHARACTER VARYING(30)         NOT NULL,
-  MANAGER_ID       NUMERIC(6,0),
-  LOCATION_ID      NUMERIC(4,0)
-) SERVER ora_sv OPTIONS (SCHEMA 'PSAMY' , TABLE 'DEPARTMENTS_TST');
-
-
-
--- Foreign table for PG_SVC_ACC_DETAIL
-CREATE FOREIGN TABLE wsdme.pg_svc_acc_detail
-(
-  service_account_name  CHARACTER VARYING(200)  NOT NULL,
-  db                    CHARACTER VARYING(200)  NOT NULL,
-  expiry_date           DATE,
-  daystogo              CHARACTER VARYING(10),
-  session_cnt           NUMERIC,
-  last_login            DATE,
-  usename               CHARACTER VARYING(200) 
-) SERVER ora_sv OPTIONS (SCHEMA 'WSDME', TABLE 'PG_SVC_ACC_DETAIL');
-
--- Foreign table for DBUSR
-CREATE FOREIGN TABLE wsdme.dbusr
-(
-  dbusr_id             NUMERIC                   NOT NULL,
-  username             CHARACTER VARYING(50)    NOT NULL,
-  usr_type             CHARACTER VARYING(30)    NOT NULL,
-  status               CHARACTER VARYING(30)    DEFAULT 'ACTIVE' NOT NULL,
-  ref_task             CHARACTER VARYING(50)    NOT NULL,
-  password             BYTEA,
-  entered              DATE                      DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  entered_by           CHARACTER VARYING(30)    DEFAULT CURRENT_USER NOT NULL,
-  requested_by         CHARACTER VARYING(50),
-  user_comment         CHARACTER VARYING(4000),
-  datical              CHARACTER(1),
-  primary_db           CHARACTER VARYING(30)    NOT NULL,
-  db_link              CHARACTER(1),
-  vault_prefix_name    CHARACTER VARYING(60),
-  orchard_exc_yn       CHARACTER(5),
-  app_team             CHARACTER VARYING(30),
-  app_mgr              CHARACTER VARYING(60),
-  app_contact          CHARACTER VARYING(60),
-  app_contact_alt      CHARACTER VARYING(60),
-  intl_flag            CHARACTER VARYING(10),
-  description          CHARACTER VARYING(200)   NOT NULL,
-  app_name             CHARACTER VARYING(100)   NOT NULL,
-  level1               CHARACTER VARYING(100)   NOT NULL,
-  level2               CHARACTER VARYING(100)   NOT NULL,
-  level3               CHARACTER VARYING(100)   NOT NULL,
-  adhoc_needed_yn      CHARACTER(2),
-  application          CHARACTER VARYING(100)
-) SERVER ora_sv OPTIONS (SCHEMA 'WSDME', TABLE 'DBUSR');
-
--- Granting USAGE privilege on the foreign server
-GRANT USAGE ON FOREIGN SERVER my_oracle_server TO my_user;
-
--- Granting INSERT, UPDATE, DELETE privileges on the foreign table
-GRANT INSERT, UPDATE, DELETE ON my_foreign_table TO my_user;
-
-Here is an example for a table definition that sets the key option:
-
-CREATE FOREIGN TABLE atable (
-   id    bigint OPTIONS (key 'true') NOT NULL,
-   value text
-) SERVER oraserver OPTIONS (table 'ATABLE');
-
-
-Create single shard tables in schema tenant1 (automatically co-located)
-set search_path to tenant1;
-create table note_categories (
-   category_id bigserial primary key,
-   category_name text not null);
-
-
-----------------------------------------------------------------------
-
-
-It seems like you're generating SQL statements to set the autovacuum_enabled property to true for each partition of a partitioned table in PostgreSQL. Your SQL query dynamically generates these statements based on the child tables of the partitioned table.
-
-Here's a breakdown of what the SQL query does:
-
-It selects the child tables of the partitioned table (partitioned_table) along with their object identifiers (oid) from the PostgreSQL system catalog tables (pg_class and pg_inherits).
-It constructs SQL statements using string concatenation to set the autovacuum_enabled property to true for each child table.
-The pg_get_expr function is used to check if the table's partition bounds match the DEFAULT expression. This helps in ordering the results.
-The gexec meta-command in the PostgreSQL client (psql) is used to execute each generated SQL statement.
-This approach allows you to automate the process of enabling autovacuum for each partition of the partitioned table, which can be useful for managing vacuuming and maintenance tasks efficiently.
-
-If you have any specific questions or need further assistance with this SQL query or related tasks, feel free to ask!
-
-
-SELECT relnamespace::regnamespace AS schema_name,
-       relname as table_name,
-       reloptions as options
-FROM pg_class
-WHERE relnamespace = 'ngmep'::regnamespace 
-  AND 'autovacuum_enabled=false' = ANY(
-          string_to_array(array_to_string(reloptions, ','), ',')
-      );
-
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-    SELECT 'ALTER TABLE mepstg.' || c.oid::pg_catalog.regclass || ' SET (autovacuum_enabled = false);'
-FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i
-WHERE c.oid = i.inhrelid 
-  AND i.inhparent = (SELECT oid FROM pg_class WHERE relname = 'stg_mep_claim_10r')
-ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
-
-
-SELECT relnamespace::regnamespace AS schema_name,
-       relname as table_name,
-       reloptions as options
-FROM pg_class
-WHERE relnamespace = 'mepstg'::regnamespace 
-  AND 'autovacuum_enabled=false' = ANY(
-          string_to_array(array_to_string(reloptions, ','), ',')
-      );
-
-
-
-0 2 * * 0 /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh
-
-#!/bin/bash
-
-# Source the environment file
-source /opt/app/localhome/svcpostgres/pg_env.sh
-
-0 1 * * 0 . /opt/app/localhome/svcpostgres/pg_env.sh && psql -h localhost -U deployadmin -d citus -c "CALL partman.run_maintenance_proc();" >> /opt/app/patroni/scripts/partition/partition.log 2>&1
-
-To ensure your environment is correctly set up, you can add the following to your crontab:
-SHELL=/bin/bash
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-
-0 2 * * 0 . /opt/app/localhome/svcpostgres/pg_env.sh && /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh >> /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.log 2>&1
-
-
-. /opt/app/localhome/svcpostgres/pg_env.sh && /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.sh >> /opt/app/patroni/scripts/pg_partman_scripts/drop_partition_tables.log 2>&1
-
-On most Linux systems, you can check the cron logs using:
-grep CRON /var/log/syslog
-
-
-SELECT 'ALTER TABLE ngmep.' || c.relname || ' SET (autovacuum_enabled = false);'
-FROM pg_catalog.pg_class c
-JOIN pg_catalog.pg_inherits i ON c.oid = i.inhrelid
-JOIN pg_catalog.pg_class p ON i.inhparent = p.oid
-JOIN pg_catalog.pg_namespace n ON p.relnamespace = n.oid
-WHERE p.relname = 'encounter_version'
-  AND n.nspname = 'ngmep'
-ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.relname;
-
-
+TABLE audit_table;
