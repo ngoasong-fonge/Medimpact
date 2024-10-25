@@ -150,3 +150,39 @@ WHERE account_id = 1;
 
 SELECT * FROM shard7.account_hist;
 
+
+===============================
+
+citus=# INSERT INTO shard7.account (
+citus(#     account_id,
+citus(#     entered,
+citus(#     entered_by,
+citus(#     client_id,
+citus(#     account_name,
+citus(#     account_code,
+citus(#     account_desc,
+citus(#     account_type,
+citus(#     status,
+citus(#     version,
+citus(#     effective_date
+citus(# ) VALUES (
+citus(#     1,
+citus(#     CURRENT_TIMESTAMP,
+citus(#     'test_user',
+citus(#     12345,
+citus(#     'Test Account',
+citus(#     'TST123',
+citus(#     'This is a test account description.',
+citus(#     1,
+citus(#     1,
+citus(#     1,
+citus(#     CURRENT_TIMESTAMP
+citus(# );
+ERROR:  record "new" has no field "value"
+CONTEXT:  SQL statement "INSERT INTO shard7.account_hist_102640 (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
+                                account_code, account_desc, account_type, status, version, effective_date)
+                  VALUES (current_user,NEW.value)"
+PL/pgSQL function shard7.tfn_account_hist() line 3 at SQL statement
+while executing command on 10.13.3.48:5432
+
+
