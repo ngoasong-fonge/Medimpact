@@ -153,8 +153,8 @@ SELECT * FROM shard7.account_hist;
 
 ===============================
 
-UPDATE insert_target
-SET value = 'updated value'
-WHERE value = 'inserted value';
+NEW.entered, NEW.entered_by, CURRENT_TIMESTAMP, current_user, NEW.account_id, NEW.client_id, 
+                NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type, 
+                NEW.status, NEW.version, NEW.effective_date
 
 
