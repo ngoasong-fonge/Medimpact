@@ -40,24 +40,68 @@ TABLE audit_table;
 
 ==================
 
-2024-10-25 16:10:03.201 UTC [] [356544]: [1352055-1] user=,db=,host=LOG:  archive command failed with exit code 1
-2024-10-25 16:10:03.201 UTC [] [356544]: [1352056-1] user=,db=,host=DETAIL:  The failed archive command was: test ! -f /opt/backup/pgdev2/group4/wal_archive/00000002.history && /usr/bin/cp pg_wal/00000002.history /opt/backup/pgdev2/group4/wal_archive/00000002.history
+CREATE TABLE IF NOT EXISTS shard7.account (
+    account_id bigint NOT NULL DEFAULT nextval('shard7.account_account_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) NOT NULL DEFAULT CURRENT_USER,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) NOT NULL,
+    account_code character varying(1000),
+    account_desc character varying(9000),
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_pkey PRIMARY KEY (account_id)
+) TABLESPACE pg_default;
 
-Temporarily set archive_command = '/bin/true' until the view pg_stat_archiver indicates that PostgreSQL is happy again, then set the parameter back to its original value
 
-citus=# select * from pg_stat_archiver;
- archived_count |    last_archived_wal     |      last_archived_time      | failed_count | last_failed_wal  |       last_failed_time       |          stats_reset
-----------------+--------------------------+------------------------------+--------------+------------------+------------------------------+-------------------------------
-            102 | 00000005000000000000005E | 2024-10-25 16:11:41.09324+00 |       885127 | 00000002.history | 2024-10-25 16:11:05.25701+00 | 2024-03-27 18:56:53.232348+00
-(1 row)
+CREATE TABLE IF NOT EXISTS shard7.account_hist (
+    account_hist_id bigint NOT NULL DEFAULT nextval('shard7.account_hist_account_hist_id_seq'::regclass),
+    entered timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entered_by character varying(100) NOT NULL DEFAULT CURRENT_USER,
+    replaced timestamp without time zone NOT NULL,
+    replaced_by character varying(100),
+    account_id bigint NOT NULL,
+    client_id bigint NOT NULL,
+    account_name character varying(1000) NOT NULL,
+    account_code character varying(1000),
+    account_desc character varying(9000),
+    account_type smallint NOT NULL,
+    status smallint NOT NULL,
+    version integer NOT NULL,
+    effective_date timestamp without time zone,
+    CONSTRAINT account_hist_pkey PRIMARY KEY (account_hist_id)
+) TABLESPACE pg_default;
 
-citus=# select pg_stat_reset_shared('archiver');
- pg_stat_reset_shared
-----------------------
 
-(1 row)
 
-citus=# select * from pg_stat_archiver;
- archived_count | last_archived_wal | last_archived_time | failed_count | last_failed_wal | last_failed_time |          stats_reset
-----------------+-------------------+--------------------+--------------+-----------------+------------------+-------------------------------
-              0 |                   |                    |            0 |                 |                  | 2024-10-25 16:25:33.358374+00
+SELECT run_command_on_placements(
+  'shard7.account_hist',
+  $cmd$
+    CREATE OR REPLACE FUNCTION shard7.tfn_account_hist() RETURNS TRIGGER AS $$
+      BEGIN
+        INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, 
+                        account_code, account_desc, account_type, status, version, effective_date)
+          VALUES (current_user,NEW.value);
+        RETURN NEW;
+      END;
+    $$ LANGUAGE plpgsql;
+  $cmd$
+);
+
+
+
+SELECT run_command_on_placements(
+  'shard7.account',
+  $cmd$
+    CREATE TRIGGER trg_account_hist
+    AFTER INSERT OR UPDATE OR DELETE ON %s
+    FOR EACH ROW EXECUTE PROCEDURE shard7.tfn_account_hist()
+  $cmd$
+);
+
+
+INSERT INTO shard7.account 
+
+TABLE account_hist;
