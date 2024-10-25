@@ -182,5 +182,25 @@ ERROR:  INSERT has more expressions than target columns
 CONTEXT:  PL/pgSQL function shard7.tfn_account_hist() line 3 at SQL statement
 while executing command on 10.13.3.48:5432
 
+citus=# \d shard7.account_hist
+                                                     Table "shard7.account_hist"
+     Column      |            Type             | Collation | Nullable |                           Default
+-----------------+-----------------------------+-----------+----------+--------------------------------------------------------------
+ account_hist_id | bigint                      |           | not null | nextval('shard7.account_hist_account_hist_id_seq'::regclass)
+ entered         | timestamp without time zone |           | not null | CURRENT_TIMESTAMP
+ entered_by      | character varying(100)      |           | not null | CURRENT_USER
+ replaced        | timestamp without time zone |           | not null |
+ replaced_by     | character varying(100)      |           |          |
+ account_id      | bigint                      |           | not null |
+ client_id       | bigint                      |           | not null |
+ account_name    | character varying(1000)     |           | not null |
+ account_code    | character varying(1000)     |           |          |
+ account_desc    | character varying(9000)     |           |          |
+ account_type    | smallint                    |           | not null |
+ status          | smallint                    |           | not null |
+ version         | integer                     |           | not null |
+ effective_date  | timestamp without time zone |           |          |
+Indexes:
+    "account_hist_pkey" PRIMARY KEY, btree (account_hist_id)
 
 
