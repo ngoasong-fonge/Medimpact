@@ -153,5 +153,8 @@ SELECT * FROM shard7.account_hist;
 
 ===============================
 
-INSERT INTO insert_target (value) VALUES ('inserted value');
+UPDATE insert_target
+SET value = 'updated value'
+WHERE value = 'inserted value';
+
 
