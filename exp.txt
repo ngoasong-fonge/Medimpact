@@ -105,3 +105,48 @@ SELECT run_command_on_placements(
 INSERT INTO shard7.account 
 
 TABLE account_hist;
+
+
+=================================
+
+INSERT INTO shard7.account (
+    account_id, 
+    entered, 
+    entered_by, 
+    client_id, 
+    account_name, 
+    account_code, 
+    account_desc, 
+    account_type, 
+    status, 
+    version, 
+    effective_date
+) VALUES (
+    1,
+    CURRENT_TIMESTAMP,
+    'test_user',
+    12345,
+    'Test Account',
+    'TST123',
+    'This is a test account description.',
+    1,
+    1,
+    1,
+    CURRENT_TIMESTAMP
+);
+
+
+UPDATE shard7.account
+SET account_name = 'Updated Account Name',
+    account_desc = 'Updated description.',
+    version = version + 1
+WHERE account_id = 1;
+
+
+
+DELETE FROM shard7.account
+WHERE account_id = 1;
+
+
+SELECT * FROM shard7.account_hist;
+
