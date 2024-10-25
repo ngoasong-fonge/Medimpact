@@ -217,3 +217,34 @@ CREATE TABLE IF NOT EXISTS shard7.account_hist (
 ) TABLESPACE pg_default;
 
 
+SELECT run_command_on_placements(
+  'shard7.account_hist',
+  $cmd$
+    CREATE OR REPLACE FUNCTION shard7.tfn_account_hist() RETURNS TRIGGER AS $$
+    BEGIN
+      IF (TG_OP = 'INSERT') THEN
+        INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, 
+                        account_code, account_desc, account_type, status, version, effective_date)
+        VALUES (NEW.entered, NEW.entered_by, NULL, NULL, NEW.account_id, NEW.client_id, 
+                NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type, 
+                NEW.status, NEW.version, NEW.effective_date);
+        
+      ELSIF (TG_OP = 'UPDATE') THEN
+        INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, 
+                        account_code, account_desc, account_type, status, version, effective_date)
+        VALUES (OLD.entered, OLD.entered_by, CURRENT_TIMESTAMP, current_user, OLD.account_id, OLD.client_id, 
+                OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, 
+                OLD.status, OLD.version, OLD.effective_date);
+        
+      ELSIF (TG_OP = 'DELETE') THEN
+        INSERT INTO %s (entered, entered_by, replaced, replaced_by, account_id, client_id, account_name, 
+                        account_code, account_desc, account_type, status, version, effective_date)
+        VALUES (OLD.entered, OLD.entered_by, CURRENT_TIMESTAMP, current_user, OLD.account_id, OLD.client_id, 
+                OLD.account_name, OLD.account_code, OLD.account_desc, OLD.account_type, 
+                OLD.status, OLD.version, OLD.effective_date);
+      END IF;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+  $cmd$
+);
