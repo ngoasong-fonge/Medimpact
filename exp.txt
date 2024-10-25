@@ -51,3 +51,13 @@ citus=# select * from pg_stat_archiver;
             102 | 00000005000000000000005E | 2024-10-25 16:11:41.09324+00 |       885127 | 00000002.history | 2024-10-25 16:11:05.25701+00 | 2024-03-27 18:56:53.232348+00
 (1 row)
 
+citus=# select pg_stat_reset_shared('archiver');
+ pg_stat_reset_shared
+----------------------
+
+(1 row)
+
+citus=# select * from pg_stat_archiver;
+ archived_count | last_archived_wal | last_archived_time | failed_count | last_failed_wal | last_failed_time |          stats_reset
+----------------+-------------------+--------------------+--------------+-----------------+------------------+-------------------------------
+              0 |                   |                    |            0 |                 |                  | 2024-10-25 16:25:33.358374+00
