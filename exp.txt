@@ -153,8 +153,34 @@ SELECT * FROM shard7.account_hist;
 
 ===============================
 
-NEW.entered, NEW.entered_by, CURRENT_TIMESTAMP, current_user, NEW.account_id, NEW.client_id, 
-                NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type, 
-                NEW.status, NEW.version, NEW.effective_date
+citus=# INSERT INTO shard7.account (
+citus(#     account_id,
+citus(#     entered,
+citus(#     entered_by,
+citus(#     client_id,
+citus(#     account_name,
+citus(#     account_code,
+citus(#     account_desc,
+citus(#     account_type,
+citus(#     status,
+citus(#     version,
+citus(#     effective_date
+citus(# ) VALUES (
+citus(#     1,
+citus(#     CURRENT_TIMESTAMP,
+citus(#     'test_user',
+citus(#     12345,
+citus(#     'Test Account',
+citus(#     'TST123',
+citus(#     'This is a test account description.',
+citus(#     1,
+citus(#     1,
+citus(#     1,
+citus(#     CURRENT_TIMESTAMP
+citus(# );
+ERROR:  INSERT has more expressions than target columns
+CONTEXT:  PL/pgSQL function shard7.tfn_account_hist() line 3 at SQL statement
+while executing command on 10.13.3.48:5432
+
 
 
