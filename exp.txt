@@ -153,7 +153,16 @@ SELECT * FROM shard7.account_hist;
 
 ===============================
 
-index=my_index sourcetype=my_sourcetype 
-| rex field=_raw "^(?<timestamp>\S+\s+\S+)\s+\[\d+\]:\s+user=(?<user>\w+),\s+db=(?<db>\w+),\s+host=(?<host>[\d\.]+),\s+app=(?<app>[^,]+),\s+xid=(?<xid>\d+),\s+status=(?<status>\w+):\s+LOG:\s+(?<log_type>[^,]+),\s+(?<session_id>[^,]+),\s+(?<event_id>[^,]+),\s+(?<action>[^,]+),\s+(?<command_type>[^,]*),\s+\"(?<command>.*?)\",(?<extra>.*)"
+index=postgresql host=dv1medpgsc* "user=auditor" | rex field=_raw "^(?<timestamp>\S+\s+\S+)\s+\[\d+\]:\s+user=(?<user>\w+),\s+db=(?<db>\w+),\s+host=(?<host>[\d\.]+),\s+app=(?<app>[^,]+),\s+xid=(?<xid>\d+),\s+status=(?<status>\w+):\s+LOG:\s+(?<log_type>[^,]+),\s+(?<session_id>[^,]+),\s+(?<event_id>[^,]+),\s+(?<action>[^,]+),\s+(?<command_type>[^,]*),\s+\"(?<command>.*?)\",(?<extra>.*)"
 | table timestamp, user, db, host, app, xid, status, log_type, session_id, event_id, action, command_type, command, extra
+
+
+index=postgresql host=dv1medpgsc* "user=auditor" | table _raw
+
+2024-10-25 17:33:11 UTC [2108563]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000: LOG:  AUDIT: SESSION,6,1,WRITE,DELETE,,,"DELETE FROM audit.employees3
+	WHERE first_name = 'Mark' AND last_name = 'Taylor';",<none>
+2024-10-25 17:33:09 UTC [2108563]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000: LOG:  AUDIT: SESSION,5,1,READ,SELECT,,,SELECT * FROM audit.employees3 WHERE first_name = 'John' AND last_name = 'Doe';,<none>
+2024-10-25 17:33:09 UTC [2108563]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000: LOG:  AUDIT: SESSION,4,1,WRITE,UPDATE,,,"UPDATE audit.employees3
+	SET salary = 60000.00
+	WHERE first_name = 'John' AND last_name = 'Doe';",<none>
 
