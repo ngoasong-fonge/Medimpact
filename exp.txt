@@ -153,5 +153,7 @@ SELECT * FROM shard7.account_hist;
 
 ===============================
 
-2024-10-25 17:33:11 UTC [2108563]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000: LOG:  AUDIT: SESSION,6,1,WRITE,DELETE,,,"DELETE FROM audit.employees3
-	WHERE first_name = 'Mark' AND last_name = 'Taylor';",<none>
+index=my_index sourcetype=my_sourcetype 
+| rex field=_raw "^(?<timestamp>\S+\s+\S+)\s+\[\d+\]:\s+user=(?<user>\w+),\s+db=(?<db>\w+),\s+host=(?<host>[\d\.]+),\s+app=(?<app>[^,]+),\s+xid=(?<xid>\d+),\s+status=(?<status>\w+):\s+LOG:\s+(?<log_type>[^,]+),\s+(?<session_id>[^,]+),\s+(?<event_id>[^,]+),\s+(?<action>[^,]+),\s+(?<command_type>[^,]*),\s+\"(?<command>.*?)\",(?<extra>.*)"
+| table timestamp, user, db, host, app, xid, status, log_type, session_id, event_id, action, command_type, command, extra
+
