@@ -35,8 +35,5 @@ SELECT run_command_on_placements(
 );
 
 
-claim_rate_with_exposure_extract.csv.gz
-INSERT INTO insert_target (value) VALUES ('inserted value');
-
-TABLE audit_table;
+LAKER-attachments-72tix-259files.zip
 
