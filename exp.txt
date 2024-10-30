@@ -35,5 +35,5 @@ SELECT run_command_on_placements(
 );
 
 
-LAKER-attachments-72tix-259files.zip
+https://aws.amazon.com/blogs/database/managing-postgresql-users-and-roles/
 
