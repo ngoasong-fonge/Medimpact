@@ -35,5 +35,18 @@ SELECT run_command_on_placements(
 );
 
 
-https://aws.amazon.com/blogs/database/managing-postgresql-users-and-roles/
+%t [%p]: user=%u, db=%d, host=%h, app=%a, xid=%x, status=%e, statement=%s:
 
+2024-11-04 22:50:43 UTC [3095402]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=53001705, status=00000, statement=2024-11-04 22:50:21 UTC:LOG:  AUDIT: SESSION,1,1,DDL,ALTER SEQUENCE,SEQUENCE,audit.employees6_id_seq,"CREATE TABLE audit.employees6 (
+            id SERIAL PRIMARY KEY,
+            first_name VARCHAR(50),
+            last_name VARCHAR(50),
+            department VARCHAR(50),
+            salary NUMERIC(10, 2)
+        );",<none>
+2024-11-04 22:50:43 UTC [3095402]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000, statement=2024-11-04 22:50:21 UTC:LOG:  AUDIT: SESSION,2,1,WRITE,INSERT,,,"INSERT INTO audit.employees6 (first_name, last_name, department, salary)
+        VALUES
+        ('John', 'Doe', 'HR', 55000.00),
+        ('Jane', 'Smith', 'Engineering', 75000.00),
+        ('Mark', 'Taylor', 'Marketing', 60000.00),
+        ('Lucy', 'Williams', 'Finance', 70000.00);",<none>
