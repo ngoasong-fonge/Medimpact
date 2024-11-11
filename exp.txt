@@ -35,16 +35,30 @@ SELECT run_command_on_placements(
 );
 
 
-%t [%p]: user=%u, db=%d, host=%h, app=%a, xid=%x, status=%e, statement=%s:
+[svcpostgres@pv2medpg3db1 foundry]$ cat task_edited_schema.sql
+create table  task_edited_schema (
+    last_modified_by varchar(4000),
+    reviewer varchar(4000),
+    last_status_changer varchar(4000),
+    assigner varchar(4000),
+    assignee varchar(4000),
+    id varchar(4000),
+    category varchar(4000),
+    type varchar(4000),
+    title varchar(4000),
+    description varchar(4000),
+    create table d_timestamp varchar(4000),
+    priority varchar(4000),
+    status varchar(4000),
+    sub_status varchar(4000),
+    due_date varchar(4000),
+    last_status_change_timestamp varchar(4000),
+    last_modified_timestamp varchar(4000),
+    review_timestamp varchar(4000),
+    linked_entity_id varchar(4000),
+    linked_ccm_entity_id, T.IntegerType()),
+    linked_entity_ids varchar(4000),
+    linked_ccm_entity_ids varchar(4000)
 
-exposures_by_cycle_period_schema.sql and task_edited_schema.sql 
-Please create the tables in the standalone Postgres in prod and try loading these files
- 
-Both of them have the '|' delimiter
- 
-not the comma
- 
-"The one that is 113KB is task_edited and the other one is exposures_by_cycle_period. Both are using the piping operator as the delimiter "
- 
 
 
