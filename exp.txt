@@ -97,3 +97,12 @@ citus=# TABLE shard6.account_hist;
  account_hist_id | entered | entered_by | replaced | replaced_by | account_id | client_id | account_name | account_code | account_desc | account_type | status | version | effective_date
 -----------------+---------+------------+----------+-------------+------------+-----------+--------------+--------------+--------------+--------------+--------+---------+----------------
 (0 rows)
+
+SELECT run_command_on_placements(
+  'shard6.account',
+  $cmd$
+    CREATE TRIGGER trg_account_hist
+    AFTER INSERT OR UPDATE OR DELETE ON %s
+    FOR EACH ROW EXECUTE PROCEDURE shard7.tfn_account_hist()
+  $cmd$
+);
