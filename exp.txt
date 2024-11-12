@@ -1,17 +1,3 @@
--- create the reference tables
-
-CREATE TABLE insert_target (
-  value text
-);
-CREATE TABLE audit_table(
-  author name NOT NULL,
-  value text
-);
-SELECT create_reference_table('insert_target');
-SELECT create_reference_table('audit_table');
-
-To make a trigger on each worker that updates audit_table, we need to know the name of that table’s shard. Rather than looking up the name in the metadata tables and using it manually in run_command_on_workers, we can use run_command_on_placements. Reference tables have exactly one placement per worker node, so the following creates what we want.
-
 SELECT run_command_on_placements(
   'audit_table',
   $cmd$
@@ -34,31 +20,45 @@ SELECT run_command_on_placements(
   $cmd$
 );
 
+INSERT INTO insert_target (value) VALUES ('inserted value');
 
-[svcpostgres@pv2medpg3db1 foundry]$ cat task_edited_schema.sql
-create table  task_edited_schema (
-    last_modified_by varchar(4000),
-    reviewer varchar(4000),
-    last_status_changer varchar(4000),
-    assigner varchar(4000),
-    assignee varchar(4000),
-    id varchar(4000),
-    category varchar(4000),
-    type varchar(4000),
-    title varchar(4000),
-    description varchar(4000),
-    create table d_timestamp varchar(4000),
-    priority varchar(4000),
-    status varchar(4000),
-    sub_status varchar(4000),
-    due_date varchar(4000),
-    last_status_change_timestamp varchar(4000),
-    last_modified_timestamp varchar(4000),
-    review_timestamp varchar(4000),
-    linked_entity_id varchar(4000),
-    linked_ccm_entity_id, T.IntegerType()),
-    linked_entity_ids varchar(4000),
-    linked_ccm_entity_ids varchar(4000)
+SELECT run_command_on_placements(
+  'shard6.account_hist',
+  $cmd$
+    CREATE OR REPLACE FUNCTION shard6.tfn_account_hist() RETURNS TRIGGER AS $$
+      BEGIN
+        INSERT INTO %s (account_hist_id,entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
+                                account_code, account_desc, account_type, status, version, effective_date)
+                  VALUES (nextval('shard7.account_hist_account_hist_id_seq'),current_user, NEW.entered, NEW.entered_by, NEW.account_id, NEW.client_id, 
+                NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type, 
+                NEW.status, NEW.version, NEW.effective_date);
+                RETURN NEW;
+      END;
+    $$ LANGUAGE plpgsql;
+  $cmd$
+);
 
+SELECT run_command_on_placements(
+  'shard6.account',
+  $cmd$
+    CREATE TRIGGER trg_account_hist
+    AFTER INSERT OR UPDATE OR DELETE ON %s
+    FOR EACH ROW EXECUTE PROCEDURE shard7.tfn_account_hist()
+  $cmd$
+);
 
+CREATE OR REPLACE FUNCTION shard6.tfn_account_hist()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $function$
+              BEGIN
+                INSERT INTO shard6.account_hist_102649 (account_hist_id,entered, entered_by, replaced, replaced_by, account_id, client_id, account_name,
+                                account_code, account_desc, account_type, status, version, effective_date)
+                  VALUES (nextval('shard7.account_hist_account_hist_id_seq'),current_user, NEW.entered, NEW.entered_by, NEW.account_id, NEW.client_id, 
+                NEW.account_name, NEW.account_code, NEW.account_desc, NEW.account_type, 
+                NEW.status, NEW.version, NEW.effective_date);
+                RETURN NEW;
+              END;
+            $function$
+;
 
