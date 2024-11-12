@@ -86,3 +86,12 @@ create table  foundry.exposures_by_cycle_period_schema(
     incremental_net_rx_count, T.LongType())
 );
 
+
+
+2024-11-12 19:07:43 UTC [3881810]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000:LOG:  statement: INSERT INTO audit.employees13 (first_name, last_name, department, salary)
+2024-11-12 19:07:43 UTC [3881810]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000:LOG:  AUDIT: SESSION,2,1,WRITE,INSERT,,,"INSERT INTO audit.employees13 (first_name, last_name, department, salary)
+        VALUES
+        ('John', 'Doe', 'HR', 55000.00),
+        ('Jane', 'Smith', 'Engineering', 75000.00),
+        ('Mark', 'Taylor', 'Marketing', 60000.00),
+        ('Lucy', 'Williams', 'Finance', 70000.00);",<none>
