@@ -73,6 +73,14 @@ CREATE TABLE foundry.exposures_by_cycle_period_schema (
     incremental_net_rx_count BIGINT
 );
 
+
+
+[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -c "COPY foundry.task_edited_schema FROM '/opt/backup/foundry/task_edited_extract.csv' DELIMITER '|' CSV HEADER;"
+ERROR:  missing data for column "reviewer"
+CONTEXT:  COPY task_edited_schema, line 2: "c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7a..."
+
+
+
 Using these native PostgreSQL types will help maintain data integrity and ensure that the columns store the expected data types.
 
 
