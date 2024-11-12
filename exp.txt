@@ -101,8 +101,6 @@ citus=# TABLE shard6.account_hist;
 SELECT run_command_on_placements(
   'shard6.account',
   $cmd$
-    CREATE TRIGGER trg_account_hist
-    AFTER INSERT OR UPDATE OR DELETE ON %s
-    FOR EACH ROW EXECUTE PROCEDURE shard7.tfn_account_hist()
+    DROP TRIGGER IF EXISTS trg_account_hist ON %s
   $cmd$
 );
