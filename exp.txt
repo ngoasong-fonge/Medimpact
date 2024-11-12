@@ -88,10 +88,9 @@ create table  foundry.exposures_by_cycle_period_schema(
 
 
 
-2024-11-12 19:07:43 UTC [3881810]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000:LOG:  statement: INSERT INTO audit.employees13 (first_name, last_name, department, salary)
-2024-11-12 19:07:43 UTC [3881810]: user=auditor, db=citus, host=127.0.0.1, app=psql, xid=0, status=00000:LOG:  AUDIT: SESSION,2,1,WRITE,INSERT,,,"INSERT INTO audit.employees13 (first_name, last_name, department, salary)
-        VALUES
-        ('John', 'Doe', 'HR', 55000.00),
-        ('Jane', 'Smith', 'Engineering', 75000.00),
-        ('Mark', 'Taylor', 'Marketing', 60000.00),
-        ('Lucy', 'Williams', 'Finance', 70000.00);",<none>
+To eliminate the statement: log entries and only keep the AUDIT: entries, you can adjust your PostgreSQL logging settings to stop logging SQL statements for specific users (such as auditor), or you can fine-tune the pg_audit configuration.
+
+Option 1: Modify PostgreSQL log_statement Configuration
+Disable log_statement for the auditor user: You can control the verbosity of the log entries for specific users by adjusting the log_statement setting. By default, log_statement is set to all or ddl or mod (depending on your configuration).
+
+You can disable statement logging for the auditor user by setting log_statement to none for that user.
