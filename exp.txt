@@ -12,3 +12,32 @@ COPY task_edited_schema FROM '/path/to/task_edited_file' DELIMITER '|' CSV HEADE
 
 psql -U your_username -d your_database -f exposures_by_cycle_period_schema.sql
 psql -U your_username -d your_database -f task_edited_schema.sql
+
+create table  foundry.task_edited_schema (
+    last_modified_by varchar(4000),
+    reviewer varchar(4000),
+    last_status_changer varchar(4000),
+    assigner varchar(4000),
+    assignee varchar(4000),
+    id varchar(4000),
+    category varchar(4000),
+    type varchar(4000),
+    title varchar(4000),
+    description varchar(4000),
+    create table d_timestamp varchar(4000),
+    priority varchar(4000),
+    status varchar(4000),
+    sub_status varchar(4000),
+    due_date varchar(4000),
+    last_status_change_timestamp varchar(4000),
+    last_modified_timestamp varchar(4000),
+    review_timestamp varchar(4000),
+    linked_entity_id varchar(4000),
+    linked_ccm_entity_id, T.IntegerType()),
+    linked_entity_ids varchar(4000),
+    linked_ccm_entity_ids varchar(4000)
+);
+
+[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -f task_edited_schema.sql
+psql:task_edited_schema.sql:24: ERROR:  syntax error at or near "create"
+LINE 12:     create table d_timestamp varchar(4000),
