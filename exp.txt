@@ -62,3 +62,14 @@ AS $function$
             $function$
 ;
 
+
+citus=# TABLE shard6.account;
+  account_id  |          entered           | entered_by | client_id | account_name | account_code |            account_desc             | account_type | status | version |       effective_date
+--------------+----------------------------+------------+-----------+--------------+--------------+-------------------------------------+--------------+--------+---------+----------------------------
+ 100000000002 | 2024-11-05 16:01:08.552385 | test_user  |     12345 | Test Account | TST123       | This is a test account description. |            1 |      1 |       1 | 2024-11-05 16:01:08.552385
+(1 row)
+
+citus=# TABLE shard6.account_hist;
+ account_hist_id | entered | entered_by | replaced | replaced_by | account_id | client_id | account_name | account_code | account_desc | account_type | status | version | effective_date
+-----------------+---------+------------+----------+-------------+------------+-----------+--------------+--------------+--------------+--------------+--------+---------+----------------
+(0 rows)
