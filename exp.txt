@@ -6,3 +6,9 @@ not the comma
  
 "The one that is 113KB is task_edited and the other one is exposures_by_cycle_period. Both are using the piping operator as the delimiter "
  
+COPY exposures_by_cycle_period_schema FROM '/path/to/exposures_by_cycle_period_file' DELIMITER '|' CSV HEADER;
+
+COPY task_edited_schema FROM '/path/to/task_edited_file' DELIMITER '|' CSV HEADER;
+
+psql -U your_username -d your_database -f exposures_by_cycle_period_schema.sql
+psql -U your_username -d your_database -f task_edited_schema.sql
