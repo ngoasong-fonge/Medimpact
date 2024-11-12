@@ -62,6 +62,30 @@ AS $function$
             $function$
 ;
 
+INSERT INTO shard6.account ( 
+    entered, 
+    entered_by, 
+    client_id, 
+    account_name, 
+    account_code, 
+    account_desc, 
+    account_type, 
+    status, 
+    version, 
+    effective_date
+) VALUES (
+    CURRENT_TIMESTAMP,
+    'test_user',
+    12345,
+    'Test Account',
+    'TST123',
+    'This is a test account description.',
+    1,
+    1,
+    1,
+    CURRENT_TIMESTAMP
+);
+
 
 citus=# TABLE shard6.account;
   account_id  |          entered           | entered_by | client_id | account_name | account_code |            account_desc             | account_type | status | version |       effective_date
