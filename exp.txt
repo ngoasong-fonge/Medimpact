@@ -1,24 +1,11 @@
-Please create the tables exposures_by_cycle_period_schema and task_edited_schema in the standalone Postgres in prod and try loading these files
- 
-Both of them have the '|' delimiter
- 
-not the comma
- 
-"The one that is 113KB is task_edited and the other one is exposures_by_cycle_period. Both are using the piping operator as the delimiter "
- 
-COPY exposures_by_cycle_period_schema FROM '/path/to/exposures_by_cycle_period_file' DELIMITER '|' CSV HEADER;
+Replacing T.IntegerType(), T.BooleanType(), T.DoubleType(), and T.LongType() with varchar(4000) is not ideal if the columns are intended to store numbers or booleans, as this approach sacrifices data type constraints and can lead to inconsistencies (e.g., storing non-numeric data in numeric fields). The appropriate substitutions in PostgreSQL for these data types are:
 
-COPY task_edited_schema FROM '/path/to/task_edited_file' DELIMITER '|' CSV HEADER;
+T.IntegerType() → INTEGER
+T.BooleanType() → BOOLEAN
+T.DoubleType() → DOUBLE PRECISION
+T.LongType() → BIGINT
 
-psql -U your_username -d your_database -f exposures_by_cycle_period_schema.sql
-psql -U your_username -d your_database -f task_edited_schema.sql
-
-[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -f exposures_by_cycle_period_schema.sql
-psql:exposures_by_cycle_period_schema.sql:67: ERROR:  syntax error at or near ","
-LINE 12:     plan_year, T.IntegerType()),
-                      ^
-[svcpostgres@pv2medpg3db1 foundry]$ cat exposures_by_cycle_period_schema.sql
-create table  foundry.exposures_by_cycle_period_schema(
+CREATE TABLE foundry.exposures_by_cycle_period_schema (
     id varchar(4000),
     contract_id varchar(4000),
     contract_organization_id varchar(4000),
@@ -29,9 +16,9 @@ create table  foundry.exposures_by_cycle_period_schema(
     guarantee_period_id varchar(4000),
     guarantee_period_effective_date varchar(4000),
     guarantee_period_expiration_date varchar(4000),
-    plan_year, T.IntegerType()),
+    plan_year INTEGER,
     level varchar(4000),
-    level_order, T.IntegerType()),
+    level_order INTEGER,
     level_display_string varchar(4000),
     guarantee_category_type varchar(4000),
     guarantee_category_id varchar(4000),
@@ -46,17 +33,17 @@ create table  foundry.exposures_by_cycle_period_schema(
     category varchar(4000),
     guarantee_type varchar(4000),
     rate_id varchar(4000),
-    contract_executed, T.BooleanType()),
+    contract_executed BOOLEAN,
     contract_effective_date varchar(4000),
     contract_expiration_date varchar(4000),
     first_full_reconciliation_period_start_date varchar(4000),
-    contract_annual_reconciliation_length, T.DoubleType()),
-    contract_co-pay_differential, T.DoubleType()),
-    contract_eligibility_threshold, T.DoubleType()),
-    contract_reconciliation_period_length, T.DoubleType()),
-    rebate_annual_reconciliation_length, T.DoubleType()),
-    rebate_co-pay_differential, T.DoubleType()),
-    rebate_reconciliation_period, T.DoubleType()),
+    contract_annual_reconciliation_length DOUBLE PRECISION,
+    contract_co_pay_differential DOUBLE PRECISION,
+    contract_eligibility_threshold DOUBLE PRECISION,
+    contract_reconciliation_period_length DOUBLE PRECISION,
+    rebate_annual_reconciliation_length DOUBLE PRECISION,
+    rebate_co_pay_differential DOUBLE PRECISION,
+    rebate_reconciliation_period DOUBLE PRECISION,
     contract_eligibility_threshold_basis varchar(4000),
     contract_eligibility_threshold_frequency varchar(4000),
     contract_exposure_cap varchar(4000),
@@ -72,19 +59,21 @@ create table  foundry.exposures_by_cycle_period_schema(
     rebate_exposure_offset varchar(4000),
     rebate_payout_period varchar(4000),
     rebate_pricing_type varchar(4000),
-    has_rebate_guarantee_rates, T.BooleanType()),
-    has_rebate_passthrough_rates, T.BooleanType()),
-    net_rx_count, T.LongType()),
-    admin_fee, T.DoubleType()),
-    incremental_admin_fee, T.DoubleType()),
-    guaranteed_exposure_exposure_cap, T.DoubleType()),
-    guaranteed_exposure_no_cap, T.DoubleType()),
-    guaranteed_exposure, T.DoubleType()),
-    incremental_guaranteed_exposure, T.DoubleType()),
-    incremental_guaranteed_exposure_exposure_cap, T.DoubleType()),
-    incremental_guaranteed_exposure_no_cap, T.DoubleType()),
-    incremental_net_rx_count, T.LongType())
+    has_rebate_guarantee_rates BOOLEAN,
+    has_rebate_passthrough_rates BOOLEAN,
+    net_rx_count BIGINT,
+    admin_fee DOUBLE PRECISION,
+    incremental_admin_fee DOUBLE PRECISION,
+    guaranteed_exposure_exposure_cap DOUBLE PRECISION,
+    guaranteed_exposure_no_cap DOUBLE PRECISION,
+    guaranteed_exposure DOUBLE PRECISION,
+    incremental_guaranteed_exposure DOUBLE PRECISION,
+    incremental_guaranteed_exposure_exposure_cap DOUBLE PRECISION,
+    incremental_guaranteed_exposure_no_cap DOUBLE PRECISION,
+    incremental_net_rx_count BIGINT
 );
+
+Using these native PostgreSQL types will help maintain data integrity and ensure that the columns store the expected data types.
 
 
 
