@@ -91,3 +91,12 @@ Option 1: Modify PostgreSQL log_statement Configuration
 Disable log_statement for the auditor user: You can control the verbosity of the log entries for specific users by adjusting the log_statement setting. By default, log_statement is set to all or ddl or mod (depending on your configuration).
 
 You can disable statement logging for the auditor user by setting log_statement to none for that user.
+
+Setting log_statement = 'all' in PostgreSQL is a way to log every SQL statement that is executed, which is useful for auditing and tracking queries.
+
+This setting has the following options:
+
+none: Logs no statements.
+ddl: Logs only data definition statements (like CREATE, ALTER, and DROP).
+mod: Logs all DDL and data modification statements (like INSERT, UPDATE, DELETE, TRUNCATE).
+all: Logs all statements, including SELECT queries.
