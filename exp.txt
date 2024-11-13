@@ -159,3 +159,11 @@ psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer,
 2024-11-13 17:44:11.048 UTC [] [2020]: [21422-1] user=,db=,host=LOG:  restartpoint complete: wrote 3078 buffers (0.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=269.925 s, sync=0.002 s, total=269.934 s; sync files=125, longest=0.001 s, average=0.001 s; distance=13255 kB, estimate=42504 kB
 
 
+2024-11-13 18:11:48.006 UTC [127.0.0.1(33514)] [2156]: [966547-1] user=pmm,db=citus,host=127.0.0.1ERROR:  recovery is in progress
+2024-11-13 18:11:48.006 UTC [127.0.0.1(33514)] [2156]: [966548-1] user=pmm,db=citus,host=127.0.0.1HINT:  WAL control functions cannot be executed during recovery.
+2024-11-13 18:11:48.006 UTC [127.0.0.1(33514)] [2156]: [966549-1] user=pmm,db=citus,host=127.0.0.1STATEMENT:
+                                SELECT slot_name, database, active, pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)
+                                FROM pg_replication_slots
+
+
+
