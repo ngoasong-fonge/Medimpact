@@ -100,3 +100,40 @@ none: Logs no statements.
 ddl: Logs only data definition statements (like CREATE, ALTER, and DROP).
 mod: Logs all DDL and data modification statements (like INSERT, UPDATE, DELETE, TRUNCATE).
 all: Logs all statements, including SELECT queries.
+
+
+
+
+
+
+psql -h pg-prod-1 -U deployadmin -d citus -c "COPY mrg.salesforce_case from '/opt/backup/mrg/caseinc101.csv' with (HEADER, format csv, delimiter ',', null '', force_null(actual_hours__c,lics_level__c,fo_case_closed_date_variance__c,begin_date__c,birth_date__c,closeddate,createddate,datereceived__c,due_date_time__c,duedate__c,e2e_completed_date__c,e2e_start_date__c,first_comment_date__c,last_comment_date__c,lastmodifieddate,ooo_end_date__c,ooo_start_date__c,plus_2_business_days__c,requested_due_date__c,systemmodstamp,x1_minute_delay__c));"
+
+psql -d archive -c "COPY foundry.task_edited_schema FROM '/opt/backup/foundry/task_edited_extract.csv' DELIMITER '|' CSV HEADER;"
+
+CREATE TABLE foundry.task_edited_schema (
+    last_modified_by varchar(4000),
+    reviewer varchar(4000),
+    last_status_changer varchar(4000),
+    assigner varchar(4000),
+    assignee varchar(4000),
+    id varchar(4000),
+    category varchar(4000),
+    type varchar(4000),
+    title varchar(4000),
+    description varchar(4000),
+    d_timestamp varchar(4000),
+    priority varchar(4000),
+    status varchar(4000),
+    sub_status varchar(4000),
+    due_date varchar(4000),
+    last_status_change_timestamp varchar(4000),
+    last_modified_timestamp varchar(4000),
+    review_timestamp varchar(4000),
+    linked_entity_id varchar(4000),
+    linked_ccm_entity_id varchar(4000),
+    linked_entity_ids varchar(4000),
+    linked_ccm_entity_ids varchar(4000)
+);
+
+
+
