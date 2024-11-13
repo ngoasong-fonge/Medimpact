@@ -149,3 +149,13 @@ psql -d archive -c "COPY foundry.task_edited_schema FROM '/opt/backup/foundry/ta
 psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids) FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER '|', HEADER, NULL '', FORCE_NULL (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids));"
 
 
+2024-11-13 17:33:52.289 UTC [] [2020]: [21415-1] user=,db=,host=LOG:  recovery restart point at 11C1/AC69E700
+2024-11-13 17:33:52.289 UTC [] [2020]: [21416-1] user=,db=,host=DETAIL:  Last completed transaction was at log time 2024-11-13 09:33:51.610636-08.
+2024-11-13 17:34:41.343 UTC [] [2020]: [21417-1] user=,db=,host=LOG:  restartpoint starting: time
+2024-11-13 17:39:11.075 UTC [] [2020]: [21418-1] user=,db=,host=LOG:  restartpoint complete: wrote 4986 buffers (0.6%); 0 WAL file(s) added, 0 removed, 1 recycled; write=269.711 s, sync=0.013 s, total=269.733 s; sync files=134, longest=0.003 s, average=0.001 s; distance=362 kB, estimate=45753 kB
+2024-11-13 17:39:11.075 UTC [] [2020]: [21419-1] user=,db=,host=LOG:  recovery restart point at 11C1/AC6F9038
+2024-11-13 17:39:11.075 UTC [] [2020]: [21420-1] user=,db=,host=DETAIL:  Last completed transaction was at log time 2024-11-13 09:39:10.842218-08.
+2024-11-13 17:39:41.114 UTC [] [2020]: [21421-1] user=,db=,host=LOG:  restartpoint starting: time
+2024-11-13 17:44:11.048 UTC [] [2020]: [21422-1] user=,db=,host=LOG:  restartpoint complete: wrote 3078 buffers (0.4%); 0 WAL file(s) added, 0 removed, 0 recycled; write=269.925 s, sync=0.002 s, total=269.934 s; sync files=125, longest=0.001 s, average=0.001 s; distance=13255 kB, estimate=42504 kB
+
+
