@@ -146,3 +146,6 @@ psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer,
                                                              
 psql -d archive -c "COPY foundry.task_edited_schema FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER '|', HEADER, NULL '');"
 
+psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids) FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER '|', HEADER, NULL '', FORCE_NULL (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids));"
+
+
