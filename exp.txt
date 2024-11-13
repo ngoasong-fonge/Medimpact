@@ -136,11 +136,11 @@ CREATE TABLE foundry.task_edited_schema (
 );
 
 
-psql -d archive -c "COPY foundry.task_edited_schema FROM '/opt/backup/foundry/task_edited_extract.csv' DELIMITER '|' CSV HEADER NULL '' FORCE_NULL(last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids);"
-ERROR:  syntax error at or near "FORCE_NULL"
-LINE 1: ...ted_extract.csv' DELIMITER '|' CSV HEADER NULL '' FORCE_NULL...
+psql -d archive -c "COPY foundry.task_edited_schema from '/opt/backup/foundry/task_edited_extract.csv' with (HEADER, format csv, delimiter ',', null '', force_null(last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids));"
+ERROR:  missing data for column "linked_ccm_entity_id"
+CONTEXT:  COPY task_edited_schema, line 136: "23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fe..."
 
-For me, the syntax that I use, working on PG 9.3 and above, is
-copy r from '/home/y.csv' WITH (delimiter ',', FORMAT csv, NULL 'null)';
+
+DELIMITER '|' CSV HEADER NULL
                                                              
 
