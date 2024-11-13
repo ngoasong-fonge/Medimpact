@@ -140,6 +140,7 @@ psql -d archive -c "COPY foundry.task_edited_schema FROM '/opt/backup/foundry/ta
 ERROR:  syntax error at or near "FORCE_NULL"
 LINE 1: ...ted_extract.csv' DELIMITER '|' CSV HEADER NULL '' FORCE_NULL...
 
+For me, the syntax that I use, working on PG 9.3 and above, is
 copy r from '/home/y.csv' WITH (delimiter ',', FORMAT csv, NULL 'null)';
                                                              
 
