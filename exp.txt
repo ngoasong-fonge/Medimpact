@@ -153,3 +153,10 @@ psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer,
 FROM '/path/to/task_edited_data.csv' WITH (FORMAT csv, DELIMITER '|', HEADER false);
 
 ALTER TABLE archive.task_edited ALTER COLUMN reviewer SET DEFAULT '';
+
+
+[svcpostgres@pv2medpg3db1 log]$ psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids)
+FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER '|', HEADER false);"
+ERROR:  missing data for column "reviewer"
+CONTEXT:  COPY task_edited_schema, line 1: "last_modified_by,reviewer,last_status_changer,assigner,assignee,id,category,type,title,description,c..."
+
