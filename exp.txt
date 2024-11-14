@@ -196,3 +196,11 @@ Step 5: Handle Missing Data with Default Values (Optional)
 If certain columns (like reviewer or linked_ccm_entity_id) may be empty in some rows, consider setting default values in your table schema:
 ALTER TABLE foundry.task_edited_schema ALTER COLUMN reviewer SET DEFAULT '';
 ALTER TABLE foundry.task_edited_schema ALTER COLUMN linked_ccm_entity_id SET DEFAULT 0;  -- or NULL if appropriate
+
+
+
+awk -F',' 'NF == 23' /opt/backup/foundry/task_edited_extract.csv > /opt/backup/foundry/task_edited_filtered.csv
+
+
+awk -F',' '{print NF}' /opt/backup/foundry/task_edited_filtered.csv | sort | uniq -c
+
