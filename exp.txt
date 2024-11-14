@@ -146,11 +146,22 @@ FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER '
 ERROR:  missing data for column "linked_ccm_entity_id"
 CONTEXT:  COPY task_edited_schema, line 136: "23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fe..."
 
+The errors suggest that the file’s structure may not fully align with the COPY command configuration. Here’s how to troubleshoot and resolve the issue.
+
+Step 1: Confirm the Delimiter and Structure
+Based on the first line you provided, the file uses a comma , delimiter, not a pipe |. You should specify the comma delimiter in your COPY command. However, if switching delimiters between , and | is causing errors in different columns, there may be inconsistencies in the data file.
+
+Step 2: Check Column Count Consistency
+It’s essential to verify that all rows have the exact number of columns expected by the table definition (23 in this case). You can use awk to check the number of fields in each line, based on a comma delimiter:
 
 awk -F',' '{print NF}' /opt/backup/foundry/task_edited_extract.csv | sort | uniq -c
 
-sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
+This command will display the frequency of lines with different column counts. Ideally, each line should have exactly 23 columns. If you see lines with fewer or more fields, inspect those lines for inconsistencies.
 
+Step 3: Inspect the Problematic Lines
+For the specific lines mentioned in the errors (e.g., line 136), open the file in a text editor or use sed to check those lines:
+sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
+Look for missing data or extra delimiters that might be causing the error.
 
 
 [svcpostgres@pv2medpg3db1 log]$ awk -F',' '{print NF}' /opt/backup/foundry/task_edited_extract.csv | sort | uniq -c
@@ -184,25 +195,28 @@ sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
       5 6
       3 9
 
-[svcpostgres@pv2medpg3db1 log]$ sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
-23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,1a7ec779-d86e-45de-840e-7aa77c764fde,12d57a03-8f1c-4df0-ae4e-08cc0730db90,Contract Review,Task Manager,CHENANGO,"CHENANGO - 2023 - \"Andy 9/10/2023:  Please update specialty channel to be all contracted pharamcies (not just specialty pharmacies).  Please update OTC exclusion to be OTCs other than strips, meters, and medications.  Please update device exclusion to be devices other than strips, meters, and medications.  Please remove rebate non-POS exclusion.  Please remove Most Favored National exclusion.  Please add exclusions for university pharmacies, Home infusion pharmacies, ITU pharmacies, and VA pharmacies.  Please add exclusions for claims older than 180 days.  please add exclusions for invalid identifiers, reversed claism, rejected claims.  Thank you.
+The output from awk shows a significant inconsistency in the column count across rows in the file. Ideally, each row should have 23 columns to match the table definition, but your data shows rows with a wide range of column counts, which is likely causing the COPY command errors. Here’s how to proceed:
 
-
-Step 4: Update the COPY Command with the Correct Delimiter
-Since the file appears to be comma-delimited, you should use , as the delimiter:
-
-
-Step 5: Handle Missing Data with Default Values (Optional)
-If certain columns (like reviewer or linked_ccm_entity_id) may be empty in some rows, consider setting default values in your table schema:
-ALTER TABLE foundry.task_edited_schema ALTER COLUMN reviewer SET DEFAULT '';
-ALTER TABLE foundry.task_edited_schema ALTER COLUMN linked_ccm_entity_id SET DEFAULT 0;  -- or NULL if appropriate
-
-
+1. Filter Rows with the Correct Number of Columns
+To isolate rows with exactly 23 columns, you can create a new file containing only those rows and then attempt to load that file. Use awk to filter out rows with exactly 23 columns:
 
 awk -F',' 'NF == 23' /opt/backup/foundry/task_edited_extract.csv > /opt/backup/foundry/task_edited_filtered.csv
 
+This command will create a new file, task_edited_filtered.csv, containing only rows with 23 columns.
+
+2. Verify the Filtered File
+It’s a good idea to check that the new file has consistent data with 23 columns in each row:
 
 awk -F',' '{print NF}' /opt/backup/foundry/task_edited_filtered.csv | sort | uniq -c
+
+This should ideally output only one line, indicating all rows have 23 columns.
+
+3. Load the Filtered File
+Now, try loading the filtered file into PostgreSQL using the COPY command:
+
+
+
+
 
 
 
