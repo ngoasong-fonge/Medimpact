@@ -187,3 +187,12 @@ sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
 [svcpostgres@pv2medpg3db1 log]$ sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
 23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,1a7ec779-d86e-45de-840e-7aa77c764fde,12d57a03-8f1c-4df0-ae4e-08cc0730db90,Contract Review,Task Manager,CHENANGO,"CHENANGO - 2023 - \"Andy 9/10/2023:  Please update specialty channel to be all contracted pharamcies (not just specialty pharmacies).  Please update OTC exclusion to be OTCs other than strips, meters, and medications.  Please update device exclusion to be devices other than strips, meters, and medications.  Please remove rebate non-POS exclusion.  Please remove Most Favored National exclusion.  Please add exclusions for university pharmacies, Home infusion pharmacies, ITU pharmacies, and VA pharmacies.  Please add exclusions for claims older than 180 days.  please add exclusions for invalid identifiers, reversed claism, rejected claims.  Thank you.
 
+
+Step 4: Update the COPY Command with the Correct Delimiter
+Since the file appears to be comma-delimited, you should use , as the delimiter:
+
+
+Step 5: Handle Missing Data with Default Values (Optional)
+If certain columns (like reviewer or linked_ccm_entity_id) may be empty in some rows, consider setting default values in your table schema:
+ALTER TABLE foundry.task_edited_schema ALTER COLUMN reviewer SET DEFAULT '';
+ALTER TABLE foundry.task_edited_schema ALTER COLUMN linked_ccm_entity_id SET DEFAULT 0;  -- or NULL if appropriate
