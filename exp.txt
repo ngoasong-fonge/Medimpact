@@ -135,7 +135,7 @@ CREATE TABLE foundry.task_edited_schema (
     linked_ccm_entity_ids varchar(4000)
 );
 
-
+when I use '|' error says missing data for column "reviewer" then when I use ',' error says missing data for column "linked_ccm_entity_id"
 [svcpostgres@pv2medpg3db1 log]$ psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids)
 FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER '|', HEADER true);"
 ERROR:  missing data for column "reviewer"
@@ -145,4 +145,9 @@ CONTEXT:  COPY task_edited_schema, line 2: "c3c58eeb-5653-4afd-9ed2-7aaa4f481412
 FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
 ERROR:  missing data for column "linked_ccm_entity_id"
 CONTEXT:  COPY task_edited_schema, line 136: "23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fe..."
+
+
+awk -F',' '{print NF}' /opt/backup/foundry/task_edited_extract.csv | sort | uniq -c
+
+sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
 
