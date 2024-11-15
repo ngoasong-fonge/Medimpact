@@ -207,4 +207,21 @@ CONTEXT:  COPY task_edited_schema, line 136: "23836ae4-9672-4fbd-9928-fecd2a6567
 [svcpostgres@pv2medpg3db1 foundry]$ sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
 23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,1a7ec779-d86e-45de-840e-7aa77c764fde,12d57a03-8f1c-4df0-ae4e-08cc0730db90,Contract Review,Task Manager,CHENANGO,"CHENANGO - 2023 - \"Andy 9/10/2023:  Please update specialty channel to be all contracted pharamcies (not just specialty pharmacies).  Please update OTC exclusion to be OTCs other than strips, meters, and medications.  Please update device exclusion to be devices other than strips, meters, and medications.  Please remove rebate non-POS exclusion.  Please remove Most Favored National exclusion.  Please add exclusions for university pharmacies, Home infusion pharmacies, ITU pharmacies, and VA pharmacies.  Please add exclusions for claims older than 180 days.  please add exclusions for invalid identifiers, reversed claism, rejected claims.  Thank you.
 
+The issue occurs because line 136 contains unescaped double quotes (") within the description field. PostgreSQL expects properly escaped quotes in the CSV file when using the COPY command. Let's address this issue step by step:
+
+Step 1: Inspect Line 136
+Line 136 contains this problematic description field:
+
+CHENANGO - 2023 - "Andy 9/10/2023:  Please update specialty channel to be all contracted pharamcies (not just specialty pharmacies). ...
+The double quotes in "Andy 9/10/2023: are not properly escaped, causing PostgreSQL to misinterpret the line.
+
+Step 2: Escape Double Quotes in the File
+To fix this, ensure all double quotes within fields are escaped properly as "". Use sed to replace all " with "" within the file:
+sed -i 's/"/""/g' /opt/backup/foundry/task_edited_extract.csv
+
+This command:
+
+Replaces every " with "" to escape quotes correctly for PostgreSQL's CSV format.
+Edits the file in place (-i flag).
+
 
