@@ -195,52 +195,17 @@ Look for missing data or extra delimiters that might be causing the error.
       5 6
       3 9
 
-The output from awk shows a significant inconsistency in the column count across rows in the file. Ideally, each row should have 23 columns to match the table definition, but your data shows rows with a wide range of column counts, which is likely causing the COPY command errors. Here’s how to proceed:
-
-1. Filter Rows with the Correct Number of Columns
-To isolate rows with exactly 23 columns, you can create a new file containing only those rows and then attempt to load that file. Use awk to filter out rows with exactly 23 columns:
-
-awk -F',' 'NF == 23' /opt/backup/foundry/task_edited_extract.csv > /opt/backup/foundry/task_edited_filtered.csv
-
-This command will create a new file, task_edited_filtered.csv, containing only rows with 23 columns.
-
-2. Verify the Filtered File
-It’s a good idea to check that the new file has consistent data with 23 columns in each row:
-
-awk -F',' '{print NF}' /opt/backup/foundry/task_edited_filtered.csv | sort | uniq -c
-
-This should ideally output only one line, indicating all rows have 23 columns.
-
-3. Load the Filtered File
-Now, try loading the filtered file into PostgreSQL using the COPY command:
-
-
-
-
-
-
-
-[svcpostgres@pv2medpg3db1 log]$ psql -d archive -c "COPY foundry.task_edited_schema (last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids)
-FROM '/opt/backup/foundry/task_edited_filtered.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
-ERROR:  extra data after last expected column
-CONTEXT:  COPY task_edited_schema, line 42: "LEGGETT 2023- 9/5 Andy  Please remove LDD exclusions, tamiflu exclusion, O drug exclusion, 'specialt..."
-
-
-grep -E ',[^"]|[^"],' /opt/backup/foundry/task_edited_filtered.csv
-
-
-psql -d archive -c "COPY foundry.task_edited_schema (
-    last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, 
-    d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, 
+[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -c "COPY foundry.task_edited_schema (
+    last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description,
+    d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp,
     review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
-) FROM '/opt/backup/foundry/task_edited_filtered.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
-
-
-\COPY foundry.task_edited_schema (
-    last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, 
-    d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, 
-    review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
-) FROM '/opt/backup/foundry/task_edited_filtered.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true) LOG ERRORS INTO err_table;
+) FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
+ERROR:  missing data for column "linked_ccm_entity_id"
+CONTEXT:  COPY task_edited_schema, line 136: "23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fe..."
+[svcpostgres@pv2medpg3db1 foundry]$
+[svcpostgres@pv2medpg3db1 foundry]$
+[svcpostgres@pv2medpg3db1 foundry]$ sed -n '136p' /opt/backup/foundry/task_edited_extract.csv
+23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,23836ae4-9672-4fbd-9928-fecd2a65678f,1a7ec779-d86e-45de-840e-7aa77c764fde,12d57a03-8f1c-4df0-ae4e-08cc0730db90,Contract Review,Task Manager,CHENANGO,"CHENANGO - 2023 - \"Andy 9/10/2023:  Please update specialty channel to be all contracted pharamcies (not just specialty pharmacies).  Please update OTC exclusion to be OTCs other than strips, meters, and medications.  Please update device exclusion to be devices other than strips, meters, and medications.  Please remove rebate non-POS exclusion.  Please remove Most Favored National exclusion.  Please add exclusions for university pharmacies, Home infusion pharmacies, ITU pharmacies, and VA pharmacies.  Please add exclusions for claims older than 180 days.  please add exclusions for invalid identifiers, reversed claism, rejected claims.  Thank you.
 
 =============
 
