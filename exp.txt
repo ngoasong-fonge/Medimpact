@@ -156,3 +156,7 @@ Re-check the second line to ensure it has exactly 23 fields:
 sed -n '2p' /opt/backup/foundry/task_edited_extract.csv | awk -F',' '{print NF}'
 
 Step 4: Test the Import again
+
+
+[svcpostgres@pv2medpg3db1 foundry]$ sed -i '2s/.*/'"$(cat fixed_line2.csv)"'/' /opt/backup/foundry/task_edited_extract.csv
+sed: -e expression #1, char 369: unknown option to `s'
