@@ -66,3 +66,16 @@ Step 3: Test the Column Count
 Ensure line 2 has exactly 23 fields:
 sed -n '2p' /opt/backup/foundry/task_edited_extract.csv | awk -F',' '{print NF}'
 
+
+[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -c "COPY foundry.task_edited_schema (
+>     last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description,
+>     d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp,
+>     review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
+> ) FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
+ERROR:  missing data for column "d_timestamp"
+CONTEXT:  COPY task_edited_schema, line 9: "1a7ec779-d86e-45de-840e-7aa77c764fde,1a7ec779-d86e-45de-840e-7aa77c764fde,1a7ec779-d86e-45de-840e-7a..."
+[svcpostgres@pv2medpg3db1 foundry]$
+[svcpostgres@pv2medpg3db1 foundry]$ sed -n '9p' /opt/backup/foundry/task_edited_extract.csv
+1a7ec779-d86e-45de-840e-7aa77c764fde,1a7ec779-d86e-45de-840e-7aa77c764fde,1a7ec779-d86e-45de-840e-7aa77c764fde,23836ae4-9672-4fbd-9928-fecd2a65678f,1a7ec779-d86e-45de-840e-7aa77c764fde,01e98fe2-5654-4402-96f4-077777205df8,Contract Review,Task Manager,SS000BLE,""Rebate Clean Up
+
+
