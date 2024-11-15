@@ -257,10 +257,11 @@ awk -F',' '{
 }' OFS=',' /opt/backup/foundry/task_edited_filtered.csv > /opt/backup/foundry/task_edited_cleaned.csv
 
 
-[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -c "COPY foundry.task_edited_schema (
->     last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description,
->     d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp,
->     review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
-> ) FROM '/opt/backup/foundry/task_edited_filtered.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
-ERROR:  extra data after last expected column
-CONTEXT:  COPY task_edited_schema, line 42: "LEGGETT 2023- 9/5 Andy  Please remove LDD exclusions, tamiflu exclusion, O drug exclusion, 'specialt..."
+[svcpostgres@pv2medpg3db1 foundry]$ head -n 10 /opt/backup/foundry/task_edited_extract.csv | awk -F',' '{print NF}' | sort | uniq -c
+      1 0
+      1 10
+      6 22
+      2 23
+[svcpostgres@pv2medpg3db1 foundry]$ head -n 10 /opt/backup/foundry/task_edited_extract.csv | awk -F'|' '{print NF}' | sort | uniq -c
+      1 0
+      9 1
