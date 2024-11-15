@@ -243,8 +243,22 @@ psql -d archive -c "COPY foundry.task_edited_schema (
 ) FROM '/opt/backup/foundry/task_edited_filtered.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true) LOG ERRORS INTO err_table;
 
 =============
+
+sed -i 's/|/,/g' /opt/backup/foundry/task_edited_filtered.csv
+
+
+awk -F',' '{for(i=1; i<=NF; i++) if($i ~ /,/) {print $0; exit}}' /opt/backup/foundry/task_edited_filtered.csv
+
+awk -F',' '{
+  for(i=1; i<=NF; i++) {
+    if($i ~ /,/ && $i !~ /^".*"$/) $i="\"" $i "\"";
+  }
+  print $0;
+}' OFS=',' /opt/backup/foundry/task_edited_filtered.csv > /opt/backup/foundry/task_edited_cleaned.csv
+
+
 psql -d archive -c "COPY foundry.task_edited_schema (
     last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description, 
     d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp, 
     review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
-) FROM '/opt/backup/foundry/task_edited_filtered.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true, QUOTE '\"');"
+) FROM '/opt/backup/foundry/task_edited_cleaned.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true, QUOTE '\"');"
