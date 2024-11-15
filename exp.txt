@@ -98,3 +98,21 @@ If the row is incomplete:
 Open the CSV file in a text editor to manually review line 9.
 If you have the original data source, retrieve the missing fields for this row.
 Correct the row by completing the missing fields.
+
+Comma as Delimiter (-F',')
+head -n 10 /opt/backup/foundry/task_edited_extract.csv | awk -F',' '{print NF}' | sort | uniq -c
+      1 0
+      1 10
+      6 22
+      2 23
+Observation: Most rows have 22 or 23 fields when using a comma as the delimiter. This indicates that the file likely uses commas to separate fields.
+
+Pipe as Delimiter (-F'|')
+head -n 10 /opt/backup/foundry/task_edited_extract.csv | awk -F'|' '{print NF}' | sort | uniq -c
+      1 0
+      9 1
+Observation: Almost all rows have only 1 field when using the pipe delimiter, which means the file is not pipe-delimited.
+
+our file appears to be comma-separated, based on the consistent field counts when using -F','.
+
+
