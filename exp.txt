@@ -12,3 +12,14 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 
 
 sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
+=========
+[svcpostgres@pv1medpg3db1 ~]$ repmgr standby switchover -f /opt/app/repmgr/repmgr.conf --dry-run
+NOTICE: checking switchover on node "pgproddr1" (ID: 2) in --dry-run mode
+INFO: SSH connection to host "10.15.2.190" succeeded
+INFO: able to execute "repmgr" on remote host "10.15.2.190"
+INFO: 1 walsenders required, 10 available
+ERROR: connection to database failed
+DETAIL:
+connection to server at "10.13.2.180", port 5432 failed: fe_sendauth: no password supplied
+
+ERROR: demotion candidate is unable to make replication connection to promotion candidate
