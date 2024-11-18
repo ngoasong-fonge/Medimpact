@@ -13,13 +13,15 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 
 sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
 =========
+primary
+node_id=1
+node_name='pgprod1'
+conninfo='host=10.15.2.190 user=repmgr dbname=repmgr connect_timeout=2'
+data_directory='/opt/app/postgres-data'
+
 standby
-[svcpostgres@pv1medpg3db1 ~]$ cat .pgpass
-10.13.2.180:5432:repmgr:repmgr:t+RS39+2
-10.15.2.190:5432:repmgr:repmgr:t+RS39+2
-
-[svcpostgres@pv2medpg3db1 ~]$ cat .pgpass
-10.15.2.190:5432:repmgr:repmgr:t+RS39+2
-10.13.2.180:5432:repmgr:repmgr:t+RS39+2
-
+node_id=2
+node_name='pgproddr1'
+conninfo='host=10.13.2.180 user=repmgr dbname=repmgr connect_timeout=2'
+data_directory='/opt/app/postgres-data'
 
