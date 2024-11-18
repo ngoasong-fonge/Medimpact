@@ -25,3 +25,6 @@ node_name='pgproddr1'
 conninfo='host=10.13.2.180 user=repmgr dbname=repmgr connect_timeout=2'
 data_directory='/opt/app/postgres-data'
 
+ERROR: connection to database failed
+DETAIL:
+connection to server at "10.13.2.180", port 5432 failed: fe_sendauth: no password supplied
