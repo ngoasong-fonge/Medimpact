@@ -189,4 +189,18 @@ awk -F',' '{print NF}' /opt/backup/foundry/task_edited_extract.csv | sort | uniq
 
 Step 4: Retry the COPY Command
 
+===========
+[svcpostgres@pv2medpg3db1 foundry]$ psql -d archive -c "COPY foundry.task_edited_schema (
+>     last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description,
+>     d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp,
+>     review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
+> ) FROM '/opt/backup/foundry/task_edited_extract.csv' WITH (FORMAT csv, DELIMITER ',', HEADER true);"
+ERROR:  extra data after last expected column
+CONTEXT:  COPY task_edited_schema, line 2: "c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7a..."
+[svcpostgres@pv2medpg3db1 foundry]$
+[svcpostgres@pv2medpg3db1 foundry]$
+[svcpostgres@pv2medpg3db1 foundry]$ sed -n '2p' /opt/backup/foundry/task_edited_extract.csv
+c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7aaa4f481412,0df5b841-156e-42e4-990f-0fe0b5c58ba5,00545af0-a82a-4e14-a9fb-364f345af53f,Contract Load,Task Manager,DQ - Discount Specialty Target zero but performance calculated,"I fixed most of these, so don't start until 12/14.  Use the DQ Investigator and the rule named [Discount Specialty Target zero but performance calculated] to solve the remaining rate issues.  Check the rate currency as well as calculate performance fields.",2022-12-13T14:53:24.527Z,Important,CLOSED,,12/16/2022,2022-12-20T20:34:42.862Z,2022-12-20T20:34:42.862Z,2022-12-20T20:34:42.862Z,,,,,,,,,,,,,,,,
+
+
 
