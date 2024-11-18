@@ -9,3 +9,6 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 [svcpostgres@pv2medpg3db1 foundry]$
 [svcpostgres@pv2medpg3db1 foundry]$ sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv
 23836ae4-9672-4fbd-9928-fecd2a65678f|23836ae4-9672-4fbd-9928-fecd2a65678f|23836ae4-9672-4fbd-9928-fecd2a65678f|23836ae4-9672-4fbd-9928-fecd2a65678f|1a7ec779-d86e-45de-840e-7aa77c764fde|12d57a03-8f1c-4df0-ae4e-08cc0730db90|Contract Review|Task Manager|CHENANGO|"CHENANGO - 2023 - \"Andy 9/10/2023:  Please update specialty channel to be all contracted pharamcies (not just specialty pharmacies).  Please update OTC exclusion to be OTCs other than strips, meters, and medications.  Please update device exclusion to be devices other than strips, meters, and medications.  Please remove rebate non-POS exclusion.  Please remove Most Favored National exclusion.  Please add exclusions for university pharmacies, Home infusion pharmacies, ITU pharmacies, and VA pharmacies.  Please add exclusions for claims older than 180 days.  please add exclusions for invalid identifiers, reversed claism, rejected claims.  Thank you.
+
+
+sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
