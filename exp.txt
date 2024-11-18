@@ -13,26 +13,13 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 
 sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
 =========
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
+standby
+[svcpostgres@pv1medpg3db1 ~]$ cat .pgpass
+10.13.2.180:5432:repmgr:repmgr:t+RS39+2
+10.15.2.190:5432:repmgr:repmgr:t+RS39+2
 
-# "local" is for Unix domain socket connections only
-local   all             all                                     trust
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            trust
-host    all             all                0.0.0.0/0            md5
-# IPv6 local connections:
-host    all             all             ::1/128                 trust
-# Allow replication connections from localhost, by a user with the
-# replication privilege.
-local   replication     all                                     md5
-host    replication     all             127.0.0.1/32            md5
-host    replication     all             ::1/128                 md5
-local   replication     repmgr                                  md5
-host    replication     repmgr     127.0.0.1/32                 md5
-host    replication     repmgr     10.15.2.190/32             md5
-host    replication     repmgr     10.13.2.180/32             md5
-local   repmgr     repmgr                                  md5
-host    repmgr     repmgr     127.0.0.1/32                 md5
-host    repmgr     repmgr     10.15.2.190/32             md5
-host    repmgr     repmgr     10.13.2.180/32             md5
+[svcpostgres@pv2medpg3db1 ~]$ cat .pgpass
+10.15.2.190:5432:repmgr:repmgr:t+RS39+2
+10.13.2.180:5432:repmgr:repmgr:t+RS39+2
+
 
