@@ -204,3 +204,29 @@ c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58eeb-5653-4afd-9ed2-7aaa4f481412,c3c58e
 
 
 
+CREATE TABLE foundry.task_edited_schema (
+    last_modified_by TEXT,
+    reviewer TEXT,
+    last_status_changer TEXT,
+    assigner TEXT,
+    assignee TEXT,
+    id UUID,  -- Use UUID if IDs are UUIDs, else TEXT or VARCHAR(36)
+    category TEXT,
+    type TEXT,
+    title TEXT,
+    description TEXT,  -- Use TEXT to handle long and multi-line fields
+    d_timestamp TIMESTAMP,  -- For ISO-8601 datetime strings
+    priority INTEGER,  -- Replace with TEXT if priority can be non-numeric
+    status VARCHAR(50),
+    sub_status VARCHAR(50),
+    due_date DATE,  -- Replace with TIMESTAMP if time information is included
+    last_status_change_timestamp TIMESTAMP,
+    last_modified_timestamp TIMESTAMP,
+    review_timestamp TIMESTAMP,
+    linked_entity_id TEXT,
+    linked_ccm_entity_id TEXT,
+    linked_entity_ids TEXT,
+    linked_ccm_entity_ids TEXT
+);
+
+
