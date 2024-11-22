@@ -13,20 +13,5 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 
 sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
 =========
-psql -d archive -c "COPY foundry.exposures_by_cycle_period_schema (
-    id, contract_id, contract_organization_id, line_of_business, source, cycle_period_date,
-    cycle_period_date_string, guarantee_period_id, guarantee_period_effective_date, guarantee_period_expiration_date,
-    plan_year, level, level_order, level_display_string, guarantee_category_type, guarantee_category_id,
-    guarantee_category_name, report_category_id, report_category, reporting_exclusion_id, reporting_exclusion_name,
-    carrier_id, channel_id, channel_name, category, guarantee_type, rate_id, contract_executed,
-    contract_effective_date, contract_expiration_date, first_full_reconciliation_period_start_date,
-    contract_annual_reconciliation_length, contract_co_pay_differential, contract_eligibility_threshold,
-    contract_reconciliation_period_length, rebate_annual_reconciliation_length, rebate_co_pay_differential,
-    rebate_reconciliation_period, contract_eligibility_threshold_basis, contract_eligibility_threshold_frequency,
-    contract_exposure_cap, contract_exposure_cap_basis, contract_exposure_offset, pharmacy_aggregation_level,
-    pharmacy_exposure_cap, pharmacy_exposure_cap_basis, pharmacy_exposure_offset, rebate_aggregation_level,
-    rebate_exposure_cap, rebate_exposure_cap_basis, rebate_exposure_offset, rebate_payout_period, rebate_pricing_type,
-    has_rebate_guarantee_rates, has_rebate_passthrough_rates, net_rx_count, admin_fee, incremental_admin_fee,
-    guaranteed_exposure_exposure_cap, guaranteed_exposure_no_cap, guaranteed_exposure, incremental_guaranteed_exposure,
-    incremental_guaranteed_exposure_exposure_cap, incremental_guaranteed_exposure_no_cap, incremental_net_rx_count
-) FROM '/opt/backup/foundry/exposures_by_cycle_period.csv' WITH (FORMAT csv, DELIMITER '|', HEADER true);"
+ERROR:  invalid input syntax for type double precision: ""
+CONTEXT:  COPY exposures_by_cycle_period_schema, line 2, column contract_annual_reconciliation_length: ""
