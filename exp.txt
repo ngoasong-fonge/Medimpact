@@ -13,79 +13,20 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 
 sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
 =========
-psql -d archive -c "COPY foundry.task_edited_schema (
-    last_modified_by, reviewer, last_status_changer, assigner, assignee, id, category, type, title, description,
-    d_timestamp, priority, status, sub_status, due_date, last_status_change_timestamp, last_modified_timestamp,
-    review_timestamp, linked_entity_id, linked_ccm_entity_id, linked_entity_ids, linked_ccm_entity_ids
-) FROM '/opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv' WITH (FORMAT csv, DELIMITER '|', HEADER true);"
-
-
-archive=# \d foundry.exposures_by_cycle_period_schema
-                            Table "foundry.exposures_by_cycle_period_schema"
-                    Column                    |          Type           | Collation | Nullable | Default
-----------------------------------------------+-------------------------+-----------+----------+---------
- id                                           | character varying(4000) |           |          |
- contract_id                                  | character varying(4000) |           |          |
- contract_organization_id                     | character varying(4000) |           |          |
- line_of_business                             | character varying(4000) |           |          |
- source                                       | character varying(4000) |           |          |
- cycle_period_date                            | character varying(4000) |           |          |
- cycle_period_date_string                     | character varying(4000) |           |          |
- guarantee_period_id                          | character varying(4000) |           |          |
- guarantee_period_effective_date              | character varying(4000) |           |          |
- guarantee_period_expiration_date             | character varying(4000) |           |          |
- plan_year                                    | integer                 |           |          |
- level                                        | character varying(4000) |           |          |
- level_order                                  | integer                 |           |          |
- level_display_string                         | character varying(4000) |           |          |
- guarantee_category_type                      | character varying(4000) |           |          |
- guarantee_category_id                        | character varying(4000) |           |          |
- guarantee_category_name                      | character varying(4000) |           |          |
- report_category_id                           | character varying(4000) |           |          |
- report_category                              | character varying(4000) |           |          |
- reporting_exclusion_id                       | character varying(4000) |           |          |
- reporting_exclusion_name                     | character varying(4000) |           |          |
- carrier_id                                   | character varying(4000) |           |          |
- channel_id                                   | character varying(4000) |           |          |
- channel_name                                 | character varying(4000) |           |          |
- category                                     | character varying(4000) |           |          |
- guarantee_type                               | character varying(4000) |           |          |
- rate_id                                      | character varying(4000) |           |          |
- contract_executed                            | boolean                 |           |          |
- contract_effective_date                      | character varying(4000) |           |          |
- contract_expiration_date                     | character varying(4000) |           |          |
- first_full_reconciliation_period_start_date  | character varying(4000) |           |          |
- contract_annual_reconciliation_length        | double precision        |           |          |
- contract_co_pay_differential                 | double precision        |           |          |
- contract_eligibility_threshold               | double precision        |           |          |
- contract_reconciliation_period_length        | double precision        |           |          |
- rebate_annual_reconciliation_length          | double precision        |           |          |
- rebate_co_pay_differential                   | double precision        |           |          |
- rebate_reconciliation_period                 | double precision        |           |          |
- contract_eligibility_threshold_basis         | character varying(4000) |           |          |
- contract_eligibility_threshold_frequency     | character varying(4000) |           |          |
- contract_exposure_cap                        | character varying(4000) |           |          |
- contract_exposure_cap_basis                  | character varying(4000) |           |          |
- contract_exposure_offset                     | character varying(4000) |           |          |
- pharmacy_aggregation_level                   | character varying(4000) |           |          |
- pharmacy_exposure_cap                        | character varying(4000) |           |          |
- pharmacy_exposure_cap_basis                  | character varying(4000) |           |          |
- pharmacy_exposure_offset                     | character varying(4000) |           |          |
- rebate_aggregation_level                     | character varying(4000) |           |          |
- rebate_exposure_cap                          | character varying(4000) |           |          |
- rebate_exposure_cap_basis                    | character varying(4000) |           |          |
- rebate_exposure_offset                       | character varying(4000) |           |          |
- rebate_payout_period                         | character varying(4000) |           |          |
- rebate_pricing_type                          | character varying(4000) |           |          |
- has_rebate_guarantee_rates                   | boolean                 |           |          |
- has_rebate_passthrough_rates                 | boolean                 |           |          |
- net_rx_count                                 | bigint                  |           |          |
- admin_fee                                    | double precision        |           |          |
- incremental_admin_fee                        | double precision        |           |          |
- guaranteed_exposure_exposure_cap             | double precision        |           |          |
- guaranteed_exposure_no_cap                   | double precision        |           |          |
- guaranteed_exposure                          | double precision        |           |          |
- incremental_guaranteed_exposure              | double precision        |           |          |
- incremental_guaranteed_exposure_exposure_cap | double precision        |           |          |
- incremental_guaranteed_exposure_no_cap       | double precision        |           |          |
- incremental_net_rx_count                     | bigint                  |           |          |
+psql -d archive -c "COPY foundry.exposures_by_cycle_period_schema (
+    id, contract_id, contract_organization_id, line_of_business, source, cycle_period_date,
+    cycle_period_date_string, guarantee_period_id, guarantee_period_effective_date, guarantee_period_expiration_date,
+    plan_year, level, level_order, level_display_string, guarantee_category_type, guarantee_category_id,
+    guarantee_category_name, report_category_id, report_category, reporting_exclusion_id, reporting_exclusion_name,
+    carrier_id, channel_id, channel_name, category, guarantee_type, rate_id, contract_executed,
+    contract_effective_date, contract_expiration_date, first_full_reconciliation_period_start_date,
+    contract_annual_reconciliation_length, contract_co_pay_differential, contract_eligibility_threshold,
+    contract_reconciliation_period_length, rebate_annual_reconciliation_length, rebate_co_pay_differential,
+    rebate_reconciliation_period, contract_eligibility_threshold_basis, contract_eligibility_threshold_frequency,
+    contract_exposure_cap, contract_exposure_cap_basis, contract_exposure_offset, pharmacy_aggregation_level,
+    pharmacy_exposure_cap, pharmacy_exposure_cap_basis, pharmacy_exposure_offset, rebate_aggregation_level,
+    rebate_exposure_cap, rebate_exposure_cap_basis, rebate_exposure_offset, rebate_payout_period, rebate_pricing_type,
+    has_rebate_guarantee_rates, has_rebate_passthrough_rates, net_rx_count, admin_fee, incremental_admin_fee,
+    guaranteed_exposure_exposure_cap, guaranteed_exposure_no_cap, guaranteed_exposure, incremental_guaranteed_exposure,
+    incremental_guaranteed_exposure_exposure_cap, incremental_guaranteed_exposure_no_cap, incremental_net_rx_count
+) FROM '/opt/backup/foundry/exposures_by_cycle_period.csv' WITH (FORMAT csv, DELIMITER '|', HEADER true);"
