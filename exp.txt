@@ -13,6 +13,6 @@ CONTEXT:  COPY task_edited_schema, line 137: "23836ae4-9672-4fbd-9928-fecd2a6567
 
 sed -n '137p' /opt/backup/foundry/spark_part-00000-73ac8059-28c3-43e7-86b0-2e2a41e73e48-c000.csv | awk -F'|' '{print NF}'
 =========
-psql -d archive -c "\COPY foundry.exposures_by_cycle_period_schema FROM '/opt/backup/foundry/exposures_by_cycle_period.csv' WITH (FORMAT csv, DELIMITER '|', HEADER true, NULL '');"
+ALTER USER auditor SET pgaudit.log TO 'read, write, ddl';
 
 
