@@ -1,28 +1,23 @@
-[svcpostgres@pv2medpg3db1 foundry_schema_table]$ psql -d archive -f /opt/backup/foundry_schema_table/rebate_summary_schema.sql
-psql:/opt/backup/foundry_schema_table/rebate_summary_schema.sql:23: ERROR:  syntax error at or near ","
-LINE 8:     POS varchar(4000)),
-                              ^
-[svcpostgres@pv2medpg3db1 foundry_schema_table]$ vi rebate_summary_schema.sql
-create table  foundry.rebate_summary_schema (
+CREATE TABLE foundry.rebate_summary_schema (
     contract_organization_id varchar(4000),
     contract_id varchar(4000),
     cycle_month varchar(4000),
     guarantee_period_id varchar(4000),
     guarantee_period_effective_date varchar(4000),
     guarantee_period_expiration_date varchar(4000),
-    POS varchar(4000)),
-    POS_ytd varchar(4000)),
-    Guarantee varchar(4000)),
-    Guarantee_ytd varchar(4000)),
-    Credit varchar(4000)),
-    Credit_ytd varchar(4000)),
-    Collections varchar(4000)),
-    Collections_ytd varchar(4000)),
-    Fee varchar(4000)),
-    Fee_ytd varchar(4000)),
-    Rebate_Exposure varchar(4000)),
-    Rebate_Exposure_ytd varchar(4000)),
-    accounting_monthly_estimated_payout varchar(4000)),
-    accounting_estimated_payout_ytd varchar(4000)),
-    Amount_Due_to_Client_ytd varchar(4000))
+    POS varchar(4000),
+    POS_ytd varchar(4000),
+    Guarantee varchar(4000),
+    Guarantee_ytd varchar(4000),
+    Credit varchar(4000),
+    Credit_ytd varchar(4000),
+    Collections varchar(4000),
+    Collections_ytd varchar(4000),
+    Fee varchar(4000),
+    Fee_ytd varchar(4000),
+    Rebate_Exposure varchar(4000),
+    Rebate_Exposure_ytd varchar(4000),
+    accounting_monthly_estimated_payout varchar(4000),
+    accounting_estimated_payout_ytd varchar(4000),
+    Amount_Due_to_Client_ytd varchar(4000)
 );
