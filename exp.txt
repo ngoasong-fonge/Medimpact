@@ -1,23 +1,19 @@
-CREATE TABLE foundry.rebate_summary_schema (
-    contract_organization_id varchar(4000),
-    contract_id varchar(4000),
-    cycle_month varchar(4000),
-    guarantee_period_id varchar(4000),
-    guarantee_period_effective_date varchar(4000),
-    guarantee_period_expiration_date varchar(4000),
-    POS varchar(4000),
-    POS_ytd varchar(4000),
-    Guarantee varchar(4000),
-    Guarantee_ytd varchar(4000),
-    Credit varchar(4000),
-    Credit_ytd varchar(4000),
-    Collections varchar(4000),
-    Collections_ytd varchar(4000),
-    Fee varchar(4000),
-    Fee_ytd varchar(4000),
-    Rebate_Exposure varchar(4000),
-    Rebate_Exposure_ytd varchar(4000),
-    accounting_monthly_estimated_payout varchar(4000),
-    accounting_estimated_payout_ytd varchar(4000),
-    Amount_Due_to_Client_ytd varchar(4000)
+[svcpostgres@pv2medpg3db1 foundry_schema_table]$ psql -d archive -f /opt/backup/foundry_schema_table/reporting_channel_ref_schema.sql
+psql:/opt/backup/foundry_schema_table/reporting_channel_ref_schema.sql:13: ERROR:  trailing junk after numeric literal at or near "2n"
+LINE 10:     2nd_Version varchar(4000),
+             ^
+[svcpostgres@pv2medpg3db1 foundry_schema_table]$ vi reporting_channel_ref_schema.sql
+create table  foundry.reporting_channel_ref_schema (
+    category varchar(4000),
+    channel_name varchar(4000),
+    reporting_channel_name varchar(4000),
+    brand_generic varchar(4000),
+    recon_channel varchar(4000),
+    discount_reporting_channel_name varchar(4000),
+    rebate_reporting_channel_name varchar(4000),
+    Matt_first_review varchar(4000),
+    2nd_Version varchar(4000),
+    report_sorting_index varchar(4000),
+    concat_rep_brand_gen varchar(4000)
 );
+
