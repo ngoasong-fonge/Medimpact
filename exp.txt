@@ -1,22 +1,4 @@
-CREATE TABLE foundry.client_contract_rate_edited_schema (
-    approved_by varchar(4000),
-    created_by varchar(4000),
-    modified_by varchar(4000),
-    id varchar(4000),
-    category varchar(4000),
-    type varchar(4000),
-    rate varchar(4000),
-    rate_currency varchar(4000),
-    pricing_type varchar(4000),
-    calculate_performance varchar(4000),
-    contract_id varchar(4000),
-    measure_id varchar(4000),
-    effective_date varchar(4000),
-    expiration_date varchar(4000),
-    validated varchar(4000),
-    last_modified_timestamp varchar(4000),
-    created_timestamp varchar(4000),
-    elixir varchar(4000),
-    rate_application_logic_id varchar(4000)
-);
+[svcpostgres@pv2medpg3db1 foundry_schema_table]$ psql -d archive -f /opt/backup/foundry_schema_table/client_contract_term_exclusion_client_contract_rate_edited_schema.sql
+psql:/opt/backup/foundry_schema_table/client_contract_term_exclusion_client_contract_rate_edited_schema.sql:4: NOTICE:  identifier "client_contract_term_exclusion_client_contract_rate_edited_schema" will be truncated to "client_contract_term_exclusion_client_contract_rate_edited_sche"
+
 
