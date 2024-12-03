@@ -1,9 +1,4 @@
-[svcpostgres@pv2medpg3db1 foundry_schema_table]$ psql -d archive -f /opt/backup/foundry_schema_table/reporting_channel_ref_schema.sql
-psql:/opt/backup/foundry_schema_table/reporting_channel_ref_schema.sql:13: ERROR:  trailing junk after numeric literal at or near "2n"
-LINE 10:     2nd_Version varchar(4000),
-             ^
-[svcpostgres@pv2medpg3db1 foundry_schema_table]$ vi reporting_channel_ref_schema.sql
-create table  foundry.reporting_channel_ref_schema (
+CREATE TABLE foundry.reporting_channel_ref_schema (
     category varchar(4000),
     channel_name varchar(4000),
     reporting_channel_name varchar(4000),
@@ -12,8 +7,7 @@ create table  foundry.reporting_channel_ref_schema (
     discount_reporting_channel_name varchar(4000),
     rebate_reporting_channel_name varchar(4000),
     Matt_first_review varchar(4000),
-    2nd_Version varchar(4000),
+    "2nd_Version" varchar(4000),
     report_sorting_index varchar(4000),
     concat_rep_brand_gen varchar(4000)
 );
-
