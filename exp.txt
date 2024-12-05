@@ -1,10 +1,3 @@
-[svcpostgres@pv2medpg3db1 backup]$ psql -d archive -c "COPY foundry.client_contract_transformed_edited_schema FROM '/opt/backup/client_contract_transformed_edited_extract_12_4_2024.csv' DELIMITER '|' CSV HEADER NULL '';"
-ERROR:  invalid byte sequence for encoding "UTF8": 0x00
-CONTEXT:  COPY client_contract_transformed_edited_schema, line 298
-
-sed -n '298p' /opt/backup/client_contract_transformed_edited_extract_12_4_2024.csv
-
-iconv -f original_encoding -t UTF-8 /opt/backup/client_contract_transformed_edited_extract_12_4_2024.csv -o /opt/backup/client_contract_transformed_edited_utf8.csv
-
-psql -d archive -c "COPY foundry.client_contract_transformed_edited_schema FROM '/opt/backup/client_contract_transformed_edited_utf8.csv' DELIMITER '|' CSV HEADER NULL '';"
-
+[svcpostgres@pv2medpg3db1 backup]$ psql -d archive -c "COPY foundry.client_contract_transformed_edited_schema FROM '/opt/backup/client_contract_transformed_edited_extract_12_5_2024.csv' DELIMITER '|' CSV HEADER NULL '';"
+ERROR:  value too long for type character varying(4000)
+CONTEXT:  COPY client_contract_transformed_edited_schema, line 731, column comments: "Mekisha - Contract is now Executed in C360 will review and validate contract ~MH 7/18/24 - set up as..."
