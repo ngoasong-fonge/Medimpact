@@ -1,0 +1,59 @@
+Auditing : pgaudit and Object Level Auditing
+
+Introduction
+pgAudit can be configured for an auditing role only to watch specific objects.
+Important: For information on the Installation of pgaudit extension and to enable session-level auditing, see KB0010357- Auditing: pgaudit extension for user session auditing. One disadvantage of session-level auditing is that it can result in excessive WAL generation on high transaction systems, and users may want to achieve more fine-grained auditing.
+Process
+To do object-level auditing, creating an "auditor" ROLE is necessary. This "auditor" is responsible for object-level auditing.
+CREATE ROLE auditor NOLOGIN;
+This role can be specified with pgaudit.role
+ALTER SYSTEM SET pgaudit.role TO 'auditor';
+SELECT pg_reload_conf();
+From this point onwards, any table/column on which the auditor has the GRANTs will be audited.
+For example, granting SELECT on a table "tblaudit" to the auditor will result in any SELECT statement on the table getting logged in the PostgreSQL log irrespective of the user.
+GRANT SELECT ON tblaudit TO auditor;
+This will result in an audit log entry like this:
+2020-03-10 09:51:56.412 UTC [24628] LOG:  AUDIT: OBJECT,2,1,READ,SELECT,TABLE,public.tblaudit,select * from tblaudit;,<not logged>
+We can have column-level auditing by GRANTing SELECT on specific columns to auditor user
+GRANT SELECT (col1) ON tblaudit TO auditor;
+So if there are any statements that SELECTs the value col1 will be audited. For example, A statement as follows
+SELECT col1 from tblaudit;
+The above statement will result in an audit log entry like this:
+2020-03-10 10:14:17.253 UTC [24677] LOG:  AUDIT: OBJECT,1,1,READ,SELECT,TABLE,public.tblaudit,SELECT col1 from tblaudit;,<not logged>
+The same happens even if the column is not explicitly specified. For example, a couple of statements as follows:
+select * from tblaudit;
+
+select id 
+  from t1
+  join tblaudit on tblaudit.col1 = t1.id
+where id < 10;
+It will be audited because the column's value is selected or used indirectly. This will result in an audit entry like:
+2020-03-25 14:15:32.621 UTC [32534] LOG:  AUDIT: OBJECT,1,1,READ,SELECT,TABLE,public.tblaudit,select * from tblaudit ;,<not logged>
+2020-03-25 14:25:39.015 UTC [32562] LOG:  AUDIT: OBJECT,1,1,READ,SELECT,TABLE,public.tblaudit,"select id 
+	  from t1
+	  join tblaudit on tblaudit.col1 = t1.id
+	where id < 10;",<not logged>
+Any statement in which an audited column is referenced or used in any part of the statement, explicitly or implicitly, alongside any other un-audited columns will be audited
+2020-03-10 10:17:04.836 UTC [24677] LOG:  AUDIT: OBJECT,2,1,READ,SELECT,TABLE,public.tblaudit,"SELECT col1,col2 from tblaudit;",<not logged>
+Column-level auditing allows us to audit anyone accessing or using sensitive information.
+However, a statement on other columns of the table will not be audited. For example, a statement as follows:
+SELECT col2 from tblaudit;
+It will not be audited because "col2" is not part of the audit policy. This holds even though another column, "col1" on the same table is part of the audit policy.
+Configuring Multiple Auditor Roles
+The parameter pgaudit.role takes only one role, and we can have only one auditor role. However, we can leverage PostgreSQL's capacity to grant roles to other roles for the purpose of auditing.
+The idea is to create multiple ROLEs and assign them to the auditor role
+CREATE ROLE readauditor NOLOGIN;
+CREATE ROLE writeauditor NOLOGIN;
+GRANT readauditor TO auditor;
+GRANT writeauditor TO auditor;
+Now the auditor ROLE gets all the privileges granted through readauditor and writeauditor.
+For example:
+GRANT SELECT (col1,col2) ON tblaudit TO readauditor;
+GRANT INSERT,UPDATE(col2),DELETE ON tblaudit TO writeauditor;
+This can produce corresponding audit logs for every action mentioned. Sample log entries are:
+2020-03-10 12:12:50.517 UTC [24677] LOG:  AUDIT: OBJECT,6,1,WRITE,UPDATE,TABLE,public.tblaudit,update tblaudit set col1=2 where col2=2;,<not logged>
+2020-03-10 12:13:34.360 UTC [24677] LOG:  AUDIT: OBJECT,7,1,WRITE,UPDATE,TABLE,public.tblaudit,update tblaudit set col2=3;,<not logged>
+Important: There can be both SESSION level auditing and OBJECT level auditing happening at the same time. The same statement might produce double entries in the log like:
+2020-03-10 09:51:56.412 UTC [24628] LOG:  AUDIT: SESSION,2,1,READ,SELECT,,,select * from tblaudit;,<not logged>
+2020-03-10 09:51:56.412 UTC [24628] LOG:  AUDIT: OBJECT,2,1,READ,SELECT,TABLE,public.tblaudit,select * from tblau
+
