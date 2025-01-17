@@ -1,0 +1,141 @@
+/usr/bin/systemctl start patroni, /usr/bin/systemctl stop patroni, /usr/bin/systemctl restart patroni, /usr/bin/systemctl enable patroni, /usr/bin/systemctl disable patroni, /usr/bin/systemctl status patroni
+sudo systemctl restart postgresql
+
+**sudo systemctl start patroni
+
+psql -h pv2medpg1c2 -U postgres -d citus
+
+
+
+ /opt/app/postgresql-15.1/bin/psql -h 10.15.130.161 -U postgres
+   62  sudo systemctl restart patroni
+   63  cd /opt/app/patroni
+   64  /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml edit-config pgprod1
+   65  sudo systemctl restart patroni
+   66  df -h
+   67  exit
+   68  nslookup pv2medpg1c2
+   69  /opt/app/postgresql-15.1/bin/psql -h 10.15.130.161 -U postgres -d citus
+   70  watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+   71  sudo systemctl restart patroni
+   72  watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+   73  /opt/app/postgresql-15.1/bin/psql -h 10.15.130.161 -U postgres -d citus
+   74  exit
+   75  /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml edit-config --group 1
+   76  /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml edit-config --group 2
+   77  exit
+   78  vi /opt/app/patroni/patroni.yml
+   79  exit
+   80  vi /opt/app/patroni/scripts/backup_postgres.sh
+   81  exity
+   82  exit
+   83  vi /opt/app/patroni/scripts/backup_postgres.sh
+   84  exit
+   85  sudo systemctl restart patroni
+   86  exit
+   87  vi pg_env.sh
+   88  chmod 744 pg_env.sh
+   89  . pg_env.sh
+   90  psql -h localhost
+   91  watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+   92  ls
+   93  . pg_env.sh
+   94  watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+   95  psql -h localhost
+   96  /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+   97  sudo systemctl stop patroni
+   98  watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+   99  exit
+  100  sudo systemctl start patroni
+  101  watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+  102  exit
+  103  ls
+  104  . pg_env.sh
+  105  vi /opt/app/patroni/patroni.yml
+  106  sudo systemctl restart patroni
+  107  vi /opt/app/patroni/patroni.yml
+
+/opt/app/postgresql-15.1/bin/psql -h pv2medpg1c2  -U postgres -d citus
+
+'/run/postgresql, /tmp'
+
+
+sftp -P 2222 CS0047368@sftp.percona.com
+
+cat /opt/backup/satur_badgerlog/postgresql-2024-06-22_* > /opt/backup/satur_badgerlog/postgresql-2024-06-22_combined.log
+
+
+
+ls -ltr /opt/backup/pgprod1/group0/wal_archive > wal_archive.log
+
+
+SELECT relname, reloptions, (SELECT setting FROM pg_settings WHERE name = 'autovacuum') AS autovacuum_enabled
+FROM pg_class
+WHERE relname = 'xray.public_components_versions_files';
+
+*****  To change parameters and restart patroni***** ------------------------------------------------------------------------------------------------------------------------------------
+curl -LO https://raw.githubusercontent.com/percona/support-snippets/master/postgresql/pg_gather/gather.sql
+
+watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+/opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml edit-config --group 0
+/opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml edit-config --group 1ls -la
+
+/opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml edit-config --group 2
+ru  /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list  (to check clustername)
+/opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml restart pguat2
+
+After this go to /opt/app/patroni/in the patroni.yml file update the parameters there as well
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+watch /opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+
+/opt/app/python/bin/patronictl -c /opt/app/patroni/patroni.yml list
+
+
+
+find /opt/backup/pgsandbox/group0/wal_archive -type f -mtime +5 -delete
+
+nohub time psql -h localhost -d citus -v ON_ERROR_STOP=1 -c 'VACUUM FULL ngmep.encounter;' > vacuum_full_table.log 2>&1 &
+
+. pg_env.sh
+pg_dump -h localhost -U deployadmin -d citus -n mepstg -Fc | gzip > /opt/backup/mepstg.dump.gz
+gunzip -c /opt/backup/mepstg.dump.gz | sed 's/mepstg/newmepstg/g' > /opt/backup/modified_backup.sql
+
+nohup restore_schema.sh > restore_schema_1117.log 2>&1 &
+
+
+pg_dump -h localhost -U deployadmin -d citus -n mepstg | gzip > /opt/backup/backup.dump.gz
+gunzip -c /opt/backup/backup.dump.gz | sed 's/mepstg/newmepstg/g' > /opt/backup/modified_backup.dump
+psql -h localhost -U deployadmin -d citus -f /opt/backup/modified_backup.dump
+
+backupfiles does not only include raw data, it also has information about index, constraints and other database objects during and after backup,statistics and information describing objects
+
+select * from pg_stat_user_tables where relname='table_name';
+select * from pg_stat_database
+
+
+
+ORACLE_HOME=/opt/app/oracle/product/instantclient_19_21
+LD_LIBRARY_PATH=/opt/app/oracle/product/instantclient_19_21
+
+
+
+export LD_LIBRARY_PATH=/opt/app/oracle/product/instantclient_19_21
+export LIBPATH=/opt/app/oracle/product/instantclient_19_21
+export ORACLE_HOME=/opt/app/oracle/product/instantclient_19_21
+export PATH=$ORACLE_HOME:$PATH
+
+
+Currently, I should be assuming that you have done custom compilations/builds from PostgreSQL source code. Please correct me if my assumption is wrong.
+As per the pg_config information, the source is configured with only a few options compared to the standard builds
+
+CONFIGURE =  '--prefix=/opt/app/postgresql' '--with-python' '--with-lz4' '--with-systemd' '--with-ssl=openssl'
+...
+LIBS = -lpgcommon -lpgport -llz4 -lssl -lcrypto -lz -lreadline -lpthread -lrt -ldl -lm
+
+
+
+log_location="/opt/backup/backup_log/backup_log.txt"
+/opt/backup/mepstg_backup"
+
+mepstg_backup_2024-01-24-213736.sql
